@@ -1,103 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>ATTENSYS - Employee Attendance System</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATTENSYS - Integrated Employee Attendance System</title>
     <link rel="stylesheet" href="{{ asset('css/landing-page.css') }}">
 </head>
-
 <body>
-
     <!-- NAVBAR -->
-    <nav>
-        <h2>ATTENSYS</h2>
-
-        <ul>
-            <li><a href="#about">About</a></li>
-            <li><a href="#features">Features</a></li>
-        </ul>
-    </nav>
-
+    <header>
+        <div class="container nav">
+            <div class="logo-area">
+                <img src="{{ asset('images/logo_attensys_removebg.png') }}" class="logo-img">
+                <h2 class="logo-text">ATTENSYS</h2>
+            </div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
+                <a href="/login" class="btn-login">Login</a>
+            </nav>
+        </div>
+    </header>
 
     <!-- HERO -->
     <section class="hero">
-
-        <h1>ATTENSYS</h1>
-
-        <p>
-            Integrated Employee Attendance System that helps companies
-            manage employee attendance using QR Code technology quickly
-            and efficiently.
-        </p>
-
-        <div class="hero-btn">
-
-            Login to System
-            </a>
-
-            <a href="#features" class="btn-secondary">
-                See Features
-            </a>
-
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">ATTENSYS</h1>
+                <h3 class="hero-subtitle">
+                    Attendance System
+                </h3>
+                <p>
+                    ATTENSYS is a digital attendance system that helps companies manage employee attendance efficiently. Employees can check in and check out using QR codes while HR administrators can monitor attendance records and generate reports easily.
+                </p>
+                <a href="/login" class="btn-primary">Get Started</a>
+            </div>
+            <div class="hero-image">
+                <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="attendance">
+            </div>
         </div>
-
     </section>
-
-
-    <!-- ABOUT -->
-    <section class="about" id="about">
-
-        <h2>About ATTENSYS</h2>
-
-        <p>
-            ATTENSYS is a web-based attendance management system designed to
-            help companies monitor employee attendance more efficiently.
-            Instead of using manual attendance books, employees can scan a QR code
-            to record their attendance. HR staff can easily manage attendance
-            records, verify employee leave requests, and generate attendance reports.
-        </p>
-
-    </section>
-
 
     <!-- FEATURES -->
-    <section class="features" id="features">
-        <h2>System Features</h2>
-        <div class="feature-grid">
-            @foreach($fungsional as $judul => $deskripsi)
-            <div class="card">
-                <h3>{{ ucfirst($judul) }}</h3>
-                <p>{{ $deskripsi }}</p>
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Key Features</h2>
+            <div class="features-grid">
+                @foreach($features as $judul => $deskripsi)
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        @if($judul == 'QR Code Attendance')
+                        📷
+                        @elseif($judul == 'Attendance History')
+                        📅
+                        @elseif($judul == 'Employee & Division Management')
+                        👥
+                        @elseif($judul == 'Attendance Recap & Reports')
+                        📊
+                        @endif
+                    </div>
+                    <h3>{{ $judul }}</h3>
+                    <p>{{ $deskripsi }}</p>
+                </div>
+                @endforeach
             </div>
-            @endforeach
         </div>
     </section>
 
-    <!-- CTA -->
-    <section class="cta">
-
-        <h2>Ready to Use ATTENSYS?</h2>
-
-        <p>
-            Login now to manage employee attendance quickly and efficiently.
-        </p>
-        Go to Login Page
-        </a>
-
+    <!-- ABOUT -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About ATTENSYS</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-icon">💡</div>
+                    <h3>What is ATTENSYS?</h3>
+                    <p>
+                        ATTENSYS is an integrated employee attendance system designed to simplify attendance management in companies using modern digital technology.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">🚀</div>
+                    <h3>Why ATTENSYS?</h3>
+                    <p>
+                        ATTENSYS helps companies improve attendance monitoring, reduce manual errors, and provide accurate attendance reports for HR administrators.
+                    </p>
+                </div>
+                <div class="about-card">
+                    <div class="about-icon">📞</div>
+                    <h3>Support</h3>
+                    <p>If you experience problems while using ATTENSYS, please contact us.</p>
+                    <p>Email : attensys@gmail.com</p>
+                    <p>Phone : +62 8X XXX XXX</p>
+                </div>
+            </div>
+        </div>
     </section>
 
-
+    <!-- FOOTER -->
     <footer>
-
-        <p>© 2026 ATTENSYS | Employee Attendance System</p>
-
+        <div class="container footer">
+            <p>© 2026 ATTENSYS - Integrated Employee Attendance System</p>
+        </div>
     </footer>
-
-
-    <script src="{{ asset('js/script.js') }}"></script>
-
 </body>
-
 </html>
