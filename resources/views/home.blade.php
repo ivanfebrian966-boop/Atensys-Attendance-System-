@@ -12,7 +12,6 @@
         <div class="container nav">
             <div class="logo-area">
                 <img src="{{ asset('images/logo_attensys_removebg.png') }}" class="logo-img">
-                <h2 class="logo-text">ATTENSYS</h2>
             </div>
             <nav>
                 <a href="#features">Features</a>
@@ -36,7 +35,7 @@
                 <a href="/login" class="btn-primary">Get Started</a>
             </div>
             <div class="hero-image">
-                <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="attendance">
+                <img src="{{ asset('images/atten.jpg') }}">
             </div>
         </div>
     </section>

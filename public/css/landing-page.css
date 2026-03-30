@@ -42,13 +42,8 @@ gap:10px;
 }
 
 .logo-img{
-width:40px;
-}
-
-.logo-text{
-font-size:22px;
-font-weight:bold;
-color:#2563eb;
+width: 175px;
+height: auto;
 }
 
 /* NAV MENU */
@@ -80,6 +75,11 @@ background:#1e4fd6;
 .hero{
 background:white;
 padding:100px 0;
+}
+
+.hero-image img{
+width:1000px;
+height: auto;
 }
 
 .hero-content{
