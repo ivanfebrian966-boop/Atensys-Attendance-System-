@@ -9,3 +9,6 @@ Route::get('/', function () {
 });
 
 Route::get('/home', [HomeController::class, 'home']);
+
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.post');
