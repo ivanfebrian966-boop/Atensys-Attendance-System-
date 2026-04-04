@@ -313,7 +313,7 @@
 
             <!-- Kembali ke beranda -->
             <div class="text-center mt-6">
-                <a href="/" class="text-sm text-slate-400 hover:text-indigo-600 transition-colors">
+                <a href="/home" class="text-sm text-slate-400 hover:text-indigo-600 transition-colors">
                     ← Kembali ke Beranda
                 </a>
             </div>
