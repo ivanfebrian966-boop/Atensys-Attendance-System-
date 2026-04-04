@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class DashboardHRController extends Controller
 {
     public function index()
     {
@@ -15,6 +15,6 @@ class DashboardController extends Controller
             "Reports" => "Automatic attendance reports"
         ];
 
-        return view('dashboard', compact('features'));
+        return view('dashboardHR', compact('features'));
     }
 }
