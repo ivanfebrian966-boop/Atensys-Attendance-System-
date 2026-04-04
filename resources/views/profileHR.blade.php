@@ -142,10 +142,10 @@
                             <div class="flex justify-between items-center mb-6">
                                 <div>
                                     <h3 class="text-xl font-semibold text-slate-800">
-                                        {{ $user->name ?? 'HR Admin' }}
+                                        {{ $user->name ?? 'Name' }}
                                     </h3>
                                     <p class="text-slate-500 text-sm">
-                                        {{ $user->position ?? 'Employee' }}
+                                        {{ $user->position ?? 'HR Admin' }}
                                     </p>
                                 </div>
 
