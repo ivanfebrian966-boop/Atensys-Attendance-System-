@@ -29,7 +29,7 @@
 
         <!-- SIDEBAR -->
         <aside id="sidebar"
-            class="w-64 bg-slate-900 text-slate-200 flex flex-col p-5 transition-all duration-300 ease-in-out">
+            class="w-64 bg-slate-900 text-slate-200 flex flex-col p-5 transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 md:static md:inset-0">
 
             <h1 class="text-xl font-bold mb-8 flex items-center gap-2">
                 <span class="text-white">A</span>
@@ -79,8 +79,11 @@
 
         </aside>
 
+        <!-- OVERLAY for mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="closeSidebar()"></div>
+
         <!-- MAIN -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 md:p-8">
 
             <!-- HEADER -->
             <div class="flex items-center gap-4 mb-8">
@@ -92,7 +95,7 @@
             </div>
 
             <!-- STATS -->
-            <div class="grid md:grid-cols-6 gap-4 mb-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mb-8">
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 hover:shadow transition">
                     <p class="text-xs text-slate-400">Total</p>
@@ -151,7 +154,7 @@
             </div>
 
             <!-- TABLE -->
-            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow hover:shadow-md transition overflow-x-auto">
 
                 <table class="w-full text-sm" id="attendanceTable">
                     <thead class="text-left text-slate-500 border-b">
@@ -219,21 +222,47 @@
         // SIDEBAR SMOOTH
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const texts = document.querySelectorAll('.sidebar-text');
+            const overlay = document.getElementById('sidebar-overlay');
 
-            if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20');
+            if (window.innerWidth >= 768) {
+                // Desktop behavior
+                const texts = document.querySelectorAll('.sidebar-text');
 
-                texts.forEach(t => {
-                    t.classList.add('opacity-0', 'scale-95', '-translate-x-2');
-                });
+                if (sidebar.classList.contains('w-64')) {
+                    sidebar.classList.replace('w-64', 'w-20');
+
+                    texts.forEach(t => {
+                        t.classList.add('opacity-0', 'scale-95', '-translate-x-2');
+                    });
+                } else {
+                    sidebar.classList.replace('w-20', 'w-64');
+
+                    texts.forEach(t => {
+                        t.classList.remove('opacity-0', 'scale-95', '-translate-x-2');
+                    });
+                }
             } else {
-                sidebar.classList.replace('w-20', 'w-64');
-
-                texts.forEach(t => {
-                    t.classList.remove('opacity-0', 'scale-95', '-translate-x-2');
-                });
+                // Mobile behavior
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    openSidebar();
+                } else {
+                    closeSidebar();
+                }
             }
+        }
+
+        function openSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
         }
 
         // FILTER + SEARCH

@@ -46,7 +46,7 @@
 
         <!-- SIDEBAR -->
         <aside id="sidebar"
-            class="w-64 bg-slate-900 text-slate-200 flex flex-col p-5 transition-all duration-300 ease-in-out">
+            class="w-64 bg-slate-900 text-slate-200 flex flex-col p-5 transition-all duration-300 ease-in-out transform -translate-x-full md:translate-x-0 md:static">
 
             <h1 class="text-xl font-bold mb-8 flex items-center gap-2">
                 <span class="text-white">A</span>
@@ -96,8 +96,11 @@
 
         </aside>
 
+        <!-- OVERLAY for mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="closeSidebar()"></div>
+
         <!-- MAIN -->
-        <main class="flex-1 p-8">
+        <main class="flex-1 p-4 md:p-8">
 
             <!-- HEADER -->
             <div class="flex items-center gap-4 mb-8">
@@ -109,7 +112,7 @@
             </div>
 
             <!-- CARD -->
-            <div class="flex justify-center">
+            <div class="flex justify-center px-4 md:px-0">
                 <div class="w-full max-w-4xl">
 
                     <!-- PROFILE CARD -->
@@ -155,7 +158,7 @@
                             </div>
 
                             <!-- DATA -->
-                            <div class="grid md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                                 <div class="p-4 bg-slate-50 rounded-xl border hover:border-[#5b3ea6] transition">
                                     <p class="text-xs text-slate-400">Employee ID</p>
@@ -185,7 +188,7 @@
                                     </p>
                                 </div>
 
-                                <div class="p-4 bg-slate-50 rounded-xl border md:col-span-2 hover:border-[#5b3ea6] transition">
+                                <div class="p-4 bg-slate-50 rounded-xl border col-span-1 md:col-span-2 hover:border-[#5b3ea6] transition">
                                     <p class="text-xs text-slate-400">Division</p>
                                     <p class="font-semibold text-slate-800 mt-1">
                                         {{ $user->division ?? '-' }}
@@ -214,22 +217,66 @@
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const texts = document.querySelectorAll('.sidebar-text');
+            const overlay = document.getElementById('sidebar-overlay');
 
-            if (sidebar.classList.contains('w-64')) {
-                sidebar.classList.replace('w-64', 'w-20');
+            if (window.innerWidth >= 768) {
+                // Desktop behavior: static position
+                sidebar.classList.remove('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
+                sidebar.classList.add('static');
 
-                texts.forEach(t => {
-                    t.classList.add('opacity-0', 'scale-95', '-translate-x-2');
-                });
+                const texts = document.querySelectorAll('.sidebar-text');
+
+                if (sidebar.classList.contains('w-64')) {
+                    sidebar.classList.replace('w-64', 'w-20');
+
+                    texts.forEach(t => {
+                        t.classList.add('opacity-0', 'scale-95', '-translate-x-2');
+                    });
+                } else {
+                    sidebar.classList.replace('w-20', 'w-64');
+
+                    texts.forEach(t => {
+                        t.classList.remove('opacity-0', 'scale-95', '-translate-x-2');
+                    });
+                }
             } else {
-                sidebar.classList.replace('w-20', 'w-64');
+                // Mobile behavior: fixed position
+                sidebar.classList.remove('static');
+                sidebar.classList.add('fixed', 'inset-y-0', 'left-0', 'z-50');
 
-                texts.forEach(t => {
-                    t.classList.remove('opacity-0', 'scale-95', '-translate-x-2');
-                });
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    openSidebar();
+                } else {
+                    closeSidebar();
+                }
             }
         }
+
+        function openSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
+                sidebar.classList.add('static', 'translate-x-0');
+            } else {
+                sidebar.classList.remove('static');
+                sidebar.classList.add('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
+            }
+        });
     </script>
 
 </body>
