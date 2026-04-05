@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/home', [HomeController::class, 'home']);
+Route::get('/super_admin', [SuperAdminController::class, 'index']);
 Route::get('/super-admin/dashboard', [SuperAdminController::class, 'index'])->name('super_admin');
 Route::get('/dashboardHR', [DashboardHRController::class, 'index'])->name('dashboardHR');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATTENSYS - Integrated Employee Attendance System</title>
 
-    <!-- Tailwind CSS via CDN (tidak perlu Node.js) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
@@ -86,6 +85,23 @@
         .img-glow {
             box-shadow: 0 0 60px rgba(99,102,241,0.25), 0 0 120px rgba(6,182,212,0.08);
         }
+        .text-hover {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .text-hover:hover {
+            color: #1b15b3; /* dark green */
+            transform: translateY(-5px) scale(1.05);
+        }
+        .sentence-hover {
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+        .sentence-hover:hover {
+            background: linear-gradient(135deg, #083182); /* dark green to orange */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transform: translateY(-4px) scale(1);
+        }
     </style>
 </head>
 <body class="bg-white text-slate-800 overflow-x-hidden">
@@ -129,38 +145,38 @@
         <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16 items-center relative" style="z-index:1">
             <!-- Text -->
             <div>
-                <div class="inline-flex items-center gap-2 text-indigo-700 text-xs font-semibold px-4 py-2 rounded-full mb-6 animate-fade-up border border-indigo-100 bg-indigo-50">
+                <div class="inline-flex items-center gap-2 text-indigo-700 text-xs font-semibold px-4 py-2 rounded-full mb-6 animate-fade-up border border-indigo-100 bg-indigo-50 text-hover">
                     <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
                     Smart Attendance Solution
                 </div>
                 <h1 class="text-5xl md:text-6xl font-extrabold leading-tight text-slate-900 mb-4 animate-fade-up delay-1" style="font-family:'Sora',sans-serif">
                     Attendance<br><span class="gradient-text">Made Simple</span>
                 </h1>
-                <p class="text-slate-500 text-lg leading-relaxed mb-8 animate-fade-up delay-2">
-                    ATTENSYS adalah sistem absensi digital yang membantu perusahaan mengelola kehadiran karyawan secara efisien menggunakan QR Code — dengan pemantauan real-time dan laporan instan.
+                <p class="text-slate-500 text-lg leading-relaxed mb-8 animate-fade-up delay-2 sentence-hover">
+                    ATTENSYS is a digital attendance system that helps companies manage employee attendance efficiently using QR Codes with real-time monitoring and instant reports.
                 </p>
                 <div class="flex flex-wrap gap-4 animate-fade-up delay-3">
                     <a href="/login" class="text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg transition hover:opacity-90" style="background:linear-gradient(135deg,#6366f1,#06b6d4);box-shadow:0 8px 24px rgba(99,102,241,0.25)">
                         Get Started →
                     </a>
                     <a href="#features" class="border border-slate-200 text-slate-700 font-semibold px-7 py-3.5 rounded-xl hover:bg-slate-50 transition">
-                        Lihat Fitur
+                        View Features
                     </a>
                 </div>
 
                 <!-- Stats -->
                 <div class="grid grid-cols-3 gap-4 mt-12 animate-fade-up delay-4">
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-indigo-600" style="font-family:'Sora',sans-serif">99%</p>
-                        <p class="text-xs text-slate-400 mt-1">Akurasi</p>
+                        <p class="text-3xl font-bold text-indigo-600 text-hover" style="font-family:'Sora',sans-serif">99%</p>
+                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Accuracy</p>
                     </div>
                     <div class="text-center border-x border-slate-100">
-                        <p class="text-3xl font-bold text-cyan-500" style="font-family:'Sora',sans-serif">24/7</p>
-                        <p class="text-xs text-slate-400 mt-1">Uptime</p>
+                        <p class="text-3xl font-bold text-cyan-500 text-hover" style="font-family:'Sora',sans-serif">24/7</p>
+                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Uptime</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-3xl font-bold text-indigo-600" style="font-family:'Sora',sans-serif">100+</p>
-                        <p class="text-xs text-slate-400 mt-1">Perusahaan</p>
+                        <p class="text-3xl font-bold text-indigo-600 text-hover" style="font-family:'Sora',sans-serif">100+</p>
+                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Companies</p>
                     </div>
                 </div>
             </div>
@@ -176,8 +192,8 @@
                     <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl px-5 py-3 flex items-center gap-3 border border-slate-100">
                         <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl">✅</div>
                         <div>
-                            <p class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">Check-in Berhasil</p>
-                            <p class="text-xs text-slate-400">Baru saja via QR Code</p>
+                            <p class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">Check-in Successful</p>
+                            <p class="text-xs text-slate-400">Just now via QR Code</p>
                         </div>
                     </div>
                     <!-- Badge atas kanan -->
@@ -195,9 +211,9 @@
     <section id="features" class="py-24 feature-bg">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-16">
-                <span class="text-indigo-600 text-sm font-semibold uppercase tracking-widest">Apa yang Kami Tawarkan</span>
-                <h2 class="text-4xl font-bold text-slate-900 mt-3" style="font-family:'Sora',sans-serif">Fitur Utama</h2>
-                <p class="text-slate-500 mt-4 max-w-xl mx-auto">Semua yang dibutuhkan tim HR untuk mengelola absensi dengan mudah dan akurat.</p>
+                <span class="text-indigo-600 text-sm font-semibold uppercase tracking-widest text-hover">What We Offer</span>
+                <h2 class="text-4xl font-bold text-slate-900 mt-3 sentence-hover" style="font-family:'Sora',sans-serif">Main Features</h2>
+                <p class="text-slate-500 mt-4 max-w-xl mx-auto sentence-hover">All you need for your HR team to manage attendance easily and accurately.</p>
             </div>
 
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -215,8 +231,8 @@
                         @elseif($judul == 'Attendance Recap & Reports') 📊
                         @else 🔧 @endif
                     </div>
-                    <h3 class="font-semibold text-slate-900 text-base mb-2" style="font-family:'Sora',sans-serif">{{ $judul }}</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">{{ $deskripsi }}</p>
+                    <h3 class="font-semibold text-slate-900 text-base mb-2 text-hover" style="font-family:'Sora',sans-serif">{{ $judul }}</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed sentence-hover">{{ $deskripsi }}</p>
                 </div>
                 @endforeach
             </div>
@@ -227,27 +243,27 @@
     <section id="howitworks" class="py-24 bg-white">
         <div class="max-w-5xl mx-auto px-6">
             <div class="text-center mb-16">
-                <span class="text-cyan-600 text-sm font-semibold uppercase tracking-widest">Cara Kerja</span>
-                <h2 class="text-4xl font-bold text-slate-900 mt-3" style="font-family:'Sora',sans-serif">Mudah & Cepat</h2>
+                <span class="text-cyan-600 text-sm font-semibold uppercase tracking-widest text-hover">How It Works</span>
+                <h2 class="text-4xl font-bold text-slate-900 mt-3 sentence-hover" style="font-family:'Sora',sans-serif">Easy & Fast</h2>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
+                <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 text-center card-hover">
                     <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm border border-indigo-100" style="background:linear-gradient(135deg,#eef2ff,#e0f7fa)">🔐</div>
                     <span class="text-xs font-bold text-indigo-400 tracking-widest">STEP 01</span>
-                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2" style="font-family:'Sora',sans-serif">Login</h3>
-                    <p class="text-slate-500 text-sm">Karyawan login secara aman ke sistem ATTENSYS.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2 text-hover" style="font-family:'Sora',sans-serif">Login</h3>
+                    <p class="text-slate-500 text-sm sentence-hover">Employees log in securely to the ATTENSYS system.</p>
                 </div>
-                <div class="text-center">
+                <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 text-center card-hover">
                     <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm border border-indigo-100" style="background:linear-gradient(135deg,#eef2ff,#e0f7fa)">📷</div>
                     <span class="text-xs font-bold text-indigo-400 tracking-widest">STEP 02</span>
-                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2" style="font-family:'Sora',sans-serif">Scan QR Code</h3>
-                    <p class="text-slate-500 text-sm">Scan QR Code unik untuk mencatat kehadiran secara instan.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2 text-hover" style="font-family:'Sora',sans-serif">Scan QR Code</h3>
+                    <p class="text-slate-500 text-sm sentence-hover">Scan the unique QR Code to instantly record attendance.</p>
                 </div>
-                <div class="text-center">
+                <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 text-center card-hover">
                     <div class="w-20 h-20 mx-auto rounded-2xl flex items-center justify-center text-3xl mb-4 shadow-sm border border-indigo-100" style="background:linear-gradient(135deg,#eef2ff,#e0f7fa)">📊</div>
                     <span class="text-xs font-bold text-indigo-400 tracking-widest">STEP 03</span>
-                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2" style="font-family:'Sora',sans-serif">Lihat Laporan</h3>
-                    <p class="text-slate-500 text-sm">HR akses dashboard real-time dan laporan yang bisa diunduh.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mt-1 mb-2 text-hover" style="font-family:'Sora',sans-serif">View Reports</h3>
+                    <p class="text-slate-500 text-sm sentence-hover">HR access real-time dashboard and downloadable reports.</p>
                 </div>
             </div>
         </div>
@@ -259,29 +275,29 @@
         <div class="absolute bottom-0 left-0 w-72 h-72 bg-cyan-900 blob opacity-20"></div>
         <div class="max-w-6xl mx-auto px-6 relative" style="z-index:1">
             <div class="text-center mb-16">
-                <span class="text-cyan-400 text-sm font-semibold uppercase tracking-widest">Tentang Kami</span>
-                <h2 class="text-4xl font-bold text-white mt-3" style="font-family:'Sora',sans-serif">About ATTENSYS</h2>
+                <span class="text-cyan-400 text-sm font-semibold uppercase tracking-widest text-hover">About Us</span>
+                <h2 class="text-4xl font-bold text-white mt-3 sentence-hover" style="font-family:'Sora',sans-serif">About ATTENSYS</h2>
             </div>
             <div class="grid md:grid-cols-3 gap-6">
-                <div class="card-floating rounded-2xl p-8 card-hover">
+                <div class="card-floating rounded-2xl p-8 card-hover bg-white">
                     <div class="text-4xl mb-5">💡</div>
-                    <h3 class="font-bold text-white text-lg mb-3" style="font-family:'Sora',sans-serif">Apa itu ATTENSYS?</h3>
-                    <p class="text-slate-300 text-sm leading-relaxed">Sistem absensi karyawan terintegrasi yang dirancang untuk menyederhanakan manajemen kehadiran menggunakan teknologi digital modern.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mb-3 text-hover" style="font-family:'Sora',sans-serif">What is ATTENSYS?</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed sentence-hover">An integrated employee attendance system designed to simplify attendance management using modern digital technology.</p>
                 </div>
-                <div class="card-floating rounded-2xl p-8 card-hover">
+                <div class="card-floating rounded-2xl p-8 card-hover bg-white">
                     <div class="text-4xl mb-5">🚀</div>
-                    <h3 class="font-bold text-white text-lg mb-3" style="font-family:'Sora',sans-serif">Mengapa ATTENSYS?</h3>
-                    <p class="text-slate-300 text-sm leading-relaxed">Tingkatkan pemantauan absensi, kurangi kesalahan manual, dan hasilkan laporan akurat — semuanya dalam satu dashboard untuk HR.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mb-3 text-hover" style="font-family:'Sora',sans-serif">why ATTENSYS?</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed sentence-hover">Enhance attendance monitoring, reduce manual errors, and generate accurate reports all in one dashboard for HR.</p>
                 </div>
-                <div class="card-floating rounded-2xl p-8 card-hover">
+                <div class="card-floating rounded-2xl p-8 card-hover bg-white">
                     <div class="text-4xl mb-5">📞</div>
-                    <h3 class="font-bold text-white text-lg mb-3" style="font-family:'Sora',sans-serif">Support</h3>
-                    <p class="text-slate-300 text-sm leading-relaxed mb-4">Mengalami masalah? Tim kami siap membantu kapan saja.</p>
+                    <h3 class="font-bold text-slate-900 text-lg mb-3 text-hover" style="font-family:'Sora',sans-serif">Support</h3>
+                    <p class="text-slate-700 text-sm leading-relaxed mb-4 sentence-hover">Experiencing issues? Our team is ready to help anytime.</p>
                     <div class="space-y-2">
-                        <div class="flex items-center gap-2 text-sm text-cyan-300">
+                        <div class="flex items-center gap-2 text-sm text-slate-700">
                             <span>📧</span> attensys@gmail.com
                         </div>
-                        <div class="flex items-center gap-2 text-sm text-cyan-300">
+                        <div class="flex items-center gap-2 text-sm text-slate-700">
                             <span>📱</span> +62 8X XXX XXX
                         </div>
                     </div>
@@ -290,10 +306,10 @@
 
             <!-- CTA Banner -->
             <div class="mt-16 rounded-3xl p-10 text-center shadow-2xl" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
-                <h3 class="text-3xl font-bold text-white mb-3" style="font-family:'Sora',sans-serif">Siap memulai?</h3>
-                <p class="text-indigo-100 mb-7 text-base">Bergabunglah dengan perusahaan yang sudah menggunakan ATTENSYS.</p>
+                <h3 class="text-3xl font-bold text-white mb-3 text-hover" style="font-family:'Sora',sans-serif">Ready to get started?</h3>
+                <p class="text-indigo-100 mb-7 text-base sentence-hover">Join the companies already using ATTENSYS.</p>
                 <a href="/login" class="inline-block bg-white text-indigo-700 font-bold px-8 py-3.5 rounded-xl hover:bg-indigo-50 transition shadow-lg text-sm" style="font-family:'Sora',sans-serif">
-                    Mulai Sekarang
+                    Get Started Now
                 </a>
             </div>
         </div>
@@ -308,7 +324,7 @@
                 </div>
                 <span class="font-bold text-white text-sm" style="font-family:'Sora',sans-serif">ATTENSYS</span>
             </div>
-            <p class="text-slate-500 text-sm">© 2026 ATTENSYS — Integrated Employee Attendance System</p>
+            <p class="text-slate-500 text-sm sentence-hover">© 2026 ATTENSYS — Integrated Employee Attendance System</p>
             <div class="flex gap-5 text-slate-500 text-sm">
                 <a href="#features" class="hover:text-white transition">Features</a>
                 <a href="#about" class="hover:text-white transition">About</a>
