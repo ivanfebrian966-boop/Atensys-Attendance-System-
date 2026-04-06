@@ -1,0 +1,76 @@
+body {
+    font-family: 'DM Sans', sans-serif;
+}
+
+h1, h2, h3 {
+    font-family: 'Sora', sans-serif;
+}
+
+/* menu sidebar */
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.menu:hover {
+    background: #1e293b;
+}
+
+.menu.active {
+    background: #1e293b;
+}
+
+/* input */
+.input {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* badge */
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge.blue {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.badge.purple {
+    background: #f3e8ff;
+    color: #9333ea;
+}
+
+/* button */
+.btn-approve {
+    background: #22c55e;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.btn-reject {
+    background: #ef4444;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.btn-approve:hover {
+    background: #16a34a;
+}
+
+.btn-reject:hover {
+    background: #dc2626;
+}

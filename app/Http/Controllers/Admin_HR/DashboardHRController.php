@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin_HR;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardHRController extends Controller
 {
@@ -15,6 +16,7 @@ class DashboardHRController extends Controller
             "Reports" => "Automatic attendance reports"
         ];
 
-        return view('dashboardHR', compact('features'));
+        $user = Auth::user();
+        return view('/Admin_HR/dashboardHR', compact('features'));
     }
 }

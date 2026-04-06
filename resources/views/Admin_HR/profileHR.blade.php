@@ -10,34 +10,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            font-family: 'DM Sans', sans-serif;
-        }
-
-        h1,
-        h2,
-        h3 {
-            font-family: 'Sora', sans-serif;
-        }
-
-        .menu {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            border-radius: 10px;
-            transition: all 0.25s ease;
-        }
-
-        .menu:hover {
-            background: #1e293b;
-        }
-
-        .menu.active {
-            background: #1e293b;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/Admin_HR/profileHR.css') }}">
 </head>
 
 <body class="bg-slate-100">
@@ -57,7 +30,7 @@
 
             <nav class="flex flex-col gap-2 text-sm">
 
-                <a href="/dashboard" class="menu">
+                <a href="/dashboardHR" class="menu">
                     <span>🏠</span>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
@@ -77,12 +50,12 @@
                     <span class="sidebar-text">Reports</span>
                 </a>
 
-                <a href="/manage" class="menu">
+                <a href="/HRmanage" class="menu">
                     <span>⚙️</span>
                     <span class="sidebar-text">Manage</span>
                 </a>
 
-                <a href="/profile" class="menu active">
+                <a href="/profileHR" class="menu active">
                     <span>👤</span>
                     <span class="sidebar-text">Profile</span>
                 </a>
@@ -214,70 +187,7 @@
     </div>
 
     <!-- SCRIPT SIDEBAR -->
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-
-            if (window.innerWidth >= 768) {
-                // Desktop behavior: static position
-                sidebar.classList.remove('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
-                sidebar.classList.add('static');
-
-                const texts = document.querySelectorAll('.sidebar-text');
-
-                if (sidebar.classList.contains('w-64')) {
-                    sidebar.classList.replace('w-64', 'w-20');
-
-                    texts.forEach(t => {
-                        t.classList.add('opacity-0', 'scale-95', '-translate-x-2');
-                    });
-                } else {
-                    sidebar.classList.replace('w-20', 'w-64');
-
-                    texts.forEach(t => {
-                        t.classList.remove('opacity-0', 'scale-95', '-translate-x-2');
-                    });
-                }
-            } else {
-                // Mobile behavior: fixed position
-                sidebar.classList.remove('static');
-                sidebar.classList.add('fixed', 'inset-y-0', 'left-0', 'z-50');
-
-                if (sidebar.classList.contains('-translate-x-full')) {
-                    openSidebar();
-                } else {
-                    closeSidebar();
-                }
-            }
-        }
-
-        function openSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.remove('hidden');
-        }
-
-        function closeSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('hidden');
-        }
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth >= 768) {
-                sidebar.classList.remove('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
-                sidebar.classList.add('static', 'translate-x-0');
-            } else {
-                sidebar.classList.remove('static');
-                sidebar.classList.add('fixed', 'inset-y-0', 'left-0', 'z-50', '-translate-x-full');
-            }
-        });
-    </script>
+    <script src="{{ asset('js/Admin_HR/ProfileHR.js') }}"></script>
 
 </body>
 

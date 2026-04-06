@@ -1,0 +1,26 @@
+body {
+    font-family: "DM Sans", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+    font-family: "Sora", sans-serif;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+
+.menu:hover {
+    background: #1e293b;
+}
+
+.menu.active {
+    background: #1e293b;
+}
