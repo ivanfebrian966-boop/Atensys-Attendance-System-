@@ -1,250 +1,298 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Profile - ATTENSYS</title>
-
+    <title>Profile — ATTENSYS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/DashboardHR.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/Admin_HR/profileHR.css') }}">
 </head>
+<body>
 
-<body class="bg-slate-100">
+@php
+    use Illuminate\Support\Facades\Auth;
+    $user = Auth::user();
+@endphp
 
-    <div class="flex min-h-screen">
+@include('Admin_HR.sidebar')
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-blob-1"></div>
-            <div class="sidebar-blob-2"></div>
-
-            <!-- Logo -->
-            <div class="px-6 pt-6 pb-4 flex items-center gap-3 relative" style="z-index:1">
-                <div class="sidebar-logo-icon">
-                    <span>A</span>
-                </div>
+<div class="main-content">
+    <div class="topbar">
+        <div class="px-4 md:px-6 py-4 flex items-center justify-between gap-4 w-full">
+            <div class="flex items-center gap-3">
+                <button class="topbar-hamburger" onclick="openSidebar()">
+                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
                 <div>
-                    <p class="font-bold text-white text-base leading-tight" style="font-family:'Sora',sans-serif">ATTENSYS</p>
-                    <p class="text-xs text-slate-400" style="font-family:'Sora',sans-serif">Admin HR</p>
+                    <h1 class="page-title">Profile</h1>
+                    <p class="text-xs text-slate-400" id="currentDate">—</p>
                 </div>
             </div>
-
-            <!-- Divider -->
-            <div class="mx-6 h-px bg-white/10 mb-2"></div>
-
-            <!-- Nav -->
-            <nav class="flex-1 overflow-y-auto pb-4 relative" style="z-index:1">
-                <p class="nav-section-label">Menu Utama</p>
-
-                <a href="/dashboardHR" class="nav-item" id="nav-dashboard">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                    </svg>
-                    Dashboard
-                </a>
-
-                <a href="/employees" class="nav-item" id="nav-employees">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a4 4 0 00-5.9-3.53M9 20H4v-2a4 4 0 015.9-3.53M15 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    Employees
-                </a>
-
-                <a href="/attendance" class="nav-item" id="nav-attendance">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                    </svg>
-                    Attendance
-                    <span class="nav-badge">QR</span>
-                </a>
-
-                <a href="/reports" class="nav-item" id="nav-reports">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Reports
-                </a>
-
-                <p class="nav-section-label">Pengaturan</p>
-
-                <a href="/HRmanage" class="nav-item" id="nav-manage">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Manage
-                </a>
-
-                <a href="/profileHR" class="nav-item active" id="nav-profile">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    Profile
-                </a>
-            </nav>
-
-            <!-- User info -->
-            <div class="sidebar-user">
-                <div class="flex items-center gap-3">
-                    <div class="sidebar-avatar">HR</div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">Admin HR</p>
-                        <p class="text-slate-400 text-xs truncate">hr@attensys.id</p>
-                    </div>
-                    <a href="/logout" class="tooltip-wrap">
-                        <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                    </a>
+            <div class="topbar-profile">
+                <div class="topbar-avatar">HR</div>
+                <div class="hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-800 sora">Admin HR</p>
+                    <p class="text-xs text-slate-400">HR Manager</p>
                 </div>
             </div>
-        </aside>
-
-        <!-- Sidebar Overlay (mobile) -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-        <!-- MAIN -->
-        <main class="main-content">
-
-            <!-- TOPBAR -->
-            <div class="topbar">
-                <div class="px-4 md:px-6 py-4 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <button class="topbar-hamburger" onclick="openSidebar()">
-                            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                        <div>
-                            <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Profile</h1>
-                            <p class="text-xs text-slate-400">Your personal information</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- HEADER -->
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">Profile</h2>
-                <p class="text-slate-500 text-sm">Your personal information</p>
-            </div>
-
-            <!-- CARD -->
-            <div class="flex justify-center px-4 md:px-0">
-                <div class="w-full max-w-4xl">
-
-                    <!-- PROFILE CARD -->
-                    <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-
-                        <!-- HEADER UNGU GELAP -->
-                        <div class="bg-gradient-to-r from-[#0f0a19] via-[#1b1430] to-[#120d1d] h-28 rounded-xl relative border border-[#2a2340]">
-
-                            <!-- AVATAR -->
-                            <div class="absolute -bottom-10 left-6">
-                                <div class="w-20 h-20 rounded-full bg-white shadow flex items-center justify-center border">
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                        class="w-10 h-10 text-[#5b3ea6]"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                            d="M15.75 6a3.75 3.75 0 11-7.5 0 
-                                           3.75 3.75 0 017.5 0zM4.5 20.25a7.5 7.5 0 0115 0" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <!-- CONTENT -->
-                        <div class="pt-14">
-
-                            <!-- NAME -->
-                            <div class="flex justify-between items-center mb-6">
-                                <div>
-                                    <h3 class="text-xl font-semibold text-slate-800">
-                                        {{ $user->name ?? 'Name' }}
-                                    </h3>
-                                    <p class="text-slate-500 text-sm">
-                                        {{ $user->position ?? 'HR Admin' }}
-                                    </p>
-                                </div>
-
-                                <span class="text-xs bg-green-100 text-green-600 px-3 py-1 rounded-full">
-                                    Active
-                                </span>
-                            </div>
-
-                            <!-- DATA -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                                <div class="p-4 bg-slate-50 rounded-xl border hover:border-[#5b3ea6] transition">
-                                    <p class="text-xs text-slate-400">Employee ID</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $user->employee_id ?? '-' }}
-                                    </p>
-                                </div>
-
-                                <div class="p-4 bg-slate-50 rounded-xl border hover:border-[#5b3ea6] transition">
-                                    <p class="text-xs text-slate-400">Email</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $user->email ?? '-' }}
-                                    </p>
-                                </div>
-
-                                <div class="p-4 bg-slate-50 rounded-xl border hover:border-[#5b3ea6] transition">
-                                    <p class="text-xs text-slate-400">Phone Number</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $user->phone ?? '-' }}
-                                    </p>
-                                </div>
-
-                                <div class="p-4 bg-slate-50 rounded-xl border hover:border-[#5b3ea6] transition">
-                                    <p class="text-xs text-slate-400">Position</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $user->position ?? '-' }}
-                                    </p>
-                                </div>
-
-                                <div class="p-4 bg-slate-50 rounded-xl border col-span-1 md:col-span-2 hover:border-[#5b3ea6] transition">
-                                    <p class="text-xs text-slate-400">Division</p>
-                                    <p class="font-semibold text-slate-800 mt-1">
-                                        {{ $user->division ?? '-' }}
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            <!-- INFO -->
-                            <div class="mt-6 bg-[#f5f3ff] text-[#4c1d95] p-4 rounded-xl text-sm border border-[#ddd6fe]">
-                                🔒 You can only view your profile. Please contact <b>Super Admin</b> for any changes.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-        </main>
-
+        </div>
     </div>
 
-    <!-- SCRIPT SIDEBAR -->
-    <script src="{{ asset('js/Admin_HR/ProfileHR.js') }}"></script>
+    <div class="p-4 md:p-6">
+        <div class="profile-grid">
 
+            <!-- LEFT: Profile card -->
+            <div class="fade-up d1">
+                <!-- Cover -->
+                <div class="profile-cover">
+                    <div class="cover-bg"></div>
+                    <div class="cover-avatar-wrap">
+                        <div class="cover-avatar" id="avatarDisplay">HR</div>
+                        <button class="avatar-edit-btn" onclick="document.getElementById('avatarInput').click()" title="Ganti foto">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </button>
+                        <input type="file" id="avatarInput" class="hidden" accept="image/*" onchange="previewAvatar(event)">
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="profile-card">
+                    <div class="profile-name-wrap">
+                        <h2 class="profile-name sora" id="dispName">{{ optional($user)->name ?? 'Admin HR' }}</h2>
+                        <span class="profile-role-badge">HR Manager</span>
+                    </div>
+                    <p class="profile-email">{{ optional($user)->email ?? 'hr@attensys.id' }}</p>
+
+                    <!-- Stats row -->
+                    <div class="profile-stats">
+                        <div class="prof-stat">
+                            <p class="prof-stat-val sora" id="statEmpHandled">48</p>
+                            <p class="prof-stat-lbl">Karyawan</p>
+                        </div>
+                        <div class="prof-stat">
+                            <p class="prof-stat-val sora">7</p>
+                            <p class="prof-stat-lbl">Divisi</p>
+                        </div>
+                        <div class="prof-stat">
+                            <p class="prof-stat-val sora">2+</p>
+                            <p class="prof-stat-lbl">Thn Bergabung</p>
+                        </div>
+                    </div>
+
+                    <!-- Activity list -->
+                    <div class="activity-section">
+                        <p class="activity-title sora">Aktivitas Terbaru</p>
+                        <div class="activity-list" id="activityList">
+                            <div class="activity-item">
+                                <span class="act-dot" style="background:#10b981"></span>
+                                <div>
+                                    <p class="act-text">Menambah karyawan baru</p>
+                                    <p class="act-time">2 jam lalu</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <span class="act-dot" style="background:#6366f1"></span>
+                                <div>
+                                    <p class="act-text">Koreksi absensi — Budi Pratama</p>
+                                    <p class="act-time">5 jam lalu</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <span class="act-dot" style="background:#f59e0b"></span>
+                                <div>
+                                    <p class="act-text">Export laporan bulanan</p>
+                                    <p class="act-time">Kemarin, 15:30</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <span class="act-dot" style="background:#06b6d4"></span>
+                                <div>
+                                    <p class="act-text">Update divisi Marketing</p>
+                                    <p class="act-time">2 hari lalu</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Edit form -->
+            <div class="fade-up d2">
+
+                <!-- Personal Info -->
+                <div class="panel mb-4">
+                    <div class="panel-header">
+                        <div>
+                            <h3 class="panel-title">Informasi Pribadi</h3>
+                            <p class="panel-subtitle">Perbarui data profil Anda</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="save-indicator hidden" id="saveIndicator">
+                                <span class="text-emerald-600 text-xs font-semibold sora">✅ Tersimpan</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="modal-body pt-4 pb-4">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="form-label">Nama Lengkap *</label>
+                                <input type="text" id="pName" class="form-input"
+                                    value="{{ optional($user)->name ?? 'Admin HR' }}"
+                                    oninput="markDirty()">
+                                <span class="form-error" id="epName"></span>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">ID Karyawan</label>
+                                <input type="text" id="pEmpId" class="form-input" value="HR-001"
+                                    readonly style="background:#f8fafc;color:#94a3b8;cursor:not-allowed">
+                            </div>
+                            <div class="form-field col-2">
+                                <label class="form-label">Email *</label>
+                                <input type="email" id="pEmail" class="form-input"
+                                    value="{{ optional($user)->email ?? 'hr@attensys.id' }}"
+                                    oninput="markDirty()">
+                                <span class="form-error" id="epEmail"></span>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">No. HP</label>
+                                <input type="text" id="pPhone" class="form-input"
+                                    value="{{ optional($user)->phone ?? '' }}"
+                                    placeholder="08xxxxxxxxxx" oninput="markDirty()">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Jabatan</label>
+                                <input type="text" id="pPosition" class="form-input"
+                                    value="{{ optional($user)->position ?? 'HR Manager' }}"
+                                    oninput="markDirty()">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Divisi</label>
+                                <input type="text" id="pDivision" class="form-input"
+                                    value="{{ optional($user)->division ?? 'HR' }}"
+                                    oninput="markDirty()">
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Tanggal Bergabung</label>
+                                <input type="date" id="pJoinDate" class="form-input"
+                                    value="{{ optional($user)->join_date ?? '2024-01-01' }}"
+                                    oninput="markDirty()">
+                            </div>
+                            <div class="form-field col-2">
+                                <label class="form-label">Alamat</label>
+                                <textarea id="pAddress" class="form-input" rows="2"
+                                    placeholder="Alamat lengkap" oninput="markDirty()">{{ optional($user)->address ?? '' }}</textarea>
+                            </div>
+                            <div class="form-field col-2">
+                                <label class="form-label">Bio Singkat</label>
+                                <textarea id="pBio" class="form-input" rows="3"
+                                    placeholder="Ceritakan sedikit tentang Anda..." oninput="markDirty()">{{ optional($user)->bio ?? '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-3 mt-5 pt-4 border-t border-slate-100">
+                            <button class="btn-ghost" onclick="resetProfile()" id="resetBtn" disabled>Reset</button>
+                            <button class="btn-primary" onclick="saveProfile()" id="saveProfileBtn" disabled>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <h3 class="panel-title">Ubah Password</h3>
+                            <p class="panel-subtitle">Buat password baru yang kuat</p>
+                        </div>
+                        <div class="security-badge">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            Aman
+                        </div>
+                    </div>
+                    <div class="modal-body pt-4 pb-4">
+                        <div class="form-grid">
+                            <div class="form-field col-2">
+                                <label class="form-label">Password Saat Ini *</label>
+                                <div class="pwd-wrap">
+                                    <input type="password" id="pwdCurrent" class="form-input" placeholder="Password lama">
+                                    <button class="pwd-toggle" onclick="togglePwd('pwdCurrent',this)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="form-error" id="epPwdCurrent"></span>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Password Baru *</label>
+                                <div class="pwd-wrap">
+                                    <input type="password" id="pwdNew" class="form-input" placeholder="Min. 8 karakter" oninput="checkPwdStrength(this.value)">
+                                    <button class="pwd-toggle" onclick="togglePwd('pwdNew',this)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Password strength -->
+                                <div class="pwd-strength" id="pwdStrength" style="display:none">
+                                    <div class="strength-bars">
+                                        <div class="str-bar" id="sb1"></div>
+                                        <div class="str-bar" id="sb2"></div>
+                                        <div class="str-bar" id="sb3"></div>
+                                        <div class="str-bar" id="sb4"></div>
+                                    </div>
+                                    <span class="strength-label" id="strLabel">—</span>
+                                </div>
+                                <span class="form-error" id="epPwdNew"></span>
+                            </div>
+                            <div class="form-field">
+                                <label class="form-label">Konfirmasi Password *</label>
+                                <div class="pwd-wrap">
+                                    <input type="password" id="pwdConfirm" class="form-input" placeholder="Ulangi password baru">
+                                    <button class="pwd-toggle" onclick="togglePwd('pwdConfirm',this)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <span class="form-error" id="epPwdConfirm"></span>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-5 pt-4 border-t border-slate-100">
+                            <button class="btn-primary" onclick="changePassword()">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                Ubah Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"><div class="toast-inner"><span id="tIcon">✅</span><span id="tMsg">Berhasil!</span></div></div>
+
+<script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
+<script src="{{ asset('js/Admin_HR/profile.js') }}"></script>
 </body>
-
 </html>

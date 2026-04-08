@@ -5,50 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola — ATTENSYS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-<<<<<<< HEAD
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/HRmanage.css') }}">
-=======
 
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/DashboardHR.css') }}">
 
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
->>>>>>> 38ebf663dfa6b53f3808e976db271b10aea87dad
 </head>
 <body>
-
-<!-- ===== SIDEBAR ===== -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-blob-1"></div>
-    <div class="sidebar-blob-2"></div>
-
-<<<<<<< HEAD
-    <div class="px-6 pt-6 pb-4 flex items-center gap-3 relative" style="z-index:1">
-        <div class="sidebar-logo-icon"><span>A</span></div>
-        <div>
-            <p class="font-bold text-white text-base leading-tight" style="font-family:'Sora',sans-serif">ATTENSYS</p>
-            <p class="text-xs text-slate-400" style="font-family:'Sora',sans-serif">Admin HR</p>
-=======
-<div class="flex min-h-screen">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-blob-1"></div>
-        <div class="sidebar-blob-2"></div>
-
-        <!-- Logo -->
-        <div class="px-6 pt-6 pb-4 flex items-center gap-3 relative" style="z-index:1">
-            <div class="sidebar-logo-icon">
-                <span>A</span>
-            </div>
-            <div>
-                <p class="font-bold text-white text-base leading-tight" style="font-family:'Sora',sans-serif">ATTENSYS</p>
-                <p class="text-xs text-slate-400" style="font-family:'Sora',sans-serif">Admin HR</p>
-            </div>
-        </div>
-
-        <!-- Divider -->
-        <div class="mx-6 h-px bg-white/10 mb-2"></div>
+@include('Admin_HR.sidebar')
 
         <!-- Nav -->
         <nav class="flex-1 overflow-y-auto pb-4 relative" style="z-index:1">
@@ -122,16 +85,11 @@
                     </svg>
                 </a>
             </div>
->>>>>>> 38ebf663dfa6b53f3808e976db271b10aea87dad
         </div>
     </div>
 
-<<<<<<< HEAD
-    <div class="mx-6 h-px bg-white/10 mb-2"></div>
-=======
     <!-- MAIN -->
     <main class="main-content">
->>>>>>> 38ebf663dfa6b53f3808e976db271b10aea87dad
 
     <nav class="flex-1 overflow-y-auto pb-4 relative" style="z-index:1">
         <p class="nav-section-label">Menu Utama</p>
