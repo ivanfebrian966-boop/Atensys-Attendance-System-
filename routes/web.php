@@ -36,6 +36,9 @@ Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 // Employee Routes
 Route::prefix('employee')->middleware('auth')->group(function () {
     Route::get('/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+    Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
+    Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
+    Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::post('/attendance/checkin', [EmployeeController::class, 'checkIn'])->name('employee.attendance.checkin');
     Route::post('/attendance/checkout', [EmployeeController::class, 'checkOut'])->name('employee.attendance.checkout');
 });
