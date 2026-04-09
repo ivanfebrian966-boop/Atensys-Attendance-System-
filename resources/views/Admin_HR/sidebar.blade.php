@@ -1,4 +1,7 @@
 {{-- resources/views/partials/sidebar.blade.php --}}
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()" style="position:fixed;top:20px;left:20px;z-index:50;display:none;background:var(--gradient);border:none;border-radius:10px;padding:8px 12px;color:white;font-weight:bold;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    ☰
+</button>
 <aside class="sidebar" id="sidebar">
     @php
         use Illuminate\Support\Facades\Auth;
@@ -76,3 +79,17 @@
     </div>
 </aside>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<script>
+// Sidebar toggle visibility for mobile
+function handleSidebarToggleBtn() {
+    const btn = document.getElementById('sidebarToggleBtn');
+    if (!btn) return;
+    if (window.innerWidth <= 1024) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+}
+window.addEventListener('DOMContentLoaded', handleSidebarToggleBtn);
+window.addEventListener('resize', handleSidebarToggleBtn);
+</script>
