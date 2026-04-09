@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin_HR\EmployeesController;
 use App\Http\Controllers\Admin_HR\ReportsController;
 use App\Http\Controllers\Admin_HR\AttendanceController;
 use App\Http\Controllers\Admin_HR\SidebarController;
+use App\Http\Controllers\Employee\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 // hakaman awal
@@ -29,5 +30,15 @@ Route::get('/HRmanage', [HRmanageController::class, 'index'])->name('HRmanage');
 Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
 Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+Route::post('/attendance/process-qr', [AttendanceController::class, 'processQRCode'])->name('attendance.process-qr');
 Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 
+// Employee Routes
+Route::prefix('employee')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+    Route::post('/attendance/checkin', [EmployeeController::class, 'checkIn'])->name('employee.attendance.checkin');
+    Route::post('/attendance/checkout', [EmployeeController::class, 'checkOut'])->name('employee.attendance.checkout');
+});
+
+// Legacy employee route
+Route::get('/employee', [EmployeeController::class, 'dashboard'])->middleware('auth')->name('employee');

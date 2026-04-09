@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Attendance — ATTENSYS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -303,14 +304,52 @@
 
 <script>
     function onScanSuccess(decodedText, decodedResult) {
-        document.getElementById('qr-result').innerText = 'QR Terdeteksi: ' + decodedText;
-        // TODO: Kirim data ke server untuk proses absen
+        document.getElementById('qr-result').innerText = 'Processing QR: ' + decodedText.substring(0, 20) + '...';
+        
+        // Only process ATTENSYS QR codes
+        if (decodedText.startsWith('ATTENSYS:EMP:')) {
+            // Send to server
+            fetch('{{ route("attendance.process-qr") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ qr_data: decodedText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('qr-result').innerHTML = 
+                        '<span style="color: #10b981; font-weight: bold;">✅ ' + data.message + '</span>';
+                    // Stop scanning for a moment to prevent multiple scans
+                    qrReader.pause();
+                    setTimeout(() => {
+                        document.getElementById('qr-result').innerText = '';
+                        qrReader.resume();
+                    }, 2000);
+                } else {
+                    document.getElementById('qr-result').innerHTML = 
+                        '<span style="color: #ef4444; font-weight: bold;">❌ ' + data.message + '</span>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('qr-result').innerHTML = 
+                    '<span style="color: #ef4444; font-weight: bold;">❌ Error processing QR code</span>';
+            });
+        } else {
+            document.getElementById('qr-result').innerText = 'Invalid QR Code';
+        }
     }
+    
     function onScanFailure(error) {
-        // Optionally handle scan errors
+        // Optionally handle scan errors - keep silent to avoid spam
     }
+    
+    let qrReader;
     if (window.Html5Qrcode) {
-        const qrReader = new Html5Qrcode("qr-reader");
+        qrReader = new Html5Qrcode("qr-reader");
         Html5Qrcode.getCameras().then(cameras => {
             if (cameras && cameras.length) {
                 qrReader.start(
