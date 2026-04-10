@@ -20,6 +20,8 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
 // Super Admin
 Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super_admin');
+Route::post('/super-admin/employee', [SuperAdminController::class, 'storeEmployee'])->name('super_admin.store_employee');
+Route::post('/super-admin/hr-admin', [SuperAdminController::class, 'storeHrAdmin'])->name('super_admin.store_hr_admin');
 
 // Admin HR
 Route::get('/dashboardHR', [DashboardHRController::class, 'index'])->name('dashboardHR');

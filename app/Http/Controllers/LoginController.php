@@ -17,8 +17,17 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Authentication passed
-            return redirect()->intended(route('employee.dashboard'));
+            $request->session()->regenerate();
+
+            $role = Auth::user()->role;
+            
+            if ($role === 'super_admin') {
+                return redirect()->route('super_admin');
+            } elseif ($role === 'hr_admin') {
+                return redirect()->route('dashboardHR');
+            }
+
+            return redirect()->route('employee.dashboard');
         }
 
         return back()->withErrors([

@@ -60,7 +60,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5.9-3.53M9 20H4v-2a4 4 0 015.9-3.53M15 7a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
             Akun Karyawan
-            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(99,102,241,0.2);color:#a5b4fc">48</span>
+            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(99,102,241,0.2);color:#a5b4fc">{{ count($employees) }}</span>
         </a>
 
         <a href="#" class="nav-item" onclick="showTab('admins',this)">
@@ -68,7 +68,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
             Akun Admin HR
-            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(6,182,212,0.2);color:#67e8f9">5</span>
+            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(6,182,212,0.2);color:#67e8f9">{{ count($hr_admins) }}</span>
         </a>
     </nav>
 
@@ -132,28 +132,16 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div class="stat-card indigo fade-up d1">
                     <div class="stat-icon" style="background:#eef2ff">📋</div>
-                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">48</p>
+                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($employees) }}</p>
                     <p class="text-sm text-slate-500 mt-1">Total Karyawan</p>
-                    <p class="text-xs text-emerald-600 font-semibold mt-2">↑ +3 bulan ini</p>
+                    <p class="text-xs text-emerald-600 font-semibold mt-2">Terdaftar</p>
                 </div>
                 <div class="stat-card cyan fade-up d2">
                     <div class="stat-icon" style="background:#ecfeff">🛡️</div>
-                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">5</p>
+                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($hr_admins) }}</p>
                     <p class="text-sm text-slate-500 mt-1">Admin HR</p>
-                    <p class="text-xs text-emerald-600 font-semibold mt-2">↑ +1 bulan ini</p>
-                </div>
-                <div class="stat-card purple fade-up d3">
-                    <div class="stat-icon" style="background:#ede9fe">🏢</div>
-                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">7</p>
-                    <p class="text-sm text-slate-500 mt-1">Total Divisi</p>
-                    <p class="text-xs text-slate-400 font-semibold mt-2">Stabil</p>
-                </div>
-                <div class="stat-card green fade-up d4">
-                    <div class="stat-icon" style="background:#ecfdf5">✅</div>
-                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">42</p>
-                    <p class="text-sm text-slate-500 mt-1">Hadir Hari Ini</p>
-                    <p class="text-xs text-emerald-600 font-semibold mt-2">87.5% kehadiran</p>
-                </div>
+                    <p class="text-xs text-emerald-600 font-semibold mt-2">Terdaftar</p>
+    </div>
             </div>
 
             <!-- Recent activity + Summary -->
@@ -180,53 +168,37 @@
                                     <th>Bergabung</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            @foreach($recent_users as $ru)
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3">
-                                            <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">AR</div>
+                                            <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
+                                                {{ substr($ru->name, 0, 2) }}
+                                            </div>
                                             <div>
-                                                <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.8rem">Andi Rahman</p>
-                                                <p class="text-slate-400" style="font-size:0.72rem">andi@attensys.id</p>
+                                                <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.8rem">{{ $ru->name }}</p>
+                                                <p class="text-slate-400" style="font-size:0.72rem">{{ $ru->email }}</p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span class="badge badge-employee">Karyawan</span></td>
-                                    <td><span class="text-slate-600 text-xs">Engineering</span></td>
+                                    <td>
+                                        @if($ru->role === 'hr_admin')
+                                            <span class="badge badge-hr">Admin HR</span>
+                                        @else
+                                            <span class="badge badge-employee">Karyawan</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($ru->role === 'hr_admin')
+                                            <span class="text-slate-600 text-xs">Semua Divisi</span>
+                                        @else
+                                            <span class="text-slate-600 text-xs">{{ $ru->employee->division->division_name ?? '-' }}</span>
+                                        @endif
+                                    </td>
                                     <td><span class="badge badge-active">● Aktif</span></td>
-                                    <td><span class="text-slate-400 text-xs">2 Apr 2026</span></td>
+                                    <td><span class="text-slate-400 text-xs">{{ $ru->created_at->format('M Y') }}</span></td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">SW</div>
-                                            <div>
-                                                <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.8rem">Siti Wulandari</p>
-                                                <p class="text-slate-400" style="font-size:0.72rem">siti@attensys.id</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge badge-hr">Admin HR</span></td>
-                                    <td><span class="text-slate-600 text-xs">HR</span></td>
-                                    <td><span class="badge badge-active">● Aktif</span></td>
-                                    <td><span class="text-slate-400 text-xs">1 Apr 2026</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">BP</div>
-                                            <div>
-                                                <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.8rem">Budi Pratama</p>
-                                                <p class="text-slate-400" style="font-size:0.72rem">budi@attensys.id</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge badge-employee">Karyawan</span></td>
-                                    <td><span class="text-slate-600 text-xs">Finance</span></td>
-                                    <td><span class="badge badge-pending">● Pending</span></td>
-                                    <td><span class="text-slate-400 text-xs">31 Mar 2026</span></td>
-                                </tr>
-                            </tbody>
+                            @endforeach
                         </table>
                     </div>
                 </div>
@@ -267,9 +239,9 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="h-1.5 rounded-full bg-emerald-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-emerald-500" style="width:88%"></div>
+                                        <div class="h-full rounded-full bg-emerald-500" style="width:100%"></div>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">47</span>
+                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ count($employees) + count($hr_admins) }}</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
@@ -308,7 +280,7 @@
                 <div class="panel-header">
                     <div>
                         <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Manajemen Akun Karyawan</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">48 total karyawan terdaftar</p>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ count($employees) }} total karyawan terdaftar</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <!-- Search -->
@@ -347,22 +319,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Row 1 -->
+                            @foreach($employees as $emp)
                             <tr data-status="Aktif">
                                 <td>
                                     <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">AR</div>
+                                        <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
+                                            {{ substr($emp->name, 0, 2) }}
+                                        </div>
                                         <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Andi Rahman</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">andi@attensys.id</p>
+                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">{{ $emp->name }}</p>
+                                            <p class="text-slate-400" style="font-size:0.72rem">{{ $emp->email }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="text-slate-500 text-xs font-mono">EMP-001</span></td>
-                                <td><span class="text-slate-600 text-sm">Engineering</span></td>
-                                <td><span class="text-slate-600 text-sm">Backend Dev</span></td>
+                                <td><span class="text-slate-500 text-xs font-mono">EMP-{{ sprintf('%03d', $emp->id) }}</span></td>
+                                <td><span class="text-slate-600 text-sm">{{ $emp->employee->division->division_name ?? '-' }}</span></td>
+                                <td><span class="text-slate-600 text-sm">Staf</span></td>
                                 <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Jan 2025</span></td>
+                                <td><span class="text-slate-400 text-xs">{{ $emp->created_at->format('M Y') }}</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
                                         <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
@@ -377,126 +351,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Row 2 -->
-                            <tr data-status="Aktif">
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0e7490)">DS</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Dewi Susanti</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">dewi@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">EMP-002</span></td>
-                                <td><span class="text-slate-600 text-sm">Marketing</span></td>
-                                <td><span class="text-slate-600 text-sm">Marketing Mgr</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Mar 2024</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item" onclick="resetPassword()">🔑 Reset Password</div>
-                                                <div class="dropdown-item" onclick="toggleStatus(this)">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger" onclick="confirmDelete(this)">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr data-status="Pending">
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)">BP</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Budi Pratama</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">budi@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">EMP-003</span></td>
-                                <td><span class="text-slate-600 text-sm">Finance</span></td>
-                                <td><span class="text-slate-600 text-sm">Akuntan</span></td>
-                                <td><span class="badge badge-pending">● Pending</span></td>
-                                <td><span class="text-slate-400 text-xs">Mar 2026</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item" onclick="resetPassword()">🔑 Reset Password</div>
-                                                <div class="dropdown-item" onclick="toggleStatus(this)">🔄 Aktifkan</div>
-                                                <div class="dropdown-item danger" onclick="confirmDelete(this)">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr data-status="Nonaktif">
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:#94a3b8">RH</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-400" style="font-family:'Sora',sans-serif;font-size:0.82rem">Rini Handayani</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">rini@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-400 text-xs font-mono">EMP-004</span></td>
-                                <td><span class="text-slate-400 text-sm">Operasional</span></td>
-                                <td><span class="text-slate-400 text-sm">Staf Ops</span></td>
-                                <td><span class="badge badge-inactive">● Nonaktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Jun 2023</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item" onclick="resetPassword()">🔑 Reset Password</div>
-                                                <div class="dropdown-item" onclick="toggleStatus(this)">🔄 Aktifkan</div>
-                                                <div class="dropdown-item danger" onclick="confirmDelete(this)">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr data-status="Aktif">
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#10b981,#059669)">FN</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Fajar Nugroho</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">fajar@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">EMP-005</span></td>
-                                <td><span class="text-slate-600 text-sm">Engineering</span></td>
-                                <td><span class="text-slate-600 text-sm">Frontend Dev</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Aug 2024</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item" onclick="resetPassword()">🔑 Reset Password</div>
-                                                <div class="dropdown-item" onclick="toggleStatus(this)">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger" onclick="confirmDelete(this)">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -522,7 +377,7 @@
                 <div class="panel-header">
                     <div>
                         <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Manajemen Akun Admin HR</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">5 Admin HR aktif mengelola sistem</p>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ count($hr_admins) }} Admin HR aktif mengelola sistem</p>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <div class="relative">
@@ -553,17 +408,20 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach($hr_admins as $admin)
                             <tr>
                                 <td>
                                     <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">SW</div>
+                                        <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
+                                            {{ substr($admin->name, 0, 2) }}
+                                        </div>
                                         <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Siti Wulandari</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">siti@attensys.id</p>
+                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">{{ $admin->name }}</p>
+                                            <p class="text-slate-400" style="font-size:0.72rem">{{ $admin->email }}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-001</span></td>
+                                <td><span class="text-slate-500 text-xs font-mono">ADM-{{ sprintf('%03d', $admin->id) }}</span></td>
                                 <td><span class="text-slate-600 text-sm">Semua Divisi</span></td>
                                 <td><span class="badge badge-admin">Full Access</span></td>
                                 <td><span class="badge badge-active">● Aktif</span></td>
@@ -583,126 +441,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">RK</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Rizky Kurniawan</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">rizky@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-002</span></td>
-                                <td><span class="text-slate-600 text-sm">Engineering, Finance</span></td>
-                                <td><span class="badge badge-admin">Partial</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Kemarin, 17:20</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item">🔑 Reset Password</div>
-                                                <div class="dropdown-item">🛡 Ubah Hak Akses</div>
-                                                <div class="dropdown-item">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706)">NA</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Nita Anjani</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">nita@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-003</span></td>
-                                <td><span class="text-slate-600 text-sm">Marketing, Sales</span></td>
-                                <td><span class="badge badge-admin">Partial</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">3 Apr 2026</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item">🔑 Reset Password</div>
-                                                <div class="dropdown-item">🛡 Ubah Hak Akses</div>
-                                                <div class="dropdown-item">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#10b981,#059669)">HP</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Hendra Putra</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">hendra@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-004</span></td>
-                                <td><span class="text-slate-600 text-sm">Operasional</span></td>
-                                <td><span class="badge badge-admin">Partial</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">2 Apr 2026</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item">🔑 Reset Password</div>
-                                                <div class="dropdown-item">🛡 Ubah Hak Akses</div>
-                                                <div class="dropdown-item">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <div class="avatar" style="background:linear-gradient(135deg,#ec4899,#db2777)">YS</div>
-                                        <div>
-                                            <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">Yuni Setiawati</p>
-                                            <p class="text-slate-400" style="font-size:0.72rem">yuni@attensys.id</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-005</span></td>
-                                <td><span class="text-slate-600 text-sm">HR, Legal</span></td>
-                                <td><span class="badge badge-admin">Partial</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">4 Apr 2026</span></td>
-                                <td>
-                                    <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item">🔑 Reset Password</div>
-                                                <div class="dropdown-item">🛡 Ubah Hak Akses</div>
-                                                <div class="dropdown-item">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -724,54 +463,53 @@
             </div>
             <button onclick="closeModal('modalAddEmployee')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="form-field col-span-2">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-input" placeholder="Nama lengkap karyawan">
+        <form method="POST" action="{{ route('super_admin.store_employee') }}">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-field col-span-2">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap karyawan" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Divisi</label>
+                    <select name="division_id" class="form-select" required>
+                        <option value="">Pilih Divisi</option>
+                        @foreach ($divisions as $div)
+                        <option value="{{ $div->id }}">{{ $div->division_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Jabatan</label>
+                    <input type="text" name="jabatan" class="form-input" placeholder="Jabatan / posisi" required>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Password Sementara</label>
+                    <input type="password" name="password" class="form-input" placeholder="Password awal (akan diminta ganti)" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Nonaktif">Nonaktif</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-field">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-input" placeholder="email@attensys.id">
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalAddEmployee')">Batal</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Simpan Akun
+                </button>
             </div>
-            <div class="form-field">
-                <label class="form-label">Divisi</label>
-                <select class="form-select">
-                    <option value="">Pilih Divisi</option>
-                    <option>Engineering</option>
-                    <option>Marketing</option>
-                    <option>Finance</option>
-                    <option>Operasional</option>
-                    <option>HR</option>
-                    <option>Legal</option>
-                    <option>Sales</option>
-                </select>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Jabatan</label>
-                <input type="text" class="form-input" placeholder="Jabatan / posisi">
-            </div>
-            <div class="form-field col-span-2">
-                <label class="form-label">Password Sementara</label>
-                <input type="password" class="form-input" placeholder="Password awal (akan diminta ganti)">
-            </div>
-            <div class="form-field">
-                <label class="form-label">Status</label>
-                <select class="form-select">
-                    <option>Aktif</option>
-                    <option>Pending</option>
-                    <option>Nonaktif</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
-            <button class="btn-ghost" onclick="closeModal('modalAddEmployee')">Batal</button>
-            <button class="btn-primary">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Simpan Akun
-            </button>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -785,59 +523,32 @@
             </div>
             <button onclick="closeModal('modalAddAdmin')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="form-field col-span-2">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-input" placeholder="Nama lengkap admin HR">
-            </div>
-            <div class="form-field">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-input" placeholder="email@attensys.id">
-            </div>
-            <div class="form-field">
-                <label class="form-label">ID Admin</label>
-                <input type="text" class="form-input" placeholder="ADM-XXX">
-            </div>
-            <div class="form-field col-span-2">
-                <label class="form-label">Hak Akses Divisi</label>
-                <div class="grid grid-cols-3 gap-2 mt-1">
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Engineering
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Marketing
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Finance
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Operasional
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> HR
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                        <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Legal
-                    </label>
+        <form method="POST" action="{{ route('super_admin.store_hr_admin') }}">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-field col-span-2">
+                    <label class="form-label">Nama Lengkap</label>
+                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin HR" required>
                 </div>
-                <label class="flex items-center gap-2 text-sm text-indigo-600 font-semibold cursor-pointer mt-2">
-                    <input type="checkbox" class="accent-indigo-600 w-4 h-4"> Full Access (Semua Divisi)
-                </label>
+                <div class="form-field">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Password Sementara</label>
+                    <input type="password" name="password" class="form-input" placeholder="Password awal admin HR" required>
+                </div>
             </div>
-            <div class="form-field col-span-2">
-                <label class="form-label">Password Sementara</label>
-                <input type="password" class="form-input" placeholder="Password awal admin HR">
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalAddAdmin')">Batal</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Simpan Admin HR
+                </button>
             </div>
-        </div>
-        <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
-            <button class="btn-ghost" onclick="closeModal('modalAddAdmin')">Batal</button>
-            <button class="btn-primary">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Simpan Admin HR
-            </button>
-        </div>
+        </form>
     </div>
 </div>
 
