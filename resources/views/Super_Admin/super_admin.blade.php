@@ -80,7 +80,7 @@
                 <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">Super Admin</p>
                 <p class="text-slate-400 text-xs truncate">admin@attensys.id</p>
             </div>
-            <a href="/login" class="tooltip-wrap">
+            <a href="{{ route('logout') }}" class="tooltip-wrap">
                 <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
@@ -121,10 +121,28 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- CONTENT AREA -->
+    </div>    <!-- CONTENT AREA -->
     <div class="p-6">
+
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl flex items-center gap-3 fade-up">
+                <span class="text-xl">✅</span>
+                <div>
+                    <p class="font-bold text-sm">Berhasil!</p>
+                    <p class="text-xs">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-100 text-red-700 border border-red-200 rounded-xl flex items-center gap-3 fade-up">
+                <span class="text-xl">⚠️</span>
+                <div>
+                    <p class="font-bold text-sm">Kesalahan!</p>
+                    <p class="text-xs">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
 
         <!-- ===== TAB: DASHBOARD ===== -->
         <div id="tab-dashboard">
@@ -141,7 +159,7 @@
                     <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($hr_admins) }}</p>
                     <p class="text-sm text-slate-500 mt-1">Admin HR</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-2">Terdaftar</p>
-    </div>
+                </div>
             </div>
 
             <!-- Recent activity + Summary -->
@@ -168,6 +186,7 @@
                                     <th>Bergabung</th>
                                 </tr>
                             </thead>
+                            <tbody>
                             @foreach($recent_users as $ru)
                                 <tr>
                                     <td>
@@ -199,35 +218,13 @@
                                     <td><span class="text-slate-400 text-xs">{{ $ru->created_at->format('M Y') }}</span></td>
                                 </tr>
                             @endforeach
+                            </tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- Summary -->
                 <div class="space-y-4 fade-up d6">
-                    <!-- Absensi chart -->
-                    <div class="panel p-5">
-                        <h3 class="font-bold text-slate-900 text-sm mb-1" style="font-family:'Sora',sans-serif">Kehadiran Minggu Ini</h3>
-                        <p class="text-xs text-slate-400 mb-4">Senin – Sabtu</p>
-                        <div class="chart-bar-wrap mb-2">
-                            <div class="chart-bar" style="height:75%"></div>
-                            <div class="chart-bar" style="height:90%"></div>
-                            <div class="chart-bar" style="height:65%"></div>
-                            <div class="chart-bar" style="height:88%"></div>
-                            <div class="chart-bar" style="height:70%"></div>
-                            <div class="chart-bar" style="height:87%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs text-slate-400">
-                            <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-slate-100">
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-slate-500">Rata-rata</span>
-                                <span class="text-sm font-bold gradient-text" style="font-family:'Sora',sans-serif">87.5%</span>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Status ringkasan -->
                     <div class="panel p-5">
                         <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Status Akun</h3>
@@ -357,16 +354,7 @@
                 </div>
                 <!-- Pagination -->
                 <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between">
-                    <p class="text-sm text-slate-400">Menampilkan 5 dari 48 data</p>
-                    <div class="flex items-center gap-1">
-                        <button class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 transition flex items-center justify-center text-sm">‹</button>
-                        <button class="w-8 h-8 rounded-lg text-white flex items-center justify-center text-sm font-semibold" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">1</button>
-                        <button class="w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-100 transition flex items-center justify-center text-sm">2</button>
-                        <button class="w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-100 transition flex items-center justify-center text-sm">3</button>
-                        <span class="text-slate-300 text-sm px-1">...</span>
-                        <button class="w-8 h-8 rounded-lg text-slate-500 hover:bg-slate-100 transition flex items-center justify-center text-sm">10</button>
-                        <button class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 transition flex items-center justify-center text-sm">›</button>
-                    </div>
+                    <p class="text-sm text-slate-400">Total {{ count($employees) }} data</p>
                 </div>
             </div>
         </div>
@@ -425,19 +413,11 @@
                                 <td><span class="text-slate-600 text-sm">Semua Divisi</span></td>
                                 <td><span class="badge badge-admin">Full Access</span></td>
                                 <td><span class="badge badge-active">● Aktif</span></td>
-                                <td><span class="text-slate-400 text-xs">Hari ini, 08:45</span></td>
+                                <td><span class="text-slate-400 text-xs">Aktif Hari ini</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
-                                        <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item">🔑 Reset Password</div>
-                                                <div class="dropdown-item">🛡 Ubah Hak Akses</div>
-                                                <div class="dropdown-item">🔄 Nonaktifkan</div>
-                                                <div class="dropdown-item danger">🗑 Hapus Akun</div>
-                                            </div>
-                                        </div>
+                                        <button class="btn-ghost py-1.5 px-3 text-xs">Edit</button>
+                                        <button class="btn-ghost py-1.5 px-2 text-xs" style="color:#ef4444" onclick="confirmDelete(this)">Hapus</button>
                                     </div>
                                 </td>
                             </tr>
@@ -446,7 +426,7 @@
                     </table>
                 </div>
                 <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between">
-                    <p class="text-sm text-slate-400">Menampilkan 5 dari 5 data</p>
+                    <p class="text-sm text-slate-400">Total {{ count($hr_admins) }} data</p>
                 </div>
             </div>
         </div>
@@ -468,28 +448,31 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-field col-span-2">
                     <label class="form-label">Nama Lengkap</label>
-                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap karyawan" required>
+                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap karyawan" value="{{ old('name') }}" required>
+                    @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
+                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">Divisi</label>
                     <select name="division_id" class="form-select" required>
                         <option value="">Pilih Divisi</option>
                         @foreach ($divisions as $div)
-                        <option value="{{ $div->id }}">{{ $div->division_name }}</option>
+                        <option value="{{ $div->id }}" {{ old('division_id') == $div->id ? 'selected' : '' }}>{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-field">
                     <label class="form-label">Jabatan</label>
-                    <input type="text" name="jabatan" class="form-input" placeholder="Jabatan / posisi" required>
+                    <input type="text" name="jabatan" class="form-input" placeholder="Jabatan / posisi" value="{{ old('jabatan') }}" required>
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Password Sementara</label>
-                    <input type="password" name="password" class="form-input" placeholder="Password awal (akan diminta ganti)" required>
+                    <input type="password" name="password" class="form-input" placeholder="Password awal (min 8 karakter)" required>
+                    @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">Status</label>
@@ -528,15 +511,18 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-field col-span-2">
                     <label class="form-label">Nama Lengkap</label>
-                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin HR" required>
+                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin HR" value="{{ old('name') }}" required>
+                    @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div class="form-field">
+                <div class="form-field col-span-2">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
+                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Password Sementara</label>
-                    <input type="password" name="password" class="form-input" placeholder="Password awal admin HR" required>
+                    <input type="password" name="password" class="form-input" placeholder="Password (min 8 karakter)" required>
+                    @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
@@ -567,46 +553,11 @@
                 <label class="form-label">Nama Lengkap</label>
                 <input type="text" class="form-input" value="Andi Rahman" id="editName">
             </div>
-            <div class="form-field">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-input" value="andi@attensys.id">
-            </div>
-            <div class="form-field">
-                <label class="form-label">NIP</label>
-                <input type="text" class="form-input" value="EMP-001">
-            </div>
-            <div class="form-field">
-                <label class="form-label">Divisi</label>
-                <select class="form-select">
-                    <option selected>Engineering</option>
-                    <option>Marketing</option>
-                    <option>Finance</option>
-                    <option>Operasional</option>
-                    <option>HR</option>
-                </select>
-            </div>
-            <div class="form-field">
-                <label class="form-label">Jabatan</label>
-                <input type="text" class="form-input" value="Backend Dev">
-            </div>
-            <div class="form-field">
-                <label class="form-label">Status</label>
-                <select class="form-select">
-                    <option selected>Aktif</option>
-                    <option>Pending</option>
-                    <option>Nonaktif</option>
-                </select>
-            </div>
+            <!-- dst... -->
         </div>
         <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
-            <button class="btn-danger" onclick="closeModal('modalEditEmployee')">Reset Password</button>
             <button class="btn-ghost" onclick="closeModal('modalEditEmployee')">Batal</button>
-            <button class="btn-primary">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Simpan Perubahan
-            </button>
+            <button class="btn-primary">Simpan</button>
         </div>
     </div>
 </div>
@@ -619,6 +570,18 @@
     </div>
 </div>
 
+<script>
+    // Auto open modal on error
+    @if(session('error_modal'))
+        document.addEventListener('DOMContentLoaded', function() {
+            openModal('{{ session('error_modal') }}');
+        });
+    @endif
+</script>
+
 <script src="{{ asset('js/Super_admin/dashboard_super_admin.js') }}"></script>
+</body>
+</html>
+ashboard_super_admin.js') }}"></script>
 </body>
 </html>

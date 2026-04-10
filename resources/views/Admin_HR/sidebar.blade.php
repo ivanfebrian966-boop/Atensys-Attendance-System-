@@ -69,11 +69,11 @@
                 <p class="text-white text-xs font-semibold truncate sora">{{ optional($user)->name ?? 'Admin HR' }}</p>
                 <p class="text-slate-400 text-xs truncate">{{ optional($user)->email ?? 'hr@attensys.id' }}</p>
             </div>
-            <a href="/logout" class="tooltip-wrap">
+            <a href="{{ route('logout') }}" class="tooltip-wrap">
                 <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
-                <span class="tooltip-text">Logout</span>
+                <span class="tooltip-text">Keluar</span>
             </a>
         </div>
     </div>

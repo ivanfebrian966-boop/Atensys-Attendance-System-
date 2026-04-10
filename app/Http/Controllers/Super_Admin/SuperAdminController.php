@@ -60,19 +60,25 @@ class SuperAdminController extends Controller
 
     public function storeHrAdmin(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+            ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'role' => 'hr_admin',
-        ]);
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+                'role' => 'hr_admin',
+            ]);
 
-        return redirect()->back()->with('success', 'HR Admin added successfully');
+            return redirect()->back()->with('success', 'Akun HR Admin berhasil dibuat!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput()->with('error_modal', 'modalAddAdmin');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membuat akun: ' . $e->getMessage())->withInput();
+        }
     }
 }

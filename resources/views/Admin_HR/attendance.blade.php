@@ -17,36 +17,11 @@
 @include('Admin_HR.sidebar')
 
 <div class="main-content">
-    <div class="topbar">
-        <div class="px-4 md:px-6 py-4 flex items-center justify-between gap-4 w-full">
-            <div class="flex items-center gap-3">
-                <button class="topbar-hamburger" onclick="openSidebar()">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-                <div>
-                    <h1 class="page-title">Attendance</h1>
-                    <p class="text-xs text-slate-400" id="currentDate">—</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button class="topbar-icon-btn relative">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <span class="notif-dot"></span>
-                </button>
-                <div class="topbar-profile">
-                    <div class="topbar-avatar">HR</div>
-                    <div class="hidden sm:block">
-                        <p class="text-sm font-semibold text-slate-800 sora">Admin HR</p>
-                        <p class="text-xs text-slate-400">HR Manager</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- TOPBAR -->
+    @include('Admin_HR.topbarHR', [
+        'pageTitle'    => 'Attendance',
+        'pageSubtitle' => now()->translatedFormat('l, d F Y'),
+    ])
 
     <div class="p-4 md:p-6">
 
