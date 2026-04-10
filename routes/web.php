@@ -30,12 +30,15 @@ Route::get('/HRmanage', [HRmanageController::class, 'index'])->name('HRmanage');
 Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
 Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
-Route::post('/attendance/process-qr', [AttendanceController::class, 'processQRCode'])->name('attendance.process-qr');
+Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr'])->name('attendance.process-qr');
+Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');
+Route::get('/attendance/stats', [AttendanceController::class, 'getStats'])->name('attendance.stats');
 Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 
 // Employee Routes
+Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+
 Route::prefix('employee')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
@@ -44,4 +47,4 @@ Route::prefix('employee')->middleware('auth')->group(function () {
 });
 
 // Legacy employee route
-Route::get('/employee', [EmployeeController::class, 'dashboard'])->middleware('auth')->name('employee');
+Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee');

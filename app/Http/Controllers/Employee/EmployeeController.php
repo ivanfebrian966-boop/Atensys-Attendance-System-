@@ -13,30 +13,43 @@ class EmployeeController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
+        $guest = false;
 
         if (!$user) {
-            return redirect()->route('login');
+            $guest = true;
+            $user = (object) [
+                'id' => 0,
+                'name' => 'Guest',
+                'email' => 'guest@attensys.id',
+                'division' => 'Employee',
+                'role' => 'Guest',
+                'created_at' => now(),
+            ];
         }
 
-        $todayAttendance = Attendance::where('user_id', $user->id)
+        $todayAttendance = $guest ? null : Attendance::where('user_id', $user->id)
             ->where('date', Carbon::today()->toDateString())
             ->first();
         
         // Monthly stats
-        $monthStats = [
+        $monthStats = $guest ? [
+            'present' => 0,
+            'late' => 0,
+            'absent' => 0,
+            'sick_permission' => 0,
+        ] : [
             'present' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Present')->count(),
             'late' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Late')->count(),
             'absent' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Absent')->count(),
             'sick_permission' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->whereIn('status', ['Sick', 'Permission'])->count(),
         ];
         
-        $recentAttendances = Attendance::where('user_id', $user->id)->orderBy('date', 'desc')->limit(7)->get();
+        $recentAttendances = $guest ? collect() : Attendance::where('user_id', $user->id)->orderBy('date', 'desc')->limit(7)->get();
         
-        // Generate unique QR code data for employee (using user ID)
-        // Format: ATTENSYS:EMP:USER_ID:TIMESTAMP for scanning
-        $qrCodeData = 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
+        $qrCodeBaseData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id;
+        $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
         
-        return view('Employee.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData'));
+        return view('Employee.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData', 'guest'));
     }
 
     public function checkIn(Request $request)

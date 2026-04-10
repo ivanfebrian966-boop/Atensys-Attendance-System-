@@ -138,7 +138,18 @@
                     </span>
                 </div>
                 <div class="p-5 text-center">
-                    @if(!$todayAttendance || !$todayAttendance->check_in)
+                    @if($guest)
+                        <div class="mb-4">
+                            <div class="text-6xl mb-3">👤</div>
+                            <p class="text-slate-600 mb-4">Anda sedang melihat halaman sebagai tamu.</p>
+                            <a href="{{ route('login') }}" class="btn-primary inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Masuk untuk Absensi
+                            </a>
+                        </div>
+                    @elseif(!$todayAttendance || !$todayAttendance->check_in)
                         <div class="mb-4">
                             <div class="text-6xl mb-3">⏰</div>
                             <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
@@ -226,6 +237,7 @@
                     <div class="qr-info">
                         ⚠️ Keep this QR code visible for attendance scanning
                     </div>
+                    <input type="hidden" id="qrCodeBase" value="{{ $qrCodeBaseData }}">
                     <input type="hidden" id="qrCodeData" value="{{ $qrCodeData }}">
                 </div>
             </div>

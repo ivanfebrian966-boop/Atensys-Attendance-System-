@@ -20,14 +20,16 @@ function updateCurrentDate() {
     }
 }
 
-// Generate QR Code - generates within 10 seconds
+// Generate QR Code - refreshes every 10 seconds
 function generateQRCode() {
+    const qrCodeBase = document.getElementById('qrCodeBase');
     const qrCodeData = document.getElementById('qrCodeData');
     const qrCodeBox = document.getElementById('qrCodeBox');
     
-    if (!qrCodeData || !qrCodeBox) return;
+    if (!qrCodeBox || (!qrCodeBase && !qrCodeData)) return;
     
-    const data = qrCodeData.value;
+    const base = qrCodeBase ? qrCodeBase.value : qrCodeData.value;
+    const data = qrCodeBase ? `${base}:${Date.now()}` : qrCodeData.value;
     
     // Show loading state
     qrCodeBox.innerHTML = `
@@ -37,54 +39,26 @@ function generateQRCode() {
         </div>
     `;
     
-    // Generate QR code within 10 seconds max
-    const startTime = Date.now();
-    const timeout = 10000; // 10 seconds
-    
     try {
-        const generateQR = () => {
-            const canvas = document.createElement('canvas');
-            QRCode.toCanvas(canvas, data, {
-                errorCorrectionLevel: 'H',
-                type: 'image/png',
+        setTimeout(() => {
+            qrCodeBox.innerHTML = '';
+            const qr = new QRCode(qrCodeBox, {
+                text: data,
                 width: 300,
-                margin: 1,
-                color: {
-                    dark: '#0f172a',
-                    light: '#ffffff'
-                }
-            }, function (error) {
-                if (error) {
-                    console.error('QR Code generation error:', error);
-                    qrCodeBox.innerHTML = `
-                        <div class="text-center text-red-500 py-8">
-                            <p class="text-lg font-semibold mb-2">Error generating QR Code</p>
-                            <p class="text-sm">Please refresh the page to try again</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Clear and append canvas
-                qrCodeBox.innerHTML = '';
-                qrCodeBox.appendChild(canvas);
-                
-                // Store QR code data for reference
-                window.currentQRCode = {
-                    data: data,
-                    generatedAt: new Date().getTime(),
-                    canvas: canvas
-                };
-                
-                const generationTime = Date.now() - startTime;
-                console.log('QR Code generated in ' + generationTime + 'ms');
+                height: 300,
+                colorDark: '#0f172a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
             });
-        };
-        
-        // Generate with small delay for smooth animation
-        setTimeout(generateQR, 300);
+
+            window.currentQRCode = {
+                data: data,
+                generatedAt: Date.now(),
+                element: qrCodeBox
+            };
+        }, 300);
     } catch (error) {
-        console.error('Error in QR code generation:', error);
+        console.error('Error generating QR code:', error);
         qrCodeBox.innerHTML = `
             <div class="text-center text-red-500 py-8">
                 <p class="text-lg font-semibold mb-2">Error generating QR Code</p>
@@ -211,7 +185,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Refresh QR code every 60 seconds
+// Refresh QR code every 10 seconds
 setInterval(function() {
     generateQRCode();
-}, 60000);
+}, 10000);
