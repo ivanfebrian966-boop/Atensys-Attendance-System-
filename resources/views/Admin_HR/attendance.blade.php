@@ -112,7 +112,7 @@
                         </svg>
                         <input type="text" id="searchAtt" class="search-input" placeholder="Cari nama..." oninput="filterAtt()">
                     </div>
-                    <input type="date" id="filterDate" class="filter-select" onchange="filterAtt()" style="padding-left:12px">
+                    <input type="date" id="filterDate" class="filter-select" value="{{ date('Y-m-d') }}" onchange="loadAttendanceData()" style="padding-left:12px">
                     <select id="filterAttStatus" class="filter-select" onchange="filterAtt()">
                         <option value="">Semua Status</option>
                         <option value="Present">Present</option>
@@ -300,73 +300,151 @@
 
 <script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
-</body>
 
+<!-- QR Code Scanner Script -->
 <script>
-    function onScanSuccess(decodedText, decodedResult) {
-        document.getElementById('qr-result').innerText = 'Processing QR: ' + decodedText.substring(0, 20) + '...';
-        
-        // Only process ATTENSYS QR codes
-        if (decodedText.startsWith('ATTENSYS:EMP:')) {
-            // Send to server
-            fetch('{{ route("attendance.process-qr") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ qr_data: decodedText })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('qr-result').innerHTML = 
-                        '<span style="color: #10b981; font-weight: bold;">✅ ' + data.message + '</span>';
-                    // Stop scanning for a moment to prevent multiple scans
-                    qrReader.pause();
-                    setTimeout(() => {
-                        document.getElementById('qr-result').innerText = '';
-                        qrReader.resume();
-                    }, 2000);
-                } else {
-                    document.getElementById('qr-result').innerHTML = 
-                        '<span style="color: #ef4444; font-weight: bold;">❌ ' + data.message + '</span>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('qr-result').innerHTML = 
-                    '<span style="color: #ef4444; font-weight: bold;">❌ Error processing QR code</span>';
-            });
-        } else {
-            document.getElementById('qr-result').innerText = 'Invalid QR Code';
-        }
-    }
-    
-    function onScanFailure(error) {
-        // Optionally handle scan errors - keep silent to avoid spam
-    }
-    
     let qrReader;
-    if (window.Html5Qrcode) {
+    let isProcessing = false;
+    
+    // Initialize QR Scanner
+    function initQRScanner() {
+        if (!window.Html5Qrcode) {
+            console.error('Html5Qrcode library not loaded');
+            return;
+        }
+        
         qrReader = new Html5Qrcode("qr-reader");
+        
         Html5Qrcode.getCameras().then(cameras => {
             if (cameras && cameras.length) {
+                const cameraId = cameras[0].id;
+                
                 qrReader.start(
-                    cameras[0].id,
+                    cameraId,
                     {
                         fps: 10,
-                        qrbox: 250
+                        qrbox: { width: 250, height: 250 }
                     },
                     onScanSuccess,
                     onScanFailure
                 );
+                
+                console.log('QR Scanner started with camera: ' + cameraId);
             } else {
-                document.getElementById('qr-result').innerText = 'Kamera tidak ditemukan.';
+                setQRStatus('❌ Kamera tidak ditemukan', 'error');
             }
         }).catch(err => {
-            document.getElementById('qr-result').innerText = 'Gagal mengakses kamera: ' + err;
+            setQRStatus('❌ Gagal akses kamera: ' + err, 'error');
         });
     }
+    
+    /**
+     * Handle successful QR code scan
+     */
+    function onScanSuccess(decodedText, decodedResult) {
+        if (isProcessing) return; // Prevent multiple simultaneous scans
+        
+        isProcessing = true;
+        setQRStatus('⏳ Memproses...', 'processing');
+        
+        // Send to server
+        fetch('{{ route("attendance.process-qr") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ qr_data: decodedText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const icon = data.type === 'check_in' ? '✅' : '👋';
+                const message = data.type === 'check_in' 
+                    ? `Check In: ${data.employee} (${data.time})` 
+                    : `Check Out: ${data.employee} (${data.duration})`;
+                
+                setQRStatus(`${icon} ${message}`, 'success');
+                showToast(icon, message, 3000);
+                
+                // Reload attendance data
+                setTimeout(() => {
+                    loadAttendanceData();
+                    updateStats();
+                }, 1000);
+                
+                // Pause scanner briefly to prevent duplicate scans
+                qrReader.pause();
+                setTimeout(() => {
+                    isProcessing = false;
+                    qrReader.resume();
+                    setQRStatus('🟢 Siap scan', 'ready');
+                }, 2000);
+            } else {
+                setQRStatus(`❌ ${data.message}`, 'error');
+                showToast('❌', data.message, 3000);
+                isProcessing = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            setQRStatus('❌ Error koneksi', 'error');
+            showToast('❌', 'Gagal menghubungi server', 3000);
+            isProcessing = false;
+        });
+    }
+    
+    /**
+     * Handle QR code scan failure (silent - too many errors)
+     */
+    function onScanFailure(error) {
+        // Silently ignore errors to avoid spam
+    }
+    
+    /**
+     * Set QR scan status message
+     */
+    function setQRStatus(message, status) {
+        const resultEl = document.getElementById('qr-result');
+        if (!resultEl) return;
+        
+        resultEl.innerText = message;
+        
+        // Color based on status
+        if (status === 'success') {
+            resultEl.style.color = '#10b981';
+        } else if (status === 'error') {
+            resultEl.style.color = '#ef4444';
+        } else if (status === 'processing') {
+            resultEl.style.color = '#f59e0b';
+        } else if (status === 'ready') {
+            resultEl.style.color = '#6366f1';
+        }
+    }
+    
+    /**
+     * Stop QR scanner
+     */
+    function stopQRScanner() {
+        if (qrReader) {
+            qrReader.stop().then(() => {
+                console.log('QR Scanner stopped');
+            }).catch(err => {
+                console.error('Error stopping scanner:', err);
+            });
+        }
+    }
+    
+    // Initialize QR Scanner on DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof initQRScanner === 'function') {
+            initQRScanner();
+            setQRStatus('🟢 Siap scan', 'ready');
+        }
+    });
+    
+    // Stop scanner on page unload
+    window.addEventListener('beforeunload', stopQRScanner);
 </script>
+
 </html>
