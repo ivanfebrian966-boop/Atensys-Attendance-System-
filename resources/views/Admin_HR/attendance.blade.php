@@ -315,6 +315,7 @@
         
         qrReader = new Html5Qrcode("qr-reader");
         
+        
         Html5Qrcode.getCameras().then(cameras => {
             if (cameras && cameras.length) {
                 const cameraId = cameras[0].id;
