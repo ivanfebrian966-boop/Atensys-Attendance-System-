@@ -178,6 +178,7 @@
                         <div class="qr-info">
                             ⚠️ Keep this QR code visible for attendance scanning
                         </div>
+                        <input type="hidden" id="qrCodeBase" value="{{ $qrCodeBaseData }}">
                         <input type="hidden" id="qrCodeData" value="{{ $qrCodeData }}">
                     </div>
                 </div>

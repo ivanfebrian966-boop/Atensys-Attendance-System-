@@ -32,8 +32,9 @@ Route::post('/attendance/process-qr', [AttendanceController::class, 'processQRCo
 Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 
 // Employee Routes
+Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+
 Route::prefix('employee')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
@@ -42,4 +43,4 @@ Route::prefix('employee')->middleware('auth')->group(function () {
 });
 
 // Legacy employee route
-Route::get('/employee', [EmployeeController::class, 'dashboard'])->middleware('auth')->name('employee');
+Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee');
