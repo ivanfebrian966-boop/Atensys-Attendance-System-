@@ -13,13 +13,25 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+<<<<<<< HEAD
             $table->foreignId('employee_id')->constrained()->onDelete('cascade');
             $table->unique(['employee_id', 'date']);
             $table->date('date');
             $table->time('check_in')->nullable();
             $table->time('check_out')->nullable();
             $table->enum('status', ['hadir', 'izin', 'sakit']);
+=======
+            $table->unsignedBigInteger('user_id');
+            $table->date('date');
+            $table->timestamp('check_in')->nullable();
+            $table->timestamp('check_out')->nullable();
+            $table->enum('status', ['Present', 'Absent', 'Late', 'Sick', 'Permission'])->default('Absent');
+            $table->text('notes')->nullable();
+>>>>>>> 5dfa1e8c2b5c484fb7ddca857f3f6b8887a31246
             $table->timestamps();
+            
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unique(['user_id', 'date']);
         });
     }
 

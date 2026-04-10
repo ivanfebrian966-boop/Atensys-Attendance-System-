@@ -1,0 +1,12 @@
+/* attendance.css — extra styles if needed */
+/* All base styles come from shared.css */
+.att-today-banner {
+    background: linear-gradient(135deg,#6366f1,#06b6d4);
+    border-radius:16px; padding:16px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px; flex-wrap:wrap; gap:12px;
+}
+.att-banner-text { color:white; }
+.att-banner-text h3 { font-family:var(--font-d,sans-serif); font-size:1rem; font-weight:700; margin:0 0 2px; }
+.att-banner-text p  { font-size:.75rem; opacity:.8; margin:0; }
+.att-banner-pct { font-family:var(--font-d,sans-serif); font-size:2rem; font-weight:800; color:white; }
