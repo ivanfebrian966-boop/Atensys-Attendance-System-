@@ -12,8 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        $table->id();
+        $table->foreignId('employee_id')->constrained()->onDelete('cascade');
+        $table->string('type');
+        $table->date('start_date');
+        $table->date('end_date');
+        $table->text('information')->nullable();
+        $table->string('status');
+        $table->timestamps();
         });
     }
 

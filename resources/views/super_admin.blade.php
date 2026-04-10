@@ -493,16 +493,6 @@
             transition: opacity 0.2s;
         }
         .chart-bar:hover { opacity: 1; }
-
-        /* Notification dot */
-        .notif-dot {
-            width: 8px; height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px; right: 2px;
-            border: 1.5px solid white;
-        }
     </style>
 </head>
 <body>
@@ -555,21 +545,6 @@
             Akun Admin HR
             <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(6,182,212,0.2);color:#67e8f9">5</span>
         </a>
-
-        <p class="nav-section-label">Lainnya</p>
-
-        <a href="#" class="nav-item">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h6M9 11h6M9 15h2"/>
-            </svg>
-            Divisi
-        </a>
-        <a href="#" class="nav-item">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
-            Laporan
-        </a>
     </nav>
 
     <!-- User info -->
@@ -612,13 +587,6 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <!-- Notif -->
-                <button class="relative p-2.5 rounded-xl hover:bg-slate-100 transition">
-                    <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <span class="notif-dot"></span>
-                </button>
                 <!-- Profile -->
                 <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
                     <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">SA</div>

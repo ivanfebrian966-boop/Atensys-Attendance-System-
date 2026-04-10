@@ -57,7 +57,7 @@
 
             <nav class="flex flex-col gap-2 text-sm">
 
-                <a href="/dashboard" class="menu">
+                <a href="/dashboard_hr" class="menu">
                     <span>🏠</span>
                     <span class="sidebar-text">Dashboard</span>
                 </a>
