@@ -1,7 +1,48 @@
+/* ============================================================
+   SIDEBAR & GLOBALS (From HRmanage / Shared)
+   ============================================================ */
+function openSidebar() {
+    document.getElementById('sidebar')?.classList.add('open');
+    document.getElementById('sidebarOverlay')?.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+    document.getElementById('sidebar')?.classList.remove('open');
+    document.getElementById('sidebarOverlay')?.classList.remove('open');
+    document.body.style.overflow = '';
+}
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 1024) closeSidebar();
+});
+
+let toastTimer = null;
+function showToast(icon, msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    document.getElementById('toastIcon').textContent = icon;
+    document.getElementById('toastMsg').textContent  = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function setErr(fieldId, errId, msg) {
+    const field = document.getElementById(fieldId);
+    const err   = document.getElementById(errId);
+    if (field) field.classList.add('is-error');
+    if (err)   err.textContent = msg;
+}
+function clearAllErrors() {
+    document.querySelectorAll('.form-error').forEach(el => el.textContent = '');
+    document.querySelectorAll('.form-input.is-error').forEach(el => el.classList.remove('is-error'));
+}
+
+/* ============================================================
+   PROFILE SPECIFIC
+   ============================================================ */
 let isDirty  = false;
 let origData = {};
 
-/* ---- Init ---- */
 document.addEventListener('DOMContentLoaded', () => {
     origData = captureData();
     disableSave(true);
@@ -20,12 +61,12 @@ function captureData() {
     };
 }
 
-/* ---- Dirty flag ---- */
 function markDirty() {
     isDirty = true;
     disableSave(false);
     document.getElementById('saveIndicator')?.classList.add('hidden');
 }
+
 function disableSave(d) {
     const btn  = document.getElementById('saveProfileBtn');
     const rbtn = document.getElementById('resetBtn');
@@ -41,7 +82,6 @@ function disableSave(d) {
     }
 }
 
-/* ---- Save profile ---- */
 function saveProfile() {
     clearAllErrors();
     const name  = document.getElementById('pName').value.trim();
@@ -56,7 +96,6 @@ function saveProfile() {
     const dispEl = document.getElementById('dispName');
     if(dispEl) dispEl.textContent = name;
 
-    // Sidebar name
     const sbarName = document.querySelector('.sidebar-user .text-white');
     if(sbarName) sbarName.textContent = name;
 
@@ -70,7 +109,6 @@ function saveProfile() {
     showToast('✅','Profil berhasil disimpan');
 }
 
-/* ---- Reset ---- */
 function resetProfile() {
     if(!isDirty) return;
     Object.entries(origData).forEach(([k,v]) => {
@@ -85,7 +123,6 @@ function resetProfile() {
     showToast('↩️','Perubahan dibatalkan');
 }
 
-/* ---- Avatar preview ---- */
 function previewAvatar(event) {
     const file = event.target.files[0];
     if(!file) return;
@@ -93,19 +130,16 @@ function previewAvatar(event) {
     reader.onload = (e) => {
         const av = document.getElementById('avatarDisplay');
         if(!av) return;
-        // remove text, add img
         av.innerHTML = `<img src="${e.target.result}" alt="avatar">`;
         showToast('📷','Foto profil diperbarui (belum tersimpan)');
     };
     reader.readAsDataURL(file);
 }
 
-/* ---- Password ---- */
 function togglePwd(id, btn) {
     const inp = document.getElementById(id); if(!inp) return;
     const isText = inp.type === 'text';
     inp.type = isText ? 'password' : 'text';
-    // toggle eye icon color
     btn.style.color = isText ? '#94a3b8' : '#6366f1';
 }
 
@@ -146,8 +180,8 @@ function changePassword() {
     else if(nw!==conf){ setErr('pwdConfirm','epPwdConfirm','Password tidak cocok'); ok=false; }
     if(!ok) return;
 
-    // Demo: just clear & show success
     ['pwdCurrent','pwdNew','pwdConfirm'].forEach(id => { document.getElementById(id).value=''; });
-    document.getElementById('pwdStrength').style.display='none';
+    const pwStr = document.getElementById('pwdStrength');
+    if(pwStr) pwStr.style.display='none';
     showToast('🔐','Password berhasil diubah');
 }
