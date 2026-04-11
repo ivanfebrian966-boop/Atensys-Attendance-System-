@@ -80,21 +80,24 @@
             Dashboard
         </a>
 
-        <p class="nav-section-label">Manajemen Akun</p>
+        <p class="nav-section-label">Account Management</p>
+
 
         <a href="{{ route('super_admin') }}" class="nav-item">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5.9-3.53M9 20H4v-2a4 4 0 015.9-3.53M15 7a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
-            Manajemen Akun
+            Account Management
         </a>
+
 
         <a href="#" class="nav-item active">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
-            Profil Saya
+            My Profile
         </a>
+
     </nav>
 
     <!-- User info -->

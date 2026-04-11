@@ -29,7 +29,8 @@
         <div class="panel fade-up d1 mb-6">
             <div class="panel-header">
                 <div>
-                    <h3 class="panel-title">Scan QR Code Kehadiran</h3>
+                    <h3 class="panel-title">Scan Attendance QR Code</h3>
+
                     <p class="panel-subtitle">Arahkan kamera ke QR code untuk absen</p>
                 </div>
             </div>
@@ -49,27 +50,32 @@
             <div class="stat-card green fade-up d2">
                 <div class="stat-icon" style="background:#ecfdf5">✅</div>
                 <p class="stat-value text-emerald-600" id="sPresent">0</p>
-                <p class="stat-label">Hadir</p>
+                <p class="stat-label">Present</p>
+
             </div>
             <div class="stat-card red fade-up d3">
                 <div class="stat-icon" style="background:#fef2f2">❌</div>
                 <p class="stat-value text-red-500" id="sAbsent">0</p>
-                <p class="stat-label">Absen</p>
+                <p class="stat-label">Absent</p>
+
             </div>
             <div class="stat-card amber fade-up d4">
                 <div class="stat-icon" style="background:#fffbeb">⏰</div>
                 <p class="stat-value text-amber-500" id="sLate">0</p>
-                <p class="stat-label">Terlambat</p>
+                <p class="stat-label">Late</p>
+
             </div>
             <div class="stat-card blue fade-up d5">
                 <div class="stat-icon" style="background:#eff6ff">🏥</div>
                 <p class="stat-value text-blue-500" id="sSick">0</p>
-                <p class="stat-label">Sakit</p>
+                <p class="stat-label">Sick</p>
+
             </div>
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon" style="background:#faf5ff">📋</div>
                 <p class="stat-value text-purple-500" id="sPerm">0</p>
-                <p class="stat-label">Izin</p>
+                <p class="stat-label">Permission</p>
+
             </div>
         </div>
 
@@ -77,7 +83,8 @@
         <div class="panel fade-up d2">
             <div class="panel-header">
                 <div>
-                    <h3 class="panel-title">Data Absensi</h3>
+                    <h3 class="panel-title">Attendance Data</h3>
+
                     <p class="panel-subtitle">Rekap kehadiran karyawan harian</p>
                 </div>
                 <div class="header-actions">
@@ -89,7 +96,8 @@
                     </div>
                     <input type="date" id="filterDate" class="filter-select" value="{{ date('Y-m-d') }}" onchange="loadAttendanceData()" style="padding-left:12px">
                     <select id="filterAttStatus" class="filter-select" onchange="filterAtt()">
-                        <option value="">Semua Status</option>
+                        <option value="">All Status</option>
+
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
@@ -97,7 +105,8 @@
                         <option value="Permission">Permission</option>
                     </select>
                     <select id="filterAttDiv" class="filter-select" onchange="filterAtt()">
-                        <option value="">Semua Divisi</option>
+                        <option value="">All Divisions</option>
+
                         <option>Engineering</option><option>HR</option><option>Finance</option>
                         <option>Marketing</option><option>IT</option><option>Operasional</option>
                     </select>
@@ -154,7 +163,8 @@
 <div class="modal-overlay" id="modalAddAtt" onclick="closeModalOutside(event,'modalAddAtt')">
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <div><h3 class="modal-title">Tambah Data Absensi</h3><p class="modal-sub">Input manual kehadiran karyawan</p></div>
+            <div><h3 class="modal-title">Add Attendance Data</h3><p class="modal-sub">Manual attendance input</p></div>
+
             <button class="modal-close" onclick="closeModal('modalAddAtt')">✕</button>
         </div>
         <div class="modal-body">
