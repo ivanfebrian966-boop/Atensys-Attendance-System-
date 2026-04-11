@@ -14,6 +14,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
 // hakaman awal
+Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/home', [HomeController::class, 'home']);
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -21,6 +22,7 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Super Admin
 Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super_admin');
+Route::get('/super-admin/profile', [SuperAdminController::class, 'profile'])->name('super_admin.profile');
 Route::post('/super-admin/employee', [SuperAdminController::class, 'storeEmployee'])->name('super_admin.store_employee');
 Route::post('/super-admin/hr-admin', [SuperAdminController::class, 'storeHrAdmin'])->name('super_admin.store_hr_admin');
 
@@ -51,7 +53,7 @@ Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 // Employee Routes
 Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
 
-Route::prefix('employee')->middleware('auth')->group(function () {
+Route::prefix('employee')->group(function () {
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');

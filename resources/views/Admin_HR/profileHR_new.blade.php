@@ -39,7 +39,6 @@
 
 @include('Admin_HR.sidebar')
 
-
 <div class="main-content">
     <!-- TOPBAR -->
     @include('Admin_HR.topbarHR', [
@@ -74,13 +73,13 @@
                         <div class="relative">
                             <div class="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-300 to-blue-300 animate-ping opacity-75"></div>
                             <div class="relative w-32 h-32 rounded-full bg-gradient-to-br from-white/30 to-white/10 backdrop-blur-sm border-4 border-white/50 flex items-center justify-center text-5xl font-bold text-white shadow-2xl transition-transform group-hover:scale-105 duration-300">
-                                {{ strtoupper(substr($user->name ?? 'HR', 0, 2)) }}
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
                             </div>
                         </div>
                     </div>
                     
                     <div class="text-center md:text-left flex-1">
-                        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight" style="font-family:'Sora',sans-serif">{{ $user->name ?? 'Admin HR' }}</h1>
+                        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight" style="font-family:'Sora',sans-serif">{{ $user->name }}</h1>
                         <div class="flex flex-wrap gap-3 justify-center md:justify-start">
                             <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">
                                 {{ $user->position ?? 'HR Manager' }}
@@ -147,13 +146,13 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Bergabung</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d M Y') : 'N/A' }}</p>
+                        <p class="text-slate-900 font-semibold text-sm">{{ $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d M Y') : 'N/A' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content: Profile Info -->
+        <!-- Main Content: Profile Info + Edit Form -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-slide-up" style="animation-delay: 0.2s">
             
             <!-- Left: Detailed Information -->
@@ -270,7 +269,7 @@
 
                         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
                             <p class="text-xs text-slate-600 font-medium mb-2">Tanggal Bergabung</p>
-                            <p class="text-sm font-semibold text-slate-900">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d MMMM Y') : 'N/A' }}</p>
+                            <p class="text-sm font-semibold text-slate-900">{{ $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d MMMM Y') : 'N/A' }}</p>
                         </div>
 
                         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">

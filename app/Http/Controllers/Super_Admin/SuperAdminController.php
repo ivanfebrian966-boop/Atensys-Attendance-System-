@@ -81,4 +81,10 @@ class SuperAdminController extends Controller
             return redirect()->back()->with('error', 'Gagal membuat akun: ' . $e->getMessage())->withInput();
         }
     }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('Super_Admin.profile_super_admin', compact('user'));
+    }
 }
