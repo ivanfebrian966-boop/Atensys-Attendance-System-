@@ -24,7 +24,7 @@
             </button>
             <div>
                 <h1 class="page-title">{{ $pageTitle ?? 'Dashboard' }}</h1>
-                <p class="text-xs text-slate-400">
+                <p class="text-xs text-slate-400" id="realtime-date">
                     {{ $pageSubtitle ?? now()->translatedFormat('l, d F Y') }}
                 </p>
             </div>

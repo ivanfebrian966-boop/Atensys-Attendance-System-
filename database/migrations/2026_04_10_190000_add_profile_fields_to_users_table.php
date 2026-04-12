@@ -21,6 +21,9 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'address')) {
                 $table->text('address')->nullable()->after('join_date');
             }
+            if (!Schema::hasColumn('users', 'status')) {
+                $table->enum('status', ['Aktif', 'Pending', 'Nonaktif'])->default('Aktif')->after('address');
+            }
         });
     }
 

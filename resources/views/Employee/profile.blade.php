@@ -129,13 +129,8 @@
                     </svg>
                 </button>
                 <div>
-<<<<<<< HEAD
-                    <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Profil Lengkap</h1>
-                    <p class="text-xs text-slate-400">Informasi akun dan detail karyawan</p>
-=======
                     <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent" style="font-family:'Sora',sans-serif">My Profile</h1>
                     <p class="text-xs text-slate-400">Manage your personal information</p>
->>>>>>> 7ab8ef2ce478c69b397df866730d3c98b5d84fc6
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -151,14 +146,6 @@
     </div>
 
     <div class="p-4 md:p-6">
-<<<<<<< HEAD
-        <div class="grid lg:grid-cols-3 gap-6">
-            <div class="panel fade-up d1">
-                <div class="text-center py-6">
-                    <div class="w-24 h-24 mx-auto rounded-full bg-indigo-600 flex items-center justify-center text-3xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 2)) }}</div>
-                    <h2 class="mt-5 text-xl font-semibold text-slate-900">{{ $user->name }}</h2>
-                    <p class="text-sm text-slate-500 mt-1">{{ $user->position ?? 'Karyawan' }}</p>
-=======
         
         <!-- Hero Section with Animated Gradient -->
         <div class="mb-8 fade-slide-up">
@@ -182,62 +169,52 @@
                     
                     <div class="text-center md:text-left flex-1">
                         <h1 class="text-3xl md:text-5xl font-bold text-white mb-3 tracking-tight" style="font-family:'Sora',sans-serif">{{ $user->name }}</h1>
-                        <div class="flex flex-wrap gap-3 justify-center md:justify-start">
-                            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">
-                                {{ $user->division ?? 'Employee' }}
-                            </span>
-                            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">
-                                {{ $user->role ?? 'Staff' }}
-                            </span>
-                        </div>
                     </div>
                     
                     <!-- Badge -->
                     <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-3 text-center">
-                        <p class="text-2xl font-bold text-white">0</p>
+                        <p class="text-2xl font-bold text-white">{{ $totalAttendance ?? 0 }}</p>
                         <p class="text-xs text-white/80">Total Kehadiran</p>
                     </div>
->>>>>>> 7ab8ef2ce478c69b397df866730d3c98b5d84fc6
                 </div>
             </div>
         </div>
 
-        <!-- Stats Grid dengan efek glassmorphism -->
+        <!-- Stats Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 fade-slide-up" style="animation-delay: 0.1s">
+            <!-- NIP -->
             <div class="glass-card rounded-2xl p-5 profile-card-hover">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
                         </svg>
                     </div>
-<<<<<<< HEAD
-                    <div class="profile-detail">
-                        <span>Nama lengkap</span>
-                        <strong>{{ $user->name }}</strong>
-                    </div>
-                    <div class="profile-detail">
-                        <span>Divisi</span>
-                        <strong>{{ $user->employee->division->division_name ?? $user->division ?? 'Belum diisi' }}</strong>
-                    </div>
-                    <div class="profile-detail">
-                        <span>Role</span>
-                        <strong>{{ ucfirst($user->role) }}</strong>
-                    </div>
-                    <div class="profile-detail">
-                        <span>Terdaftar sejak</span>
-                        <strong>{{ $user->created_at ? $user->created_at->translatedFormat('d F Y') : '-' }}</strong>
-=======
                     <div class="text-right">
-                        <p class="text-xs text-slate-500 font-medium">Email</p>
-                        <p class="text-slate-900 font-semibold text-sm truncate max-w-[180px]">{{ $user->email }}</p>
->>>>>>> 7ab8ef2ce478c69b397df866730d3c98b5d84fc6
+                        <p class="text-xs text-slate-500 font-medium">NIP</p>
+                        <p class="text-slate-900 font-bold text-sm tracking-wider">{{ $user->employee->nip ?? '-' }}</p>
                     </div>
                 </div>
             </div>
 
+            <!-- Position -->
             <div class="glass-card rounded-2xl p-5 profile-card-hover">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center justify-between">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500 font-medium">Jabatan</p>
+                        <p class="text-slate-900 font-bold text-sm">{{ $user->position ?? 'Staff' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Division -->
+            <div class="glass-card rounded-2xl p-5 profile-card-hover">
+                <div class="flex items-center justify-between">
                     <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
@@ -245,44 +222,14 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Divisi</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ $user->division ?? 'Not set' }}</p>
+                        <p class="text-slate-900 font-bold text-sm">{{ $user->employee->division->division_name ?? $user->division ?? 'Not set' }}</p>
                     </div>
                 </div>
             </div>
 
+            <!-- Joined Date -->
             <div class="glass-card rounded-2xl p-5 profile-card-hover">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-xs text-slate-500 font-medium">Status</p>
-                        <p class="text-emerald-600 font-semibold text-sm">Active</p>
-                    </div>
-<<<<<<< HEAD
-                    <div class="info-card">
-                        <p class="info-label">Posisi / Jabatan</p>
-                        <p class="info-value">{{ $user->position ?? 'Karyawan' }}</p>
-                    </div>
-                    <div class="info-card">
-                        <p class="info-label">Divisi</p>
-                        <p class="info-value">{{ $user->employee->division->division_name ?? $user->division ?? 'Belum diisi' }}</p>
-                    </div>
-                    <div class="info-card">
-                        <p class="info-label">Telepon</p>
-                        <p class="info-value">{{ $user->phone ?? $user->employee->no_hp ?? '-' }}</p>
-                    </div>
-                    <div class="info-card">
-                        <p class="info-label">Alamat</p>
-                        <p class="info-value">{{ $user->address ?? $user->employee->alamat ?? '-' }}</p>
-=======
-                </div>
-            </div>
-
-            <div class="glass-card rounded-2xl p-5 profile-card-hover">
-                <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center justify-between">
                     <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -290,7 +237,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Bergabung</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d M Y') : '-' }}</p>
+                        <p class="text-slate-900 font-bold text-sm">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d M Y') : '-' }}</p>
                     </div>
                 </div>
             </div>
@@ -308,6 +255,19 @@
                     </div>
 
                     <div class="space-y-5">
+                        <!-- NIP -->
+                        <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-white/50 transition-colors">
+                            <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">NIP</p>
+                                <p class="text-base text-slate-900 font-semibold tracking-wider">{{ $user->employee->nip ?? '-' }}</p>
+                            </div>
+                        </div>
+
                         <!-- Nama -->
                         <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-white/50 transition-colors">
                             <div class="w-12 h-12 bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -343,7 +303,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Divisi</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->division ?? 'Belum diisi' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->employee->division->division_name ?? $user->division ?? 'Belum diisi' }}</p>
                             </div>
                         </div>
 
@@ -351,12 +311,12 @@
                         <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-white/50 transition-colors">
                             <div class="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-xl flex items-center justify-center flex-shrink-0">
                                 <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Role / Posisi</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->role ?? 'Employee' }}</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Jabatan</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->position ?? 'Staff' }}</p>
                             </div>
                         </div>
 
@@ -369,7 +329,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Telepon</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? 'Belum diisi' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? $user->employee->no_hp ?? 'Belum diisi' }}</p>
                             </div>
                         </div>
 
@@ -382,7 +342,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Alamat</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? 'Belum diisi' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? $user->employee->alamat ?? 'Belum diisi' }}</p>
                             </div>
                         </div>
                     </div>
@@ -423,14 +383,6 @@
                             <p class="text-xs text-slate-600 font-medium mb-2">Update Terakhir</p>
                             <p class="text-sm font-semibold text-slate-900">{{ isset($user->updated_at) && $user->updated_at ? $user->updated_at->translatedFormat('d MMMM Y') : '-' }}</p>
                         </div>
-
-                        <!-- Login Reminder -->
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 mt-4">
-                            <p class="text-xs text-blue-700 font-medium">
-                                💡 <span class="ml-2">Login untuk mengedit informasi profil Anda</span>
-                            </p>
-                        </div>
->>>>>>> 7ab8ef2ce478c69b397df866730d3c98b5d84fc6
                     </div>
                 </div>
             </div>

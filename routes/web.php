@@ -22,6 +22,7 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 // Super Admin
 Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super_admin');
 Route::get('/super-admin/profile', [SuperAdminController::class, 'profile'])->name('super_admin.profile');
+Route::post('/super-admin/profile', [SuperAdminController::class, 'updateProfile'])->name('super_admin.update_profile');
 Route::post('/super-admin/employee', [SuperAdminController::class, 'storeEmployee'])->name('super_admin.store_employee');
 Route::post('/super-admin/employee/{id}', [SuperAdminController::class, 'updateEmployee'])->name('super_admin.update_employee');
 Route::delete('/super-admin/employee/{id}', [SuperAdminController::class, 'deleteEmployee'])->name('super_admin.delete_employee');

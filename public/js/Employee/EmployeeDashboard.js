@@ -13,12 +13,31 @@ document.addEventListener('DOMContentLoaded', function() {
 // Update current date and time
 function updateCurrentDate() {
     const dateElement = document.getElementById('currentDate');
+    const clockElement = document.getElementById('realtime-clock');
+    
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    
+    const now = new Date();
+    
     if (dateElement) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const today = new Date();
-        dateElement.textContent = today.toLocaleDateString('id-ID', options);
+        const dayName = days[now.getDay()];
+        const day = String(now.getDate()).padStart(2, '0');
+        const monthName = months[now.getMonth()];
+        const year = now.getFullYear();
+        dateElement.textContent = `${dayName}, ${day} ${monthName} ${year}`;
+    }
+    
+    if (clockElement) {
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
     }
 }
+
+// Set interval for realtime clock
+setInterval(updateCurrentDate, 1000);
 
 // Generate QR Code - refreshes every 10 seconds
 function generateQRCode() {

@@ -11,7 +11,7 @@ function showTab(tab, el) {
     if (el) el.classList.add('active');
 
     // page title
-    const titles = { dashboard: 'Dashboard', employees: 'Akun Karyawan', admins: 'Akun Admin HR', divisions: 'Data Divisi' };
+    const titles = { dashboard: 'Dashboard', employees: 'Akun Karyawan', admins: 'Akun Admin HR', divisions: 'Data Divisi', profile: 'Profil Pengaturan' };
     document.getElementById('pageTitle').textContent = titles[tab] || 'Dashboard';
 
     closeSidebar();
@@ -107,12 +107,24 @@ function openEditAdmin(btn) {
     const id = row.dataset.id;
     const name = row.dataset.name;
     const email = row.dataset.email;
+    const nip = row.dataset.nip;
+    const phone = row.dataset.phone;
+    const address = row.dataset.address;
+    const status = row.dataset.status;
+    const division = row.dataset.division;
+    const position = row.dataset.position;
 
     const form = document.getElementById('formEditAdmin');
     form.action = `/super-admin/hr-admin/${id}`;
     
     document.getElementById('edit_admin_name').value = name;
     document.getElementById('edit_admin_email').value = email;
+    document.getElementById('edit_admin_nip').value = nip || '';
+    document.getElementById('edit_admin_phone').value = phone || '';
+    document.getElementById('edit_admin_address').value = address || '';
+    document.getElementById('edit_admin_status').value = status || 'Aktif';
+    document.getElementById('edit_admin_division').value = division || '';
+    document.getElementById('edit_admin_position').value = position || '';
 
     openModal('modalEditAdmin');
 }
@@ -146,6 +158,31 @@ function closeAllDropdowns() {
 }
 
 // ===== Toast =====
+// ===== Realtime Date =====
+function updateRealtimeDate() {
+    const el = document.getElementById('realtime-date');
+    if (!el) return;
+
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    
+    const now = new Date();
+    const dayName = days[now.getDay()];
+    const day = String(now.getDate()).padStart(2, '0');
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    el.textContent = `${dayName}, ${day} ${monthName} ${year} | ${hours}:${minutes}:${seconds}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updateRealtimeDate();
+    setInterval(updateRealtimeDate, 1000);
+});
+
 function showToast(icon, msg) {
     const toast = document.getElementById('toast');
     document.getElementById('toastIcon').textContent = icon;

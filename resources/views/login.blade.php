@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — ATTENSYS</title>
 
-    <!-- Tailwind CSS via CDN (tidak perlu Node.js) -->
+    <!-- Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
@@ -190,16 +190,7 @@
             <!-- Header -->
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Login</h2>
-</xai:function_call}
-
-
-
-
-
-<xai:function_call name="edit_file">
-<parameter name="path">resources/views/login.blade.php
                 <p class="text-slate-500 text-sm mt-2">Enter your credentials to access the dashboard.</p>
-
             </div>
 
             <!-- Alert error validasi -->
@@ -233,14 +224,6 @@
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
-</xai:function_call}
-
-
-
-
-
-<xai:function_call name="edit_file">
-<parameter name="path">
                     <div class="relative">
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +248,6 @@
                         <a href="{{ route('password.request') }}" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
                             Forgot Password?
                         </a>
-
                         @endif
                     </div>
                     <div class="relative">
@@ -305,7 +287,6 @@
                     <label for="remember" class="text-sm text-slate-600 cursor-pointer select-none">
                         Remember me for 30 days
                     </label>
-
                 </div>
 
                 <!-- Submit -->
@@ -313,7 +294,6 @@
                     <button type="submit" class="btn-login">
                         Login to Dashboard →
                     </button>
-
                 </div>
             </form>
 
@@ -337,7 +317,6 @@
                 <a href="/home" class="text-sm text-slate-400 hover:text-indigo-600 transition-colors">
                     ← Back to Home
                 </a>
-
             </div>
 
             <p class="text-center text-slate-400 text-xs mt-6">

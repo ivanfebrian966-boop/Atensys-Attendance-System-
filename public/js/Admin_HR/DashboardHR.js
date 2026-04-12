@@ -20,15 +20,24 @@ window.addEventListener('resize', () => {
 });
 
 /* DATE */
-function setCurrentDate() {
-    const el = document.getElementById('currentDate');
+function updateRealtimeDate() {
+    const el = document.getElementById('realtime-date');
     if (!el) return;
 
     const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
     const months = ['Januari','Februari','Maret','April','Mei','Juni',
                     'Juli','Agustus','September','Oktober','November','Desember'];
     const now = new Date();
-    el.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    
+    const dayName = days[now.getDay()];
+    const day = String(now.getDate()).padStart(2, '0');
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    el.textContent = `${dayName}, ${day} ${monthName} ${year} | ${hours}:${minutes}:${seconds}`;
 }
 
 /* TABLE FILTER */
@@ -154,7 +163,8 @@ function animateStatusBars() {
 
 /* INIT */
 document.addEventListener('DOMContentLoaded', () => {
-    setCurrentDate();
+    updateRealtimeDate();
+    setInterval(updateRealtimeDate, 1000);
     initChartTooltips();
     animateStatusBars();
 });

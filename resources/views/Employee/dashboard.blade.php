@@ -121,7 +121,7 @@
                 <h2 class="text-xl md:text-2xl font-bold text-white" style="font-family:'Sora',sans-serif">Welcome back, {{ $user->name }}! 👋</h2>
                 <p class="text-slate-200 text-sm mt-1">Today is {{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
-            <div class="welcome-badge">{{ now()->format('H:i') }}</div>
+            <div class="welcome-badge" id="realtime-clock">{{ now()->format('H:i') }}</div>
         </div>
 
         <!-- ===== ATTENDANCE STATUS CARD ===== -->

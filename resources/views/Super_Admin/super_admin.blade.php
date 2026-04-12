@@ -78,15 +78,26 @@
             Data Divisi
             <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(139,92,246,0.2);color:#c4b5fd">{{ count($divisions) }}</span>
         </a>
+
+        <p class="nav-section-label">Akun</p>
+
+        <a href="#" class="nav-item {{ (isset($active_tab) && $active_tab == 'profile') ? 'active' : '' }}" onclick="showTab('profile',this)">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            Profil
+        </a>
     </nav>
 
     <!-- User info -->
     <div class="mx-4 mb-4 p-3 rounded-2xl relative" style="z-index:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">SA</div>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">
+                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+            </div>
             <div class="flex-1 min-w-0">
-                <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">Super Admin</p>
-                <p class="text-slate-400 text-xs truncate">admin@attensys.id</p>
+                <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">{{ Auth::user()->name }}</p>
+                <p class="text-slate-400 text-xs truncate">{{ Auth::user()->email }}</p>
             </div>
             <a href="{{ route('logout') }}" class="tooltip-wrap">
                 <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,15 +127,17 @@
                 </button>
                 <div>
                     <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif" id="pageTitle">Dashboard</h1>
-                    <p class="text-xs text-slate-400">Sabtu, 04 April 2026</p>
+                    <p class="text-xs text-slate-400" id="realtime-date">Sabtu, 04 April 2026</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 <!-- Profile -->
                 <div class="flex items-center gap-2 pl-2 border-l border-slate-200">
-                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">SA</div>
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    </div>
                     <div class="hidden sm:block">
-                        <p class="text-sm font-semibold text-slate-800" style="font-family:'Sora',sans-serif">Super Admin</p>
+                        <p class="text-sm font-semibold text-slate-800" style="font-family:'Sora',sans-serif">{{ Auth::user()->name }}</p>
                     </div>
                 </div>
             </div>
@@ -155,18 +168,27 @@
         <!-- ===== TAB: DASHBOARD ===== -->
         <div id="tab-dashboard">
             <!-- Stat Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <!-- Total Karyawan -->
                 <div class="stat-card indigo fade-up d1">
                     <div class="stat-icon" style="background:#eef2ff">📋</div>
                     <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($employees) }}</p>
                     <p class="text-sm text-slate-500 mt-1">Total Karyawan</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-2">Terdaftar</p>
                 </div>
+                <!-- Admin HR -->
                 <div class="stat-card cyan fade-up d2">
                     <div class="stat-icon" style="background:#ecfeff">🛡️</div>
                     <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($hr_admins) }}</p>
                     <p class="text-sm text-slate-500 mt-1">Admin HR</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-2">Terdaftar</p>
+                </div>
+                <!-- Total Divisi -->
+                <div class="stat-card purple fade-up d3">
+                    <div class="stat-icon" style="background:#f5f3ff">🏢</div>
+                    <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($divisions) }}</p>
+                    <p class="text-sm text-slate-500 mt-1">Total Divisi</p>
+                    <p class="text-xs text-emerald-600 font-semibold mt-2">Ditambahkan</p>
                 </div>
             </div>
 
@@ -222,7 +244,15 @@
                                             <span class="text-slate-600 text-xs">{{ $ru->employee->division->division_name ?? '-' }}</span>
                                         @endif
                                     </td>
-                                    <td><span class="badge badge-active">● Aktif</span></td>
+                                    <td>
+                                         @if($ru->status === 'Aktif')
+                                             <span class="badge badge-active">● Aktif</span>
+                                         @elseif($ru->status === 'Pending')
+                                             <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
+                                         @else
+                                             <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
+                                         @endif
+                                     </td>
                                     <td><span class="text-slate-400 text-xs">{{ $ru->created_at->format('M Y') }}</span></td>
                                 </tr>
                             @endforeach
@@ -237,6 +267,12 @@
                     <div class="panel p-5">
                         <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Status Akun</h3>
                         <div class="space-y-3">
+                            @php
+                                $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['pending'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
+                                $aktif_p = (($status_counts['aktif'] ?? 0) / $total_users) * 100;
+                                $pending_p = (($status_counts['pending'] ?? 0) / $total_users) * 100;
+                                $nonaktif_p = (($status_counts['nonaktif'] ?? 0) / $total_users) * 100;
+                            @endphp
                             <div class="flex justify-between items-center">
                                 <div class="flex items-center gap-2">
                                     <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
@@ -244,9 +280,9 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="h-1.5 rounded-full bg-emerald-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-emerald-500" style="width:100%"></div>
+                                        <div class="h-full rounded-full bg-emerald-500" style="width:{{ $aktif_p }}%"></div>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ count($employees) + count($hr_admins) }}</span>
+                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['aktif'] ?? 0 }}</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
@@ -256,9 +292,9 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="h-1.5 rounded-full bg-amber-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-amber-400" style="width:10%"></div>
+                                        <div class="h-full rounded-full bg-amber-400" style="width:{{ $pending_p }}%"></div>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">5</span>
+                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['pending'] ?? 0 }}</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center">
@@ -268,9 +304,9 @@
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="h-1.5 rounded-full bg-red-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-red-400" style="width:2%"></div>
+                                        <div class="h-full rounded-full bg-red-400" style="width:{{ $nonaktif_p }}%"></div>
                                     </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">1</span>
+                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['nonaktif'] ?? 0 }}</span>
                                 </div>
                             </div>
                         </div>
@@ -325,7 +361,7 @@
                         </thead>
                         <tbody>
                             @foreach($employees as $emp)
-                            <tr data-status="Aktif" 
+                            <tr data-status="{{ $emp->status ?? 'Aktif' }}" 
                                 data-id="{{ $emp->id }}"
                                 data-nip="{{ $emp->employee->nip ?? '' }}"
                                 data-name="{{ $emp->name }}"
@@ -333,8 +369,7 @@
                                 data-division="{{ $emp->employee->division_id ?? '' }}"
                                 data-jabatan="{{ $emp->position ?? 'Staf' }}"
                                 data-no_hp="{{ $emp->employee->no_hp ?? '' }}"
-                                data-alamat="{{ $emp->employee->alamat ?? '' }}"
-                                data-status="Aktif">
+                                data-alamat="{{ $emp->employee->alamat ?? '' }}">
                                 <td>
                                     <div class="flex items-center gap-3">
                                         <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
@@ -349,7 +384,15 @@
                                 <td><span class="text-slate-500 text-xs font-mono">{{ $emp->employee->nip ?? '-' }}</span></td>
                                 <td><span class="text-slate-600 text-sm">{{ $emp->employee->division->division_name ?? '-' }}</span></td>
                                 <td><span class="text-slate-600 text-sm">{{ $emp->position ?? 'Staf' }}</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
+                                <td>
+                                    @if(($emp->status ?? 'Aktif') === 'Aktif')
+                                        <span class="badge badge-active">● Aktif</span>
+                                    @elseif($emp->status === 'Pending')
+                                        <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
+                                    @else
+                                        <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
+                                    @endif
+                                </td>
                                 <td><span class="text-slate-400 text-xs">{{ $emp->created_at->format('M Y') }}</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
@@ -402,7 +445,7 @@
                         <thead>
                             <tr>
                                 <th>Admin HR</th>
-                                <th>ID Admin</th>
+                                <th>NIP</th>
                                 <th>Dikelola</th>
                                 <th>Hak Akses</th>
                                 <th>Status</th>
@@ -412,7 +455,15 @@
                         </thead>
                         <tbody>
                             @foreach($hr_admins as $admin)
-                            <tr data-id="{{ $admin->id }}" data-name="{{ $admin->name }}" data-email="{{ $admin->email }}">
+                            <tr data-id="{{ $admin->id }}" 
+                                data-nip="{{ $admin->nip }}"
+                                data-name="{{ $admin->name }}" 
+                                data-email="{{ $admin->email }}"
+                                data-phone="{{ $admin->phone }}"
+                                data-address="{{ $admin->address }}"
+                                data-status="{{ $admin->status }}"
+                                data-division="{{ $admin->division }}"
+                                data-position="{{ $admin->position }}">
                                 <td>
                                     <div class="flex items-center gap-3">
                                         <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
@@ -424,10 +475,18 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="text-slate-500 text-xs font-mono">ADM-{{ sprintf('%03d', $admin->id) }}</span></td>
+                                <td><span class="text-slate-500 text-xs font-mono">{{ $admin->nip ?? '-' }}</span></td>
                                 <td><span class="text-slate-600 text-sm">Semua Divisi</span></td>
                                 <td><span class="badge badge-admin">Full Access</span></td>
-                                <td><span class="badge badge-active">● Aktif</span></td>
+                                <td>
+                                    @if(($admin->status ?? 'Aktif') === 'Aktif')
+                                        <span class="badge badge-active">● Aktif</span>
+                                    @elseif($admin->status === 'Pending')
+                                        <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
+                                    @else
+                                        <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
+                                    @endif
+                                </td>
                                 <td><span class="text-slate-400 text-xs">Aktif Hari ini</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
@@ -488,7 +547,7 @@
                                     <span class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.85rem">{{ $div->division_name }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-employee">{{ $div->employees->count() ?? 0 }} Karyawan</span>
+                                    <span class="badge badge-employee">{{ ($div->employees->count() + $div->users->where('role', 'hr_admin')->count()) }} Karyawan</span>
                                 </td>
                                 <td><span class="text-slate-400 text-xs">{{ $div->created_at->format('d M Y') }}</span></td>
                                 <td>
@@ -511,6 +570,98 @@
                 </div>
                 <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between">
                     <p class="text-sm text-slate-400">Total {{ count($divisions) }} data</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TAB: PROFIL ===== -->
+        <div id="tab-profile" class="{{ (isset($active_tab) && $active_tab == 'profile') ? '' : 'hidden' }}">
+            <div class="grid lg:grid-cols-3 gap-6 fade-up d1">
+                <!-- Info Section -->
+                <div class="lg:col-span-1">
+                    <div class="panel p-6 text-center relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-20"></div>
+                        <div class="relative pt-6">
+                            <div class="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-3xl font-bold text-white shadow-2xl mb-4" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">
+                                {{ substr($user->name, 0, 2) }}
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ $user->name }}</h3>
+                            <p class="text-sm text-slate-500 mt-1">{{ $user->email }}</p>
+                            <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-xs font-bold mt-4">Super Admin Account</span>
+                        </div>
+                        
+                        <div class="mt-8 pt-6 border-t border-slate-100 text-left space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2"></path></svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-medium">Telepon</p>
+                                    <p class="text-sm font-semibold text-slate-700">{{ $user->phone ?? 'Belum diatur' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-400 font-medium">Alamat</p>
+                                    <p class="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{{ $user->address ?? 'Belum diatur' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="lg:col-span-2">
+                    <div class="panel p-6">
+                        <h3 class="text-lg font-bold text-slate-900 mb-6" style="font-family:'Sora',sans-serif">Pengaturan Profil</h3>
+                        
+                        <form action="{{ route('super_admin.update_profile') }}" method="POST">
+                            @csrf
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                <div class="form-field">
+                                    <label class="form-label">Nama Lengkap</label>
+                                    <input type="text" name="name" class="form-input" value="{{ old('name', $user->name) }}" required>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" name="email" class="form-input" value="{{ old('email', $user->email) }}" required>
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Nomor Telepon</label>
+                                    <input type="text" name="phone" class="form-input" value="{{ old('phone', $user->phone) }}" placeholder="08xxxx">
+                                </div>
+                                <div class="form-field">
+                                    <label class="form-label">Alamat</label>
+                                    <input type="text" name="address" class="form-input" value="{{ old('address', $user->address) }}" placeholder="Alamat lengkap">
+                                </div>
+                            </div>
+
+                            <div class="border-t border-slate-100 pt-6 mt-6">
+                                <h4 class="text-sm font-bold text-slate-900 mb-4" style="font-family:'Sora',sans-serif">Ganti Password</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="form-field">
+                                        <label class="form-label">Password Baru</label>
+                                        <input type="password" name="password" class="form-input" placeholder="Minimal 8 karakter">
+                                    </div>
+                                    <div class="form-field">
+                                        <label class="form-label">Konfirmasi Password Baru</label>
+                                        <input type="password" name="password_confirmation" class="form-input" placeholder="Ulangi password">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-400 mt-3 italic">Biarkan kosong jika tidak ingin mengubah password.</p>
+                            </div>
+
+                            <div class="mt-8 flex justify-end">
+                                <button type="submit" class="btn-primary px-8">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                    Simpan Perubahan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -606,15 +757,49 @@
         <form method="POST" action="{{ route('super_admin.store_hr_admin') }}">
             @csrf
             <div class="grid grid-cols-2 gap-4">
-                <div class="form-field col-span-2">
+                <div class="form-field">
                     <label class="form-label">Nama Lengkap</label>
                     <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin HR" value="{{ old('name') }}" required>
                     @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div class="form-field">
+                    <label class="form-label">NIP</label>
+                    <input type="text" name="nip" class="form-input" placeholder="NIP Admin" value="{{ old('nip') }}" required>
+                    @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
                     @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Divisi</label>
+                    <select name="division" class="form-select" required>
+                        <option value="">Pilih Divisi</option>
+                        @foreach ($divisions as $div)
+                        <option value="{{ $div->division_name }}">{{ $div->division_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Posisi / Jabatan</label>
+                    <input type="text" name="position" class="form-input" placeholder="Contoh: HR Manager" value="{{ old('position') }}" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">No. Telepon</label>
+                    <input type="text" name="phone" class="form-input" placeholder="08xxxx" value="{{ old('phone') }}" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Nonaktif">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Alamat</label>
+                    <textarea name="address" class="form-input" placeholder="Alamat lengkap admin" required>{{ old('address') }}</textarea>
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Password Sementara</label>
@@ -773,12 +958,48 @@
                 <input type="text" name="name" id="edit_admin_name" class="form-input" required>
             </div>
             <div class="form-field mb-4">
+                <label class="form-label">NIP</label>
+                <input type="text" name="nip" id="edit_admin_nip" class="form-input" required>
+            </div>
+            <div class="form-field mb-4">
                 <label class="form-label">Email</label>
                 <input type="email" name="email" id="edit_admin_email" class="form-input" required>
             </div>
-            <div class="form-field mb-4">
-                <label class="form-label">Ganti Password (Opsional)</label>
-                <input type="password" name="password" class="form-input" placeholder="Kosongkan jika tidak diubah">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-field">
+                    <label class="form-label">Divisi</label>
+                    <select name="division" id="edit_admin_division" class="form-select" required>
+                        @foreach ($divisions as $div)
+                        <option value="{{ $div->division_name }}">{{ $div->division_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Posisi / Jabatan</label>
+                    <input type="text" name="position" id="edit_admin_position" class="form-input" required>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="form-field">
+                    <label class="form-label">No. Telepon</label>
+                    <input type="text" name="phone" id="edit_admin_phone" class="form-input" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Status</label>
+                    <select name="status" id="edit_admin_status" class="form-select" required>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Nonaktif">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Alamat</label>
+                    <textarea name="address" id="edit_admin_address" class="form-input" required></textarea>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Ganti Password (Opsional)</label>
+                    <input type="password" name="password" class="form-input" placeholder="Kosongkan jika tidak diubah">
+                </div>
             </div>
             <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
                 <button type="button" class="btn-ghost" onclick="closeModal('modalEditAdmin')">Batal</button>
