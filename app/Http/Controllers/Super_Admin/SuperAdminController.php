@@ -86,6 +86,7 @@ class SuperAdminController extends Controller
         }
     }
 
+<<<<<<< HEAD
     public function updateEmployee(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -196,5 +197,11 @@ class SuperAdminController extends Controller
 
         $division->delete();
         return redirect()->back()->with('success', 'Divisi berhasil dihapus!');
+=======
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('Super_Admin.profile_super_admin', compact('user'));
+>>>>>>> 7ab8ef2ce478c69b397df866730d3c98b5d84fc6
     }
 }

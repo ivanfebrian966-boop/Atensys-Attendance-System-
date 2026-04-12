@@ -93,12 +93,20 @@ class EmployeeController extends Controller
         $user = Auth::user();
 
         if (!$user) {
-            return redirect()->route('login');
+            $user = (object) [
+                'id' => 0,
+                'name' => 'Guest',
+                'email' => 'guest@attensys.id',
+                'division' => 'Employee',
+                'role' => 'Guest',
+                'created_at' => now(),
+            ];
+            $attendances = collect();
+        } else {
+            $attendances = Attendance::where('user_id', $user->id)
+                ->orderBy('date', 'desc')
+                ->get();
         }
-
-        $attendances = Attendance::where('user_id', $user->id)
-            ->orderBy('date', 'desc')
-            ->get();
 
         $counts = [
             'present' => $attendances->where('status', 'Present')->count(),
@@ -116,7 +124,14 @@ class EmployeeController extends Controller
         $user = Auth::user();
 
         if (!$user) {
-            return redirect()->route('login');
+            $user = (object) [
+                'id' => 0,
+                'name' => 'Guest',
+                'email' => 'guest@attensys.id',
+                'division' => 'Employee',
+                'role' => 'Guest',
+                'created_at' => now(),
+            ];
         }
 
         return view('Employee.profile', compact('user'));
@@ -125,20 +140,31 @@ class EmployeeController extends Controller
     public function attendance()
     {
         $user = Auth::user();
+        $guest = false;
 
         if (!$user) {
-            return redirect()->route('login');
+            $guest = true;
+            $user = (object) [
+                'id' => 0,
+                'name' => 'Guest',
+                'email' => 'guest@attensys.id',
+                'division' => 'Employee',
+                'role' => 'Guest',
+                'created_at' => now(),
+            ];
+            $todayAttendance = null;
+            $recentAttendances = collect();
+        } else {
+            $todayAttendance = Attendance::where('user_id', $user->id)
+                ->where('date', Carbon::today()->toDateString())
+                ->first();
+            $recentAttendances = Attendance::where('user_id', $user->id)
+                ->orderBy('date', 'desc')
+                ->limit(7)
+                ->get();
         }
 
-        $todayAttendance = Attendance::where('user_id', $user->id)
-            ->where('date', Carbon::today()->toDateString())
-            ->first();
-        $recentAttendances = Attendance::where('user_id', $user->id)
-            ->orderBy('date', 'desc')
-            ->limit(7)
-            ->get();
-
-        $qrCodeData = 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
+        $qrCodeData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
 
         return view('Employee.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user'));
     }
