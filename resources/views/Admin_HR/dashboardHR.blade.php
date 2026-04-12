@@ -198,10 +198,7 @@
                         <span class="text-2xl">👥</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Karyawan</span>
                     </a>
-                    <a href="/HRmanage" class="quick-action-card" style="--qa-color:#8b5cf6;--qa-bg:#faf5ff">
-                        <span class="text-2xl">⚙️</span>
-                        <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Kelola</span>
-                    </a>
+
                 </div>
             </div>
         </div>

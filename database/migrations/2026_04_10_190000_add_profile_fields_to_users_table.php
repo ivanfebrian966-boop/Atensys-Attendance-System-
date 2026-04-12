@@ -21,19 +21,13 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'address')) {
                 $table->text('address')->nullable()->after('join_date');
             }
-            if (!Schema::hasColumn('users', 'bio')) {
-                $table->text('bio')->nullable()->after('address');
-            }
-            if (!Schema::hasColumn('users', 'avatar')) {
-                $table->string('avatar')->nullable()->after('bio');
-            }
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $columns = ['phone', 'position', 'join_date', 'address', 'bio', 'avatar'];
+            $columns = ['phone', 'position', 'join_date', 'address'];
             foreach ($columns as $col) {
                 if (Schema::hasColumn('users', $col)) {
                     $table->dropColumn($col);

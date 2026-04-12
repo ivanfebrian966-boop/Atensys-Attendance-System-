@@ -67,15 +67,12 @@
                     <div class="profile-card" style="border-radius:20px;">
 
                         <!-- Cover + Avatar -->
+                        <!-- Cover + Display (Simple) -->
                         <div class="profile-cover">
                             <div class="cover-bg"></div>
                             <div class="cover-avatar-wrap">
-                                <div class="cover-avatar" id="avatarDisplay">
-                                    @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="Foto Profil">
-                                    @else
-                                        <span class="avatar-initials">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
-                                    @endif
+                                <div class="cover-avatar">
+                                    <span class="avatar-initials">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -106,34 +103,6 @@
                             </div>
                         </div>
 
-                        <!-- Upload Avatar Form -->
-                        <div class="p-4 border-t border-slate-100">
-                            <p class="text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">Foto Profil</p>
-                            <form action="{{ route('profileHR.avatar') }}" method="POST" enctype="multipart/form-data" id="avatarForm">
-                                @csrf
-                                <label for="avatarInput" class="avatar-upload-label" id="avatarUploadLabel">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    Pilih Foto
-                                </label>
-                                <input type="file" id="avatarInput" name="avatar" class="hidden" accept="image/*" onchange="previewAndSubmit(event)">
-                                @error('avatar')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                                <p class="text-xs text-slate-400 mt-1">JPG, PNG, WebP · Maks 2MB</p>
-                            </form>
-                        </div>
-
-                        <!-- Bio -->
-                        @if($user->bio)
-                        <div class="p-4 border-t border-slate-100">
-                            <p class="text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wide">Bio</p>
-                            <p class="text-xs text-slate-600 leading-relaxed">{{ $user->bio }}</p>
-                        </div>
-                        @endif
                     </div>
                 </div>
 
@@ -228,15 +197,6 @@
                                         @enderror
                                     </div>
 
-                                    <!-- Bio -->
-                                    <div class="form-field col-span-2">
-                                        <label class="form-label" for="pBio">Bio Singkat</label>
-                                        <textarea id="pBio" name="bio" class="form-input @error('bio') is-error @enderror" rows="3"
-                                            placeholder="Ceritakan sedikit tentang Anda...">{{ old('bio', $user->bio) }}</textarea>
-                                        @error('bio')
-                                            <span class="form-error">{{ $message }}</span>
-                                        @enderror
-                                    </div>
                                 </div>
 
                                 <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
@@ -370,20 +330,6 @@ function switchTab(tab, btn) {
     btn.classList.add('active');
 }
 
-/* ---- AVATAR PREVIEW & AUTO-SUBMIT ---- */
-function previewAndSubmit(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    // Preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const av = document.getElementById('avatarDisplay');
-        if (av) av.innerHTML = `<img src="${e.target.result}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:15px;">`;
-    };
-    reader.readAsDataURL(file);
-    // Auto submit after short delay so preview shows
-    setTimeout(() => { document.getElementById('avatarForm').submit(); }, 300);
-}
 
 /* ---- PASSWORD TOGGLE ---- */
 function togglePwd(id, btn) {

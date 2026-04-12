@@ -5,7 +5,6 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Super_Admin\SuperAdminController;
 use App\Http\Controllers\Admin_HR\DashboardHRController;
 use App\Http\Controllers\Admin_HR\ProfileHRController;
-use App\Http\Controllers\Admin_HR\HRmanageController;
 use App\Http\Controllers\Admin_HR\EmployeesController;
 use App\Http\Controllers\Admin_HR\ReportsController;
 use App\Http\Controllers\Admin_HR\AttendanceController;
@@ -22,24 +21,23 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 // Super Admin
 Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super_admin');
 Route::post('/super-admin/employee', [SuperAdminController::class, 'storeEmployee'])->name('super_admin.store_employee');
+Route::post('/super-admin/employee/{id}', [SuperAdminController::class, 'updateEmployee'])->name('super_admin.update_employee');
+Route::delete('/super-admin/employee/{id}', [SuperAdminController::class, 'deleteEmployee'])->name('super_admin.delete_employee');
+
 Route::post('/super-admin/hr-admin', [SuperAdminController::class, 'storeHrAdmin'])->name('super_admin.store_hr_admin');
+Route::post('/super-admin/hr-admin/{id}', [SuperAdminController::class, 'updateHrAdmin'])->name('super_admin.update_hr_admin');
+Route::delete('/super-admin/hr-admin/{id}', [SuperAdminController::class, 'deleteHrAdmin'])->name('super_admin.delete_hr_admin');
+
+Route::post('/super-admin/division', [SuperAdminController::class, 'storeDivision'])->name('super_admin.store_division');
+Route::post('/super-admin/division/{id}', [SuperAdminController::class, 'updateDivision'])->name('super_admin.update_division');
+Route::delete('/super-admin/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('super_admin.delete_division');
 
 // Admin HR
 Route::get('/dashboardHR', [DashboardHRController::class, 'index'])->name('dashboardHR');
 Route::get('/profileHR', [ProfileHRController::class, 'index'])->name('profileHR');
 Route::post('/profileHR/update', [ProfileHRController::class, 'updateProfile'])->name('profileHR.update');
-Route::post('/profileHR/avatar', [ProfileHRController::class, 'uploadAvatar'])->name('profileHR.avatar');
 Route::post('/profileHR/password', [ProfileHRController::class, 'changePassword'])->name('profileHR.password');
-Route::get('/HRmanage', [HRmanageController::class, 'index'])->name('HRmanage');
-Route::post('/HRmanage/employee', [HRmanageController::class, 'storeEmployee'])->name('HRmanage.employee.store');
-Route::post('/HRmanage/employee/{id}', [HRmanageController::class, 'updateEmployee'])->name('HRmanage.employee.update');
-Route::delete('/HRmanage/employee/{id}', [HRmanageController::class, 'deleteEmployee'])->name('HRmanage.employee.delete');
 
-Route::post('/HRmanage/division', [HRmanageController::class, 'storeDivision'])->name('HRmanage.division.store');
-Route::post('/HRmanage/division/{id}', [HRmanageController::class, 'updateDivision'])->name('HRmanage.division.update');
-Route::delete('/HRmanage/division/{id}', [HRmanageController::class, 'deleteDivision'])->name('HRmanage.division.delete');
-
-Route::delete('/HRmanage/attendance/{id}', [HRmanageController::class, 'deleteAttendance'])->name('HRmanage.attendance.delete');
 Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
 Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');

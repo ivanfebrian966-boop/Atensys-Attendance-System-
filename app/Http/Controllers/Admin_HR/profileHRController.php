@@ -35,7 +35,6 @@ class ProfileHRController extends Controller
             'position'  => 'nullable|string|max:255',
             'join_date' => 'nullable|date',
             'address'   => 'nullable|string|max:500',
-            'bio'       => 'nullable|string|max:1000',
         ], [
             'name.required'  => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -49,34 +48,6 @@ class ProfileHRController extends Controller
             ->with('success', 'Profil berhasil diperbarui.');
     }
 
-    /**
-     * Upload avatar photo.
-     */
-    public function uploadAvatar(Request $request)
-    {
-        $request->validate([
-            'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ], [
-            'avatar.required' => 'Pilih file foto terlebih dahulu.',
-            'avatar.image'    => 'File harus berupa gambar.',
-            'avatar.mimes'    => 'Format gambar: jpg, jpeg, png, webp.',
-            'avatar.max'      => 'Ukuran foto maksimal 2MB.',
-        ]);
-
-        $user = Auth::user();
-
-        // Hapus avatar lama jika ada
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
-        }
-
-        // Simpan avatar baru
-        $path = $request->file('avatar')->store('avatars', 'public');
-        $user->update(['avatar' => $path]);
-
-        return redirect()->route('profileHR')
-            ->with('success', 'Foto profil berhasil diperbarui.');
-    }
 
     /**
      * Change password.

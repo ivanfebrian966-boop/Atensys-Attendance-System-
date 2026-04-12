@@ -71,7 +71,7 @@
                 <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">{{ $user->name }}</p>
                 <p class="text-slate-400 text-xs truncate">{{ $user->email }}</p>
             </div>
-            <a href="/logout" class="tooltip-wrap">
+            <a href="{{ route('logout') }}" class="tooltip-wrap">
                 <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -94,8 +94,17 @@
                     </svg>
                 </button>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Profile Lengkap</h1>
+                    <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Profil Lengkap</h1>
                     <p class="text-xs text-slate-400">Informasi akun dan detail karyawan</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3 bg-white/50 backdrop-blur-md px-3 py-1.5 rounded-2xl border border-slate-100">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">{{ strtoupper(substr($user->name, 0, 2)) }}</div>
+                    <div class="hidden sm:block">
+                        <p class="text-xs font-bold text-slate-800 leading-tight" style="font-family:'Sora',sans-serif">{{ $user->name }}</p>
+                        <p class="text-[10px] text-slate-400">{{ $user->employee->division->division_name ?? $user->division ?? 'Employee' }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,7 +116,7 @@
                 <div class="text-center py-6">
                     <div class="w-24 h-24 mx-auto rounded-full bg-indigo-600 flex items-center justify-center text-3xl font-bold text-white">{{ strtoupper(substr($user->name, 0, 2)) }}</div>
                     <h2 class="mt-5 text-xl font-semibold text-slate-900">{{ $user->name }}</h2>
-                    <p class="text-sm text-slate-500 mt-1">{{ $user->division ?? 'Employee' }}</p>
+                    <p class="text-sm text-slate-500 mt-1">{{ $user->position ?? 'Karyawan' }}</p>
                 </div>
                 <div class="border-t border-slate-200 px-6 py-5">
                     <div class="profile-detail">
@@ -120,11 +129,11 @@
                     </div>
                     <div class="profile-detail">
                         <span>Divisi</span>
-                        <strong>{{ $user->division ?? 'Belum diisi' }}</strong>
+                        <strong>{{ $user->employee->division->division_name ?? $user->division ?? 'Belum diisi' }}</strong>
                     </div>
                     <div class="profile-detail">
                         <span>Role</span>
-                        <strong>{{ $user->role ?? 'Employee' }}</strong>
+                        <strong>{{ ucfirst($user->role) }}</strong>
                     </div>
                     <div class="profile-detail">
                         <span>Terdaftar sejak</span>
@@ -150,16 +159,20 @@
                         <p class="info-value">{{ $user->email }}</p>
                     </div>
                     <div class="info-card">
+                        <p class="info-label">Posisi / Jabatan</p>
+                        <p class="info-value">{{ $user->position ?? 'Karyawan' }}</p>
+                    </div>
+                    <div class="info-card">
                         <p class="info-label">Divisi</p>
-                        <p class="info-value">{{ $user->division ?? 'Belum diisi' }}</p>
+                        <p class="info-value">{{ $user->employee->division->division_name ?? $user->division ?? 'Belum diisi' }}</p>
                     </div>
                     <div class="info-card">
                         <p class="info-label">Telepon</p>
-                        <p class="info-value">{{ $user->phone ?? '-' }}</p>
+                        <p class="info-value">{{ $user->phone ?? $user->employee->no_hp ?? '-' }}</p>
                     </div>
                     <div class="info-card">
                         <p class="info-label">Alamat</p>
-                        <p class="info-value">{{ $user->address ?? '-' }}</p>
+                        <p class="info-value">{{ $user->address ?? $user->employee->alamat ?? '-' }}</p>
                     </div>
                 </div>
             </div>

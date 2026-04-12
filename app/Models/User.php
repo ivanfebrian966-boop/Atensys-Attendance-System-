@@ -27,8 +27,6 @@ class User extends Authenticatable
         'position',
         'join_date',
         'address',
-        'bio',
-        'avatar',
     ];
 
     /**
