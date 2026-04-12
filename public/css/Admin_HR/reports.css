@@ -45,3 +45,126 @@
 .rate-high   { background:#ecfdf5; color:#059669; }
 .rate-mid    { background:#fffbeb; color:#d97706; }
 .rate-low    { background:#fef2f2; color:#dc2626; }
+
+/* ============================================================
+   VIEW TOGGLE BUTTONS
+   ============================================================ */
+.view-btn {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: white;
+    color: #94a3b8;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.view-btn:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+}
+.view-btn.active {
+    border-color: #6366f1;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    color: white;
+}
+
+/* ============================================================
+   REPORT DETAIL CARDS
+   ============================================================ */
+.report-detail-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    transition: all 0.2s;
+}
+.report-detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    border-color: #cbd5e1;
+}
+
+.report-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+.report-card-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+.report-card-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+    font-family: var(--font-d, sans-serif);
+}
+.report-card-division {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin: 2px 0 0;
+}
+
+.report-card-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.report-stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+.report-stat-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+}
+.report-stat-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: var(--font-d, sans-serif);
+}
+
+.report-card-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+}
+.report-percentage-bar {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+.report-percentage-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #06b6d4);
+    border-radius: 6px;
+    transition: width 0.3s;
+}
+.report-percentage-text {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 600;
+    margin: 0;
+}

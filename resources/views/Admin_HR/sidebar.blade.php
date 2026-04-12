@@ -29,12 +29,6 @@
             </svg>
             Dashboard
         </a>
-        <a href="/employees" class="nav-item {{ request()->is('employees') ? 'active' : '' }}">
-            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-5.9-3.53M9 20H4v-2a4 4 0 015.9-3.53M15 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-            </svg>
-            Employees
-        </a>
         <a href="/attendance" class="nav-item {{ request()->is('attendance') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -47,7 +41,7 @@
             </svg>
             Reports
         </a>
-        <p class="nav-section-label">Pengaturan</p>
+        <p class="nav-section-label">Settings</p>
 
         <a href="/profileHR" class="nav-item {{ request()->is('profileHR') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

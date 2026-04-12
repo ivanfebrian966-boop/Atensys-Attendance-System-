@@ -31,7 +31,7 @@
                 <div>
                     <h3 class="panel-title">Scan Attendance QR Code</h3>
 
-                    <p class="panel-subtitle">Arahkan kamera ke QR code untuk absen</p>
+                    <p class="panel-subtitle">Point camera at QR code to check in</p>
                 </div>
             </div>
             <div class="modal-body pt-4 pb-4">
@@ -85,14 +85,14 @@
                 <div>
                     <h3 class="panel-title">Attendance Data</h3>
 
-                    <p class="panel-subtitle">Rekap kehadiran karyawan harian</p>
+                    <p class="panel-subtitle">Daily employee attendance summary</p>
                 </div>
                 <div class="header-actions">
                     <div class="search-wrap">
                         <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                        <input type="text" id="searchAtt" class="search-input" placeholder="Cari nama..." oninput="filterAtt()">
+                        <input type="text" id="searchAtt" class="search-input" placeholder="Search name..." oninput="filterAtt()">
                     </div>
                     <input type="date" id="filterDate" class="filter-select" value="{{ date('Y-m-d') }}" onchange="loadAttendanceData()" style="padding-left:12px">
                     <select id="filterAttStatus" class="filter-select" onchange="filterAtt()">
@@ -120,7 +120,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
-                        Tambah
+                        Add
                     </button>
                 </div>
             </div>
@@ -129,15 +129,15 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Karyawan</th>
-                            <th class="hidden sm:table-cell">Tanggal</th>
-                            <th class="hidden md:table-cell">Divisi</th>
+                            <th>Employee</th>
+                            <th class="hidden sm:table-cell">Date</th>
+                            <th class="hidden md:table-cell">Division</th>
                             <th>Status</th>
                             <th class="hidden md:table-cell">Check In</th>
                             <th class="hidden md:table-cell">Check Out</th>
-                            <th class="hidden lg:table-cell">Durasi</th>
-                            <th class="hidden lg:table-cell">Keterangan</th>
-                            <th class="text-right">Aksi</th>
+                            <th class="hidden lg:table-cell">Duration</th>
+                            <th class="hidden lg:table-cell">Notes</th>
+                            <th class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="attBody"></tbody>
@@ -146,8 +146,8 @@
 
             <div id="attEmpty" class="empty-state hidden">
                 <div class="empty-icon">📋</div>
-                <p class="empty-title">Tidak ada data absensi</p>
-                <p class="empty-sub">Ubah filter tanggal atau tambah data manual</p>
+                <p class="empty-title">No attendance data</p>
+                <p class="empty-sub">Change date filter or add manual data</p>
             </div>
 
             <div class="table-footer">
@@ -170,12 +170,12 @@
         <div class="modal-body">
             <div class="form-grid">
                 <div class="form-field col-2">
-                    <label class="form-label">Nama Karyawan *</label>
-                    <input type="text" id="aaName" class="form-input" placeholder="Nama karyawan">
+                    <label class="form-label">Employee Name *</label>
+                    <input type="text" id="aaName" class="form-input" placeholder="Employee name">
                     <span class="form-error" id="eaaName"></span>
                 </div>
                 <div class="form-field">
-                    <label class="form-label">Tanggal *</label>
+                    <label class="form-label">Date *</label>
                     <input type="date" id="aaDate" class="form-input">
                 </div>
                 <div class="form-field">
@@ -197,18 +197,18 @@
                     <input type="time" id="aaCheckOut" class="form-input">
                 </div>
                 <div class="form-field col-2">
-                    <label class="form-label">Keterangan</label>
-                    <textarea id="aaNote" class="form-input" rows="2" placeholder="Catatan tambahan..."></textarea>
+                    <label class="form-label">Notes</label>
+                    <textarea id="aaNote" class="form-input" rows="2" placeholder="Additional notes..."></textarea>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-ghost" onclick="closeModal('modalAddAtt')">Batal</button>
+            <button class="btn-ghost" onclick="closeModal('modalAddAtt')">Cancel</button>
             <button class="btn-primary" onclick="saveAtt()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Simpan
+                Save
             </button>
         </div>
     </div>
@@ -218,18 +218,18 @@
 <div class="modal-overlay" id="modalEditAtt" onclick="closeModalOutside(event,'modalEditAtt')">
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <div><h3 class="modal-title">Koreksi Absensi</h3><p class="modal-sub">Edit data kehadiran</p></div>
+            <div><h3 class="modal-title">Correct Attendance</h3><p class="modal-sub">Edit attendance data</p></div>
             <button class="modal-close" onclick="closeModal('modalEditAtt')">✕</button>
         </div>
         <div class="modal-body">
             <input type="hidden" id="eaId">
             <div class="form-grid">
                 <div class="form-field col-2">
-                    <label class="form-label">Nama Karyawan</label>
+                    <label class="form-label">Employee Name</label>
                     <input type="text" id="eaName" class="form-input" readonly style="background:#f8fafc;color:#64748b;cursor:not-allowed">
                 </div>
                 <div class="form-field">
-                    <label class="form-label">Tanggal</label>
+                    <label class="form-label">Date</label>
                     <input type="date" id="eaDate" class="form-input">
                 </div>
                 <div class="form-field">
@@ -251,18 +251,18 @@
                     <input type="time" id="eaCheckOut" class="form-input">
                 </div>
                 <div class="form-field col-2">
-                    <label class="form-label">Keterangan</label>
+                    <label class=\"form-label\">Notes</label>
                     <textarea id="eaNote" class="form-input" rows="2"></textarea>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-ghost" onclick="closeModal('modalEditAtt')">Batal</button>
+            <button class="btn-ghost" onclick="closeModal('modalEditAtt')">Cancel</button>
             <button class="btn-primary" onclick="updateAtt()">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Simpan Koreksi
+                Save Changes
             </button>
         </div>
     </div>
@@ -272,16 +272,16 @@
 <div class="modal-overlay" id="modalDelAtt" onclick="closeModalOutside(event,'modalDelAtt')">
     <div class="modal-box modal-sm" onclick="event.stopPropagation()">
         <div class="del-icon-wrap"><div class="del-icon">🗑</div></div>
-        <h3 class="del-title">Hapus Data Absensi?</h3>
-        <p class="del-sub" id="delAttMsg">Data akan dihapus permanen.</p>
+        <h3 class="del-title">Delete Attendance Data?</h3>
+        <p class="del-sub" id="delAttMsg">Data will be permanently deleted.</p>
         <div class="modal-footer" style="justify-content:center">
-            <button class="btn-ghost" onclick="closeModal('modalDelAtt')">Batal</button>
-            <button class="btn-danger" onclick="execDelAtt()">Ya, Hapus</button>
+            <button class="btn-ghost" onclick="closeModal('modalDelAtt')">Cancel</button>
+            <button class="btn-danger" onclick="execDelAtt()">Yes, Delete</button>
         </div>
     </div>
 </div>
 
-<div id="toast" class="toast"><div class="toast-inner"><span id="tIcon">✅</span><span id="tMsg">Berhasil!</span></div></div>
+<div id=\"toast\" class=\"toast\"><div class=\"toast-inner\"><span id=\"tIcon\">✅</span><span id=\"tMsg\">Success!</span></div></div>
 
 <script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
@@ -317,10 +317,10 @@
                 
                 console.log('QR Scanner started with camera: ' + cameraId);
             } else {
-                setQRStatus('❌ Kamera tidak ditemukan', 'error');
+                setQRStatus('❌ Camera not found', 'error');
             }
         }).catch(err => {
-            setQRStatus('❌ Gagal akses kamera: ' + err, 'error');
+            setQRStatus('❌ Failed to access camera: ' + err, 'error');
         });
     }
     
@@ -331,7 +331,7 @@
         if (isProcessing) return; // Prevent multiple simultaneous scans
         
         isProcessing = true;
-        setQRStatus('⏳ Memproses...', 'processing');
+        setQRStatus('⏳ Processing...', 'processing');
         
         // Send to server
         fetch('{{ route("attendance.process-qr") }}', {
