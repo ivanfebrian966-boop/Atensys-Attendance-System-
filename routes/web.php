@@ -43,6 +43,7 @@ Route::post('/profileHR/password', [ProfileHRController::class, 'changePassword'
 
 Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
 Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+Route::get('/reports/data', [ReportsController::class, 'getData'])->name('reports.data');
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
 Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr'])->name('attendance.process-qr');
 Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');

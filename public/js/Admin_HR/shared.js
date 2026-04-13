@@ -80,17 +80,38 @@ function showToast(icon, msg, ms = 3200) {
     _tt = setTimeout(() => t.classList.remove('show'), ms);
 }
 
-/* ---- Date ---- */
-function setDate() {
-    const d = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const m = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const n = new Date();
-    const el = document.getElementById('currentDate');
-    if (el) el.textContent = `${d[n.getDay()]}, ${n.getDate()} ${m[n.getMonth()]} ${n.getFullYear()}`;
+/* ---- Realtime Date + Clock ---- */
+function updateRealtimeDate() {
+    const el = document.getElementById('realtime-date');
+    if (!el) return;
+
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
+    const now = new Date();
+
+    const dayName  = days[now.getDay()];
+    const day      = String(now.getDate()).padStart(2, '0');
+    const month    = months[now.getMonth()];
+    const year     = now.getFullYear();
+    const hours    = String(now.getHours()).padStart(2, '0');
+    const minutes  = String(now.getMinutes()).padStart(2, '0');
+    const seconds  = String(now.getSeconds()).padStart(2, '0');
+
+    el.textContent = `${dayName}, ${day} ${month} ${year}  |  ${hours}:${minutes}:${seconds}`;
 }
 
-// Auto-set date on page load
-document.addEventListener('DOMContentLoaded', setDate);
+// Also keep legacy #currentDate support
+function setDate() {
+    const el = document.getElementById('currentDate');
+    if (el) {
+        const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+        const now = new Date();
+        el.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    }
+}
 
 /* ---- Helpers ---- */
 function initials(name) {
@@ -159,4 +180,8 @@ function downloadCSV(filename, rows) {
     URL.revokeObjectURL(url);
 }
 
-document.addEventListener('DOMContentLoaded', setDate);
+document.addEventListener('DOMContentLoaded', () => {
+    setDate();
+    updateRealtimeDate();
+    setInterval(updateRealtimeDate, 1000);
+});
