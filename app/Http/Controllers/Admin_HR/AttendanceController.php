@@ -208,6 +208,20 @@ class AttendanceController extends Controller
         $duration = Carbon::parse($checkOut)->diff(Carbon::parse($checkIn));
         return sprintf('%02d:%02d', $duration->h, $duration->i);
     }
+    /**
+     * Get list of employees for autocomplete
+     */
+    public function getEmployees()
+    {
+        $employees = User::where('role', 'employee')
+            ->orderBy('name')
+            ->get(['id', 'name', 'division', 'position']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $employees
+        ]);
+    }
 }
 
 

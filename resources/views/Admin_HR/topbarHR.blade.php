@@ -17,7 +17,7 @@
 
         {{-- LEFT: Hamburger + Page Title --}}
         <div class="flex items-center gap-3">
-            <button class="topbar-hamburger" onclick="openSidebar()" aria-label="Buka Sidebar">
+            <button class="topbar-hamburger" onclick="openSidebar()" aria-label="Open Sidebar">
                 <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -35,7 +35,7 @@
 
             {{-- Export Button (khusus Reports) --}}
             @if(!empty($showExport))
-            <button class="btn-secondary topbar-export-btn" onclick="exportAllReport()" title="Export Laporan">
+            <button class="btn-secondary topbar-export-btn" onclick="exportAllReport()" title="Export Report">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -44,17 +44,10 @@
             </button>
             @endif
 
-            {{-- Notification Bell --}}
-            <button class="topbar-icon-btn relative" title="Notifikasi" aria-label="Notifikasi">
-                <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-                <span class="notif-dot"></span>
-            </button>
+
 
             {{-- Profile Chip — klik untuk ke halaman profil --}}
-            <a href="{{ route('profileHR') }}" class="topbar-profile topbar-profile-link" title="Lihat Profil">
+            <a href="{{ route('profileHR') }}" class="topbar-profile topbar-profile-link" title="View Profile">
                 <div class="topbar-avatar">
                     @if($authUser && $authUser->avatar)
                         <img src="{{ asset('storage/' . $authUser->avatar) }}"

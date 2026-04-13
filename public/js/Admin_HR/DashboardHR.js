@@ -24,9 +24,9 @@ function updateRealtimeDate() {
     const el = document.getElementById('realtime-date');
     if (!el) return;
 
-    const days   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const months = ['Januari','Februari','Maret','April','Mei','Juni',
-                    'Juli','Agustus','September','Oktober','November','Desember'];
+    const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['January','February','March','April','May','June',
+                    'July','August','September','October','November','December'];
     const now = new Date();
     
     const dayName = days[now.getDay()];
@@ -70,8 +70,8 @@ function filterTable() {
     const infoEl = document.getElementById('tableInfo');
     if (infoEl) {
         infoEl.textContent = visible > 0
-            ? `Menampilkan ${visible} data`
-            : 'Tidak ada data yang cocok';
+            ? `Showing ${visible} data`
+            : 'No matching data found';
     }
 
     // Show / hide empty state
@@ -141,12 +141,7 @@ function showToast(icon, msg, duration = 3000) {
 
 /* CHART BAR TOOLTIPS (hover) */
 function initChartTooltips() {
-    const bars   = document.querySelectorAll('.chart-bar');
-    const values = ['75%','90%','65%','88%','70%','87%'];
-
-    bars.forEach((bar, i) => {
-        bar.setAttribute('title', `Kehadiran: ${values[i] || ''}`);
-    });
+    // Tooltips are now rendered directly via Blade with database values.
 }
 
 /* ANIMATE STATUS BARS on load */

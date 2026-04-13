@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Admin HR — ATTENSYS</title>
+    <title>HR Admin Profile — ATTENSYS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
@@ -43,8 +43,8 @@
 <div class="main-content">
     <!-- TOPBAR -->
     @include('Admin_HR.topbarHR', [
-        'pageTitle'    => 'Profil Admin HR',
-        'pageSubtitle' => 'Kelola informasi akun Anda',
+        'pageTitle'    => 'HR Admin Profile',
+        'pageSubtitle' => 'Manage your account information',
     ])
 
     <!-- FLASH MESSAGES -->
@@ -118,7 +118,7 @@
                         </svg>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-slate-500 font-medium">Divisi</p>
+                        <p class="text-xs text-slate-500 font-medium">Division</p>
                         <p class="text-slate-900 font-semibold text-sm">{{ $user->division ?? 'N/A' }}</p>
                     </div>
                 </div>
@@ -132,8 +132,8 @@
                         </svg>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-slate-500 font-medium">Telepon</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ $user->phone ?? 'Belum diisi' }}</p>
+                        <p class="text-xs text-slate-500 font-medium">Phone</p>
+                        <p class="text-slate-900 font-semibold text-sm">{{ $user->phone ?? 'Not set' }}</p>
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                         </svg>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-slate-500 font-medium">Bergabung</p>
+                        <p class="text-xs text-slate-500 font-medium">Joined Date</p>
                         <p class="text-slate-900 font-semibold text-sm">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d M Y') : 'N/A' }}</p>
                     </div>
                 </div>
@@ -160,8 +160,8 @@
             <div class="lg:col-span-2">
                 <div class="glass-card rounded-2xl p-6">
                     <div class="mb-6 pb-4 border-b border-slate-200">
-                        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent" style="font-family:'Sora',sans-serif">Informasi Pribadi</h2>
-                        <p class="text-sm text-slate-500 mt-1">Data lengkap profil Admin HR Anda</p>
+                        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent" style="font-family:'Sora',sans-serif">Personal Information</h2>
+                        <p class="text-sm text-slate-500 mt-1">Complete data of your HR Admin profile</p>
                     </div>
 
                     <div class="space-y-5">
@@ -173,7 +173,7 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Nama Lengkap</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Full Name</p>
                                 <p class="text-base text-slate-900 font-semibold">{{ $user->name ?? 'N/A' }}</p>
                             </div>
                         </div>
@@ -199,7 +199,7 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Posisi / Jabatan</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Position</p>
                                 <p class="text-base text-slate-900 font-semibold">{{ $user->position ?? 'HR Manager' }}</p>
                             </div>
                         </div>
@@ -212,7 +212,7 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Divisi</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Division</p>
                                 <p class="text-base text-slate-900 font-semibold">{{ $user->division ?? 'HR Department' }}</p>
                             </div>
                         </div>
@@ -225,8 +225,8 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Telepon</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? 'Belum diisi' }}</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Phone</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? 'Not set' }}</p>
                             </div>
                         </div>
 
@@ -238,8 +238,8 @@
                                 </svg>
                             </div>
                             <div class="flex-1">
-                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Alamat</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? 'Belum diisi' }}</p>
+                                <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Address</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? 'Not set' }}</p>
                             </div>
                         </div>
                     </div>
@@ -255,21 +255,21 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Status Akun</h3>
-                        <p class="text-xs text-slate-500 mt-1">Informasi status Admin HR</p>
+                        <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Account Status</h3>
+                        <p class="text-xs text-slate-500 mt-1">HR Admin status information</p>
                     </div>
 
                     <div class="space-y-4">
                         <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
-                                <p class="text-sm font-semibold text-green-900">Akun Aktif</p>
+                                <p class="text-sm font-semibold text-green-900">Active Account</p>
                             </div>
-                            <p class="text-xs text-green-700">Akun Admin HR Anda aktif dan berfungsi normal</p>
+                            <p class="text-xs text-green-700">Your HR Admin account is active and functioning normally</p>
                         </div>
 
                         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                            <p class="text-xs text-slate-600 font-medium mb-2">Tanggal Bergabung</p>
+                            <p class="text-xs text-slate-600 font-medium mb-2">Joined Date</p>
                             <p class="text-sm font-semibold text-slate-900">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d MMMM Y') : 'N/A' }}</p>
                         </div>
 

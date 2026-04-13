@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,7 +35,8 @@
                 </div>
             </div>
             <div class="modal-body pt-4 pb-4">
-                <div id="qr-reader" style="width:320px;max-width:100%;margin:auto;"></div>
+                <style>#qr-reader video { transform: scaleX(-1); }</style>
+                <div id="qr-reader" style="width:100%;max-width:640px;margin:auto;border-radius:12px;overflow:hidden;"></div>
                 <div id="qr-result" class="mt-4 text-center text-emerald-600 font-semibold"></div>
             </div>
         </div>
@@ -169,9 +170,11 @@
         </div>
         <div class="modal-body">
             <div class="form-grid">
-                <div class="form-field col-2">
+                <div class="form-field col-2" style="position:relative">
                     <label class="form-label">Employee Name *</label>
-                    <input type="text" id="aaName" class="form-input" placeholder="Employee name">
+                    <input type="text" id="aaName" class="form-input" placeholder="Type to search employee..." autocomplete="off" oninput="filterEmployeeDropdown('aaName','aaEmpId','aaDropdown')">
+                    <input type="hidden" id="aaEmpId">
+                    <ul id="aaDropdown" class="emp-dropdown" style="display:none"></ul>
                     <span class="form-error" id="eaaName"></span>
                 </div>
                 <div class="form-field">
@@ -309,7 +312,7 @@
                     cameraId,
                     {
                         fps: 10,
-                        qrbox: { width: 250, height: 250 }
+                        aspectRatio: 1.777778
                     },
                     onScanSuccess,
                     onScanFailure
@@ -364,7 +367,7 @@
                 setTimeout(() => {
                     isProcessing = false;
                     qrReader.resume();
-                    setQRStatus('🟢 Siap scan', 'ready');
+                    setQRStatus('🟢 Ready to scan', 'ready');
                 }, 2000);
             } else {
                 setQRStatus(`❌ ${data.message}`, 'error');
@@ -374,8 +377,8 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            setQRStatus('❌ Error koneksi', 'error');
-            showToast('❌', 'Gagal menghubungi server', 3000);
+            setQRStatus('❌ Connection error', 'error');
+            showToast('❌', 'Failed to connect to server', 3000);
             isProcessing = false;
         });
     }
@@ -425,7 +428,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         if (typeof initQRScanner === 'function') {
             initQRScanner();
-            setQRStatus('🟢 Siap scan', 'ready');
+            setQRStatus('🟢 Ready to scan', 'ready');
         }
     });
     

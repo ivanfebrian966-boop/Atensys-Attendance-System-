@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -122,31 +122,6 @@
             </div>
         </div>
 
-        <!-- PER-DIVISION SUMMARY -->
-        <div class="panel fade-up d4 mb-4">
-            <div class="panel-header">
-                <div>
-                    <h3 class="panel-title">Summary by Division</h3>
-                    <p class="panel-subtitle">Attendance comparison between divisions</p>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Division</th>
-                            <th>Total Present</th>
-                            <th>Absent</th>
-                            <th>Late</th>
-                            <th>Sick/Permission</th>
-                            <th>% Present</th>
-                            <th>Trend</th>
-                        </tr>
-                    </thead>
-                    <tbody id="divisionReportBody"></tbody>
-                </table>
-            </div>
-        </div>
 
         <!-- DETAIL TABLE -->
         <div class="panel fade-up d5">
@@ -260,23 +235,23 @@
                     </div>
                     <div class="report-card-body">
                         <div class="report-stat-item">
-                            <span class="report-stat-label">Hadir</span>
+                            <span class="report-stat-label">Present</span>
                             <span class="report-stat-value" style="color:#10b981">${present}</span>
                         </div>
                         <div class="report-stat-item">
-                            <span class="report-stat-label">Absen</span>
+                            <span class="report-stat-label">Absent</span>
                             <span class="report-stat-value" style="color:#ef4444">${absent}</span>
                         </div>
                         <div class="report-stat-item">
-                            <span class="report-stat-label">Telat</span>
+                            <span class="report-stat-label">Late</span>
                             <span class="report-stat-value" style="color:#f59e0b">${late}</span>
                         </div>
                         <div class="report-stat-item">
-                            <span class="report-stat-label">Sakit</span>
+                            <span class="report-stat-label">Sick</span>
                             <span class="report-stat-value" style="color:#3b82f6">${sick}</span>
                         </div>
                         <div class="report-stat-item">
-                            <span class="report-stat-label">Izin</span>
+                            <span class="report-stat-label">Permission</span>
                             <span class="report-stat-value" style="color:#8b5cf6">${permission}</span>
                         </div>
                     </div>
@@ -284,7 +259,7 @@
                         <div class="report-percentage-bar">
                             <div class="report-percentage-fill" style="width:${parseInt(percentage)}%"></div>
                         </div>
-                        <p class="report-percentage-text">${percentage} Hadir</p>
+                        <p class="report-percentage-text">${percentage} Present</p>
                     </div>
                 `;
                 cardContainer.appendChild(card);

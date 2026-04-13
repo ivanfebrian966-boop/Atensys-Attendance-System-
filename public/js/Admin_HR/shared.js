@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
-        modal.classList.add('show');
+        modal.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
 }
@@ -44,7 +44,7 @@ function openModal(id) {
 function closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
-        modal.classList.remove('show');
+        modal.classList.remove('open');
         document.body.style.overflow = '';
     }
     clearAllErrors();
