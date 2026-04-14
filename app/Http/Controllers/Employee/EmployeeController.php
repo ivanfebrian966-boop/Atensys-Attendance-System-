@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
+use App\Models\Permission;
 use Carbon\Carbon;
 
 class EmployeeController extends Controller
@@ -166,6 +167,43 @@ class EmployeeController extends Controller
 
         $qrCodeData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
 
-        return view('Employee.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user'));
+        $permissions = $guest ? collect() : Permission::whereHas('employee', function($q) use($user) {
+                $q->where('user_id', $user->id);
+            })->orderBy('created_at', 'desc')->get();
+
+        return view('Employee.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user', 'permissions'));
+    }
+
+    public function storePermission(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) return redirect()->route('login');
+
+        $request->validate([
+            'type' => 'required|in:Izin,Sakit',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'information' => 'required|string|max:255',
+            'attachment' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB PDF
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $fileName = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('permissions', $fileName, 'public');
+        }
+
+        Permission::create([
+            'employee_id' => $user->employee->id,
+            'type' => $request->type,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'information' => $request->information,
+            'status' => 'Pending',
+            'attachment' => $filePath,
+        ]);
+
+        return back()->with('success', 'Leave request submitted successfully!');
     }
 }

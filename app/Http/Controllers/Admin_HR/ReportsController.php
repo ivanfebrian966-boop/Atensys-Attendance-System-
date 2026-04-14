@@ -8,6 +8,6 @@ class ReportsController extends Controller
 {
     public function index()
     {
-        return view('/Admin_HR/reports');
+        return view('Admin_HR.pages.reports');
     }
 }

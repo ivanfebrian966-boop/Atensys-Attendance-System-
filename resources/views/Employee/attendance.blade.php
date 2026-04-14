@@ -125,15 +125,23 @@
                         <div class="mb-4">
                             <div class="text-6xl mb-3">⏰</div>
                             <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
-                            <form action="{{ route('employee.attendance.checkin') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn-primary">
+                            <div class="flex flex-col gap-2 max-w-xs mx-auto">
+                                <form action="{{ route('employee.attendance.checkin') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn-primary w-full">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        </svg>
+                                        Check In
+                                    </button>
+                                </form>
+                                <button class="btn-secondary w-full" onclick="openModal('modalRequestLeave')">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
-                                    Check In
+                                    Request Leave (Izin/Sakit)
                                 </button>
-                            </form>
+                            </div>
                         </div>
                     @elseif($todayAttendance->check_in && !$todayAttendance->check_out)
                         <div class="mb-4">
@@ -223,6 +231,117 @@
                 </table>
             </div>
         </div>
+
+        <!-- LEAVE REQUEST HISTORY -->
+        <div class="panel fade-up d4 mt-6">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-title">My Leave Requests</h3>
+                    <p class="panel-subtitle">History of your permission/sick requests</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Date Range</th>
+                            <th>Status</th>
+                            <th>Information</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($permissions as $perm)
+                        <tr class="table-row">
+                            <td>
+                                <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
+                                    ● {{ $perm->type }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-sm">
+                                    {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} — 
+                                    {{ \Carbon\Carbon::parse($perm->end_date)->format('d M Y') }}
+                                </span>
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = match($perm->status) {
+                                        'Pending' => 'bg-amber-100 text-amber-600',
+                                        'Approved' => 'bg-emerald-100 text-emerald-600',
+                                        'Rejected' => 'bg-red-100 text-red-600',
+                                        default => 'bg-slate-100 text-slate-600'
+                                    };
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $statusClass }}">
+                                    {{ $perm->status }}
+                                </span>
+                            </td>
+                            <td class="max-w-xs truncate text-xs text-slate-500" title="{{ $perm->information }}">
+                                {{ $perm->information }}
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-slate-400 py-6">No leave requests found</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- MODAL REQUEST LEAVE -->
+<div class="modal-overlay" id="modalRequestLeave" onclick="closeModalOutside(event,'modalRequestLeave')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <div><h3 class="modal-title">Request Leave</h3><p class="modal-sub">Submit permission or sick leave</p></div>
+            <button class="modal-close" onclick="closeModal('modalRequestLeave')">✕</button>
+        </div>
+        <form action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-field col-2">
+                        <label class="form-label text-slate-700">Type *</label>
+                        <select name="type" class="form-select" required>
+                            <option value="Izin">Izin (Personal)</option>
+                            <option value="Sakit">Sakit (Medical)</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">Start Date *</label>
+                        <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">End Date *</label>
+                        <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="form-field col-2">
+                        <label class="form-label text-slate-700">Information / Reason *</label>
+                        <textarea name="information" class="form-input" rows="3" required placeholder="e.g. Taking care of family / Medical appointment..."></textarea>
+                    </div>
+                    <div class="form-field col-2">
+                        <label class="form-label text-slate-700">Attachment (PDF)</label>
+                        <input type="file" name="attachment" class="form-input" accept="application/pdf">
+                        <p class="text-[10px] text-slate-400 mt-1">Maximum file size: 2MB. Format: PDF only.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalRequestLeave')">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Submit Request
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 

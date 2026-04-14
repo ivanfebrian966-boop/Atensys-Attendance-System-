@@ -49,6 +49,8 @@ Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr']
 Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');
 Route::get('/attendance/stats', [AttendanceController::class, 'getStats'])->name('attendance.stats');
 Route::get('/attendance/employees', [AttendanceController::class, 'getEmployees'])->name('attendance.employees');
+Route::post('/attendance/permission/{id}/approve', [AttendanceController::class, 'approvePermission'])->name('attendance.permission.approve');
+Route::post('/attendance/permission/{id}/reject', [AttendanceController::class, 'rejectPermission'])->name('attendance.permission.reject');
 Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
 
 // Employee Routes
@@ -60,6 +62,7 @@ Route::prefix('employee')->group(function () {
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::post('/attendance/checkin', [EmployeeController::class, 'checkIn'])->name('employee.attendance.checkin');
     Route::post('/attendance/checkout', [EmployeeController::class, 'checkOut'])->name('employee.attendance.checkout');
+    Route::post('/attendance/permission', [EmployeeController::class, 'storePermission'])->name('employee.attendance.permission');
 });
 
 // Legacy employee route

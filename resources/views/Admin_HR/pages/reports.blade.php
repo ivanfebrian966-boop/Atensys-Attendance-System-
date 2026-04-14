@@ -1,21 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports — ATTENSYS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/reports.css') }}">
-</head>
-<body>
+@extends('Admin_HR.layouts.main')
 
-@include('Admin_HR.sidebar')
+@section('title', 'Reports — ATTENSYS')
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/Admin_HR/reports.css') }}">
+@endsection
+
+@section('main_structure')
+@include('Admin_HR.components.sidebar')
 
 <div class="main-content">
-    <!-- TOPBAR -->
-    @include('Admin_HR.topbarHR', [
+    @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Reports',
         'pageSubtitle' => now()->translatedFormat('l, d F Y'),
     ])
@@ -180,108 +176,16 @@
                 <div id="reportCardContainer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
             <div id="reportEmpty" class="empty-state hidden">
-<script>
-    // Toggle between card and table view for report details
-    function switchReportView(view) {
-        const tableView = document.getElementById('reportTableView');
-        const cardView = document.getElementById('reportCardView');
-        const btnTable = document.getElementById('btnReportTableView');
-        const btnCard = document.getElementById('btnReportCardView');
-        const cardContainer = document.getElementById('reportCardContainer');
-
-        if (view === 'table') {
-            tableView.classList.remove('hidden');
-            cardView.classList.add('hidden');
-            btnTable.classList.add('active');
-            btnCard.classList.remove('active');
-        } else {
-            tableView.classList.add('hidden');
-            cardView.classList.remove('hidden');
-            btnTable.classList.remove('active');
-            btnCard.classList.add('active');
-            renderReportCards();
-        }
-    }
-
-    // Render cards from table data
-    function renderReportCards() {
-        const tableBody = document.getElementById('reportDetailBody');
-        const cardContainer = document.getElementById('reportCardContainer');
-        const rows = tableBody.querySelectorAll('tr');
-
-        cardContainer.innerHTML = '';
-
-        rows.forEach(row => {
-            const cells = row.querySelectorAll('td');
-            if (cells.length > 0) {
-                const name = cells[0].textContent.trim();
-                const division = cells[1]?.textContent.trim() || '-';
-                const present = cells[2]?.textContent.trim() || '0';
-                const absent = cells[3]?.textContent.trim() || '0';
-                const late = cells[4]?.textContent.trim() || '0';
-                const sick = cells[5]?.textContent.trim() || '0';
-                const permission = cells[6]?.textContent.trim() || '0';
-                const percentage = cells[7]?.textContent.trim() || '0%';
-
-                const card = document.createElement('div');
-                card.className = 'report-detail-card';
-                card.innerHTML = `
-                    <div class="report-card-header">
-                        <div class="report-card-avatar">${name.substring(0, 2).toUpperCase()}</div>
-                        <div class="flex-1">
-                            <p class="report-card-name">${name}</p>
-                            <p class="report-card-division">${division}</p>
-                        </div>
-                    </div>
-                    <div class="report-card-body">
-                        <div class="report-stat-item">
-                            <span class="report-stat-label">Present</span>
-                            <span class="report-stat-value" style="color:#10b981">${present}</span>
-                        </div>
-                        <div class="report-stat-item">
-                            <span class="report-stat-label">Absent</span>
-                            <span class="report-stat-value" style="color:#ef4444">${absent}</span>
-                        </div>
-                        <div class="report-stat-item">
-                            <span class="report-stat-label">Late</span>
-                            <span class="report-stat-value" style="color:#f59e0b">${late}</span>
-                        </div>
-                        <div class="report-stat-item">
-                            <span class="report-stat-label">Sick</span>
-                            <span class="report-stat-value" style="color:#3b82f6">${sick}</span>
-                        </div>
-                        <div class="report-stat-item">
-                            <span class="report-stat-label">Permission</span>
-                            <span class="report-stat-value" style="color:#8b5cf6">${permission}</span>
-                        </div>
-                    </div>
-                    <div class="report-card-footer">
-                        <div class="report-percentage-bar">
-                            <div class="report-percentage-fill" style="width:${parseInt(percentage)}%"></div>
-                        </div>
-                        <p class="report-percentage-text">${percentage} Present</p>
-                    </div>
-                `;
-                cardContainer.appendChild(card);
-            }
-        });
-    }
-</script>
-                <div class="empty-icon">📊</div>
-                <p class=\"empty-title\">No report data</p>
-                <p class=\"empty-sub\">Change filter period or division</p>
             </div>
             <div class="table-footer">
                 <p class="table-info" id="reportInfo">— data</p>
             </div>
         </div>
 
-    </div>
-</div>
+    </div><!-- end p-4 -->
+</div><!-- end main-content -->
+@endsection
 
-<div id=\"toast\" class=\"toast\"><div class=\"toast-inner\"><span id=\"tIcon\">✅</span><span id=\"tMsg\">Success!</span></div></div>
-
-<script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
+@section('scripts')
 <script src="{{ asset('js/Admin_HR/reports.js') }}"></script>
-</body>
-</html>
+@endsection

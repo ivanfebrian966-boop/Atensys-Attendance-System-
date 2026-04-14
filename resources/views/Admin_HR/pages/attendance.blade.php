@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Attendance — ATTENSYS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
+@extends('Admin_HR.layouts.main')
+
+@section('title', 'Attendance — ATTENSYS')
+
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/attendance.css') }}">
     <!-- QR Code Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-</head>
-<body>
+@endsection
 
-@include('Admin_HR.sidebar')
+@section('main_structure')
+@include('Admin_HR.components.sidebar')
 
 <div class="main-content">
-    <!-- TOPBAR -->
-    @include('Admin_HR.topbarHR', [
+    @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Attendance',
         'pageSubtitle' => now()->translatedFormat('l, d F Y'),
     ])
@@ -77,6 +72,81 @@
                 <p class="stat-value text-purple-500" id="sPerm">0</p>
                 <p class="stat-label">Permission</p>
 
+            </div>
+        </div>
+        
+        <!-- LEAVE REQUESTS (PENDING ACC) -->
+        <div class="panel fade-up d2 mb-6">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-title">Pending Leave Requests</h3>
+                    <p class="panel-subtitle">Review and approve employee permission/sick requests</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>Date Range</th>
+                            <th>Information</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($pendingPermissions as $perm)
+                        <tr class="table-row">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="avatar-sm" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
+                                        {{ substr($perm->employee->user->name, 0, 2) }}
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-slate-800 text-sm">{{ $perm->employee->user->name }}</p>
+                                        <p class="text-xs text-slate-400">{{ $perm->employee->user->division }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
+                                    ● {{ $perm->type }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="text-sm">
+                                    {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} — 
+                                    {{ \Carbon\Carbon::parse($perm->end_date)->format('d M Y') }}
+                                </div>
+                            </td>
+                            <td>
+                                <p class="text-xs text-slate-500 max-w-xs truncate" title="{{ $perm->information }}">
+                                    {{ $perm->information }}
+                                </p>
+                            </td>
+                            <td class="text-right">
+                                <div class="flex justify-end gap-2">
+                                    @if($perm->attachment)
+                                        <a href="{{ asset('storage/' . $perm->attachment) }}" target="_blank" class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">View PDF</a>
+                                    @endif
+                                    <form action="{{ route('attendance.permission.approve', $perm->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-approve">ACC</button>
+                                    </form>
+                                    <form action="{{ route('attendance.permission.reject', $perm->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn-reject">Reject</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-slate-400 py-6">No pending leave requests</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -157,9 +227,11 @@
             </div>
         </div>
 
-    </div>
-</div>
+    </div><!-- end p-4 -->
+</div><!-- end main-content -->
+@endsection
 
+@section('modals')
 <!-- MODAL ADD ATT -->
 <div class="modal-overlay" id="modalAddAtt" onclick="closeModalOutside(event,'modalAddAtt')">
     <div class="modal-box" onclick="event.stopPropagation()">
@@ -284,156 +356,9 @@
     </div>
 </div>
 
-<div id=\"toast\" class=\"toast\"><div class=\"toast-inner\"><span id=\"tIcon\">✅</span><span id=\"tMsg\">Success!</span></div></div>
+@endsection
 
-<script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
+@section('scripts')
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
-
-<!-- QR Code Scanner Script -->
-<script>
-    let qrReader;
-    let isProcessing = false;
-    
-    // Initialize QR Scanner
-    function initQRScanner() {
-        if (!window.Html5Qrcode) {
-            console.error('Html5Qrcode library not loaded');
-            return;
-        }
-        
-        qrReader = new Html5Qrcode("qr-reader");
-        
-        
-        Html5Qrcode.getCameras().then(cameras => {
-            if (cameras && cameras.length) {
-                const cameraId = cameras[0].id;
-                
-                qrReader.start(
-                    cameraId,
-                    {
-                        fps: 10,
-                        aspectRatio: 1.777778
-                    },
-                    onScanSuccess,
-                    onScanFailure
-                );
-                
-                console.log('QR Scanner started with camera: ' + cameraId);
-            } else {
-                setQRStatus('❌ Camera not found', 'error');
-            }
-        }).catch(err => {
-            setQRStatus('❌ Failed to access camera: ' + err, 'error');
-        });
-    }
-    
-    /**
-     * Handle successful QR code scan
-     */
-    function onScanSuccess(decodedText, decodedResult) {
-        if (isProcessing) return; // Prevent multiple simultaneous scans
-        
-        isProcessing = true;
-        setQRStatus('⏳ Processing...', 'processing');
-        
-        // Send to server
-        fetch('{{ route("attendance.process-qr") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: JSON.stringify({ qr_data: decodedText })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const icon = data.type === 'check_in' ? '✅' : '👋';
-                const message = data.type === 'check_in' 
-                    ? `Check In: ${data.employee} (${data.time})` 
-                    : `Check Out: ${data.employee} (${data.duration})`;
-                
-                setQRStatus(`${icon} ${message}`, 'success');
-                showToast(icon, message, 3000);
-                
-                // Reload attendance data
-                setTimeout(() => {
-                    loadAttendanceData();
-                    updateStats();
-                }, 1000);
-                
-                // Pause scanner briefly to prevent duplicate scans
-                qrReader.pause();
-                setTimeout(() => {
-                    isProcessing = false;
-                    qrReader.resume();
-                    setQRStatus('🟢 Ready to scan', 'ready');
-                }, 2000);
-            } else {
-                setQRStatus(`❌ ${data.message}`, 'error');
-                showToast('❌', data.message, 3000);
-                isProcessing = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            setQRStatus('❌ Connection error', 'error');
-            showToast('❌', 'Failed to connect to server', 3000);
-            isProcessing = false;
-        });
-    }
-    
-    /**
-     * Handle QR code scan failure (silent - too many errors)
-     */
-    function onScanFailure(error) {
-        // Silently ignore errors to avoid spam
-    }
-    
-    /**
-     * Set QR scan status message
-     */
-    function setQRStatus(message, status) {
-        const resultEl = document.getElementById('qr-result');
-        if (!resultEl) return;
-        
-        resultEl.innerText = message;
-        
-        // Color based on status
-        if (status === 'success') {
-            resultEl.style.color = '#10b981';
-        } else if (status === 'error') {
-            resultEl.style.color = '#ef4444';
-        } else if (status === 'processing') {
-            resultEl.style.color = '#f59e0b';
-        } else if (status === 'ready') {
-            resultEl.style.color = '#6366f1';
-        }
-    }
-    
-    /**
-     * Stop QR scanner
-     */
-    function stopQRScanner() {
-        if (qrReader) {
-            qrReader.stop().then(() => {
-                console.log('QR Scanner stopped');
-            }).catch(err => {
-                console.error('Error stopping scanner:', err);
-            });
-        }
-    }
-    
-    // Initialize QR Scanner on DOM ready
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof initQRScanner === 'function') {
-            initQRScanner();
-            setQRStatus('🟢 Ready to scan', 'ready');
-        }
-    });
-    
-    // Stop scanner on page unload
-    window.addEventListener('beforeunload', stopQRScanner);
-</script>
-
-</html>
+<script src="{{ asset('js/Admin_HR/attendance_qr.js') }}"></script>
+@endsection

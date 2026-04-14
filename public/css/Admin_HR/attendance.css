@@ -199,6 +199,43 @@
     color: #6b21a8;
 }
 
+/* Leave Request Buttons */
+.btn-approve {
+    background: #10b981;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-display);
+}
+.btn-approve:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-reject {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid #fecaca;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-display);
+}
+.btn-reject:hover {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
 /* Action Buttons */
 .action-btn {
     display: inline-flex;

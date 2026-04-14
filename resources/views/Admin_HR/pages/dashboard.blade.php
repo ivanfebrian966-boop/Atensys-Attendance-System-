@@ -1,39 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Dashboard — ATTENSYS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
+@extends('Admin_HR.layouts.main')
+
+@section('title', 'HR Dashboard — ATTENSYS')
+
+@section('styles')
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/DashboardHR.css') }}">
-</head>
-<body>
+@endsection
 
-@include('Admin_HR.sidebar')
+@section('main_structure')
+@include('Admin_HR.components.sidebar')
 
-<!-- ===== MAIN CONTENT ===== -->
 <div class="main-content">
-
-    <!-- TOPBAR -->
-    @include('Admin_HR.topbarHR', [
+    @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Dashboard',
         'pageSubtitle' => now()->translatedFormat('l, d F Y'),
     ])
 
-    <!-- ===== CONTENT AREA ===== -->
     <div class="p-4 md:p-6">
         
         <!-- ===== WELCOME BANNER ===== -->
-        <div class="panel fade-up d1 mb-6" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); color: white; padding: 2rem; border: none; box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);">
+        <div class="panel fade-up d1 mb-6 welcome-banner-gradient">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold sora mb-2">Welcome back, {{ Auth::user()->name ?? 'HR Admin' }} 👋</h2>
                     <p class="text-indigo-100 opacity-90 max-w-xl">Here is a summary of today's attendance. Keep up the great work managing the team's data!</p>
                 </div>
                 <div class="hidden md:block">
-                    <span class="text-5xl opacity-80" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">🏢</span>
+                    <span class="text-5xl opacity-80 drop-shadow-sm">🏢</span>
                 </div>
             </div>
         </div>
@@ -284,17 +277,10 @@
             </div>
         </div>
 
-    </div><!-- end content area -->
+    </div><!-- end p-4 -->
 </div><!-- end main-content -->
+@endsection
 
-<!-- ===== TOAST ===== -->
-<div id="toast" class="toast">
-    <div class="toast-inner">
-        <span id="toastIcon">✅</span>
-        <span id="toastMsg">Success!</span>
-    </div>
-</div>
-
+@section('scripts')
 <script src="{{ asset('js/Admin_HR/DashboardHR.js') }}"></script>
-</body>
-</html>
+@endsection

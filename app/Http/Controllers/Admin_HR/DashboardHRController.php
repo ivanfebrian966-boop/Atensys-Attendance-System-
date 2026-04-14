@@ -78,7 +78,7 @@ class DashboardHRController extends Controller
             ->take(5)
             ->get();
 
-        return view('Admin_HR.dashboardHR', [
+        return view('Admin_HR.pages.dashboard', [
             'features' => $features,
             'totalEmployees' => $totalEmployees,
             'present' => $present,

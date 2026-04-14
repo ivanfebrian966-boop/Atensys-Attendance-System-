@@ -5,14 +5,21 @@ namespace App\Http\Controllers\Admin_HR;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\User;
+use App\Models\Permission;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
-        return view('/Admin_HR/attendance');
+        $pendingPermissions = Permission::with('employee.user')
+            ->where('status', 'Pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('Admin_HR.pages.attendance', compact('pendingPermissions'));
     }
 
     /**
@@ -75,16 +82,6 @@ class AttendanceController extends Controller
                     'time' => $now->format('H:i:s'),
                     'status' => $attendance->status
                 ]);
-            } elseif (!$todayAttendance->check_out) {
-                // Already checked in, now check out
-                $checkInTime = Carbon::parse($todayAttendance->check_in);
-                $duration = $now->diff($checkInTime);
-                
-                $todayAttendance->update([
-                    'check_out' => $now,
-                    'notes' => ($todayAttendance->notes ?? '') . ' | Auto check-out via QR'
-                ]);
-                
                 return response()->json([
                     'success' => true,
                     'type' => 'check_out',
@@ -92,6 +89,22 @@ class AttendanceController extends Controller
                     'employee' => $employee->name,
                     'time' => $now->format('H:i:s'),
                     'duration' => $duration->format('%H:%I')
+                ]);
+            } elseif ($todayAttendance->status === 'Absent' && !$todayAttendance->check_in) {
+                // If marks as Absent by system but user scans QR -> update to Present/Late
+                $todayAttendance->update([
+                    'check_in' => $now,
+                    'status' => $this->determineStatus($now),
+                    'notes' => ($todayAttendance->notes ?? '') . ' | Overridden via QR'
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'type' => 'check_in',
+                    'message' => 'Check In (Override Absent) berhasil',
+                    'employee' => $employee->name,
+                    'time' => $now->format('H:i:s'),
+                    'status' => $todayAttendance->status
                 ]);
             } else {
                 // Already checked in and out
@@ -221,6 +234,84 @@ class AttendanceController extends Controller
             'success' => true,
             'data' => $employees
         ]);
+    }
+
+    /**
+     * Approve leave permission
+     */
+    public function approvePermission($id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $permission = Permission::with('employee.user')->findOrFail($id);
+            $permission->update(['status' => 'Approved']);
+
+            // Create attendance records for the date range
+            $start = Carbon::parse($permission->start_date);
+            $end = Carbon::parse($permission->end_date);
+            $userId = $permission->employee->user_id;
+
+            for ($date = $start; $date->lte($end); $date->addDay()) {
+                // Don't overwrite existing present/late attendance
+                $exists = Attendance::where('user_id', $userId)
+                    ->whereDate('date', $date->toDateString())
+                    ->exists();
+
+                if (!$exists) {
+                    Attendance::create([
+                        'user_id' => $userId,
+                        'date' => $date->toDateString(),
+                        'status' => $permission->type === 'Sakit' ? 'Sick' : 'Permission',
+                        'notes' => "Approved leave: " . $permission->information
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return back()->with('success', 'Permission approved successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to approve: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reject leave permission
+     */
+    public function rejectPermission($id)
+    {
+        try {
+            DB::beginTransaction();
+            $permission = Permission::with('employee.user')->findOrFail($id);
+            $permission->update(['status' => 'Rejected']);
+
+            // Create 'Absent' records for the date range
+            $start = Carbon::parse($permission->start_date);
+            $end = Carbon::parse($permission->end_date);
+            $userId = $permission->employee->user_id;
+
+            for ($date = $start; $date->lte($end); $date->addDay()) {
+                $exists = Attendance::where('user_id', $userId)
+                    ->whereDate('date', $date->toDateString())
+                    ->exists();
+
+                if (!$exists) {
+                    Attendance::create([
+                        'user_id' => $userId,
+                        'date' => $date->toDateString(),
+                        'status' => 'Absent',
+                        'notes' => "Rejected leave: " . $permission->information
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return back()->with('success', 'Permission rejected and marked as Absent.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to reject: ' . $e->getMessage());
+        }
     }
 }
 

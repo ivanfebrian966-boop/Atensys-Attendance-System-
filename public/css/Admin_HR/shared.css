@@ -425,3 +425,42 @@ textarea.form-input { resize:vertical; }
 @media(max-width:375px){
     .data-table{min-width:320px}
 }
+
+/* ============================================================
+   SIDEBAR TOGGLE (FOR MOBILE)
+   ============================================================ */
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 50;
+    display: none;
+    background: var(--gradient);
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform var(--t);
+}
+
+.sidebar-toggle-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.welcome-banner-gradient {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+    color: white !important;
+    padding: 2rem !important;
+    border: none !important;
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4) !important;
+}
+
+.drop-shadow-sm {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}

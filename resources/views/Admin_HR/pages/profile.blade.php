@@ -1,66 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR Admin Profile — ATTENSYS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
-    <style>
-        .profile-card-hover {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .profile-card-hover:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
-        }
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .fade-slide-up {
-            animation: fadeSlideUp 0.5s ease-out forwards;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
-</head>
-<body class="bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30">
+@extends('Admin_HR.layouts.main')
 
-@include('Admin_HR.sidebar')
+@section('title', 'HR Admin Profile — ATTENSYS')
 
+@section('body_class', 'bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30')
+
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('css/Admin_HR/ProfileHR.css') }}">
+@endsection
+
+@section('main_structure')
+@include('Admin_HR.components.sidebar')
 
 <div class="main-content">
-    <!-- TOPBAR -->
-    @include('Admin_HR.topbarHR', [
+    @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'HR Admin Profile',
         'pageSubtitle' => 'Manage your account information',
     ])
-
-    <!-- FLASH MESSAGES -->
-    @if(session('success'))
-    <div class="m-4 md:m-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-700 text-sm animate-pulse">
-        ✅ {{ session('success') }}
-    </div>
-    @endif
-
-    @if($errors->any())
-    <div class="m-4 md:m-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-        @foreach($errors->all() as $error)
-            <p>⚠️ {{ $error }}</p>
-        @endforeach
-    </div>
-    @endif
 
     <div class="p-4 md:p-6">
         <!-- Hero Card -->
@@ -281,9 +237,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
-</body>
-</html>
+    </div><!-- end p-4 -->
+</div><!-- end main-content -->
+@endsection

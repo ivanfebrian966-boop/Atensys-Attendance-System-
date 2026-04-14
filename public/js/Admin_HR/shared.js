@@ -180,8 +180,26 @@ function downloadCSV(filename, rows) {
     URL.revokeObjectURL(url);
 }
 
+
+// Sidebar toggle visibility for mobile
+function handleSidebarToggleBtn() {
+    const btn = document.getElementById('sidebarToggleBtn');
+    if (!btn) return;
+    if (window.innerWidth <= 1024) {
+        btn.style.display = 'block';
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    handleSidebarToggleBtn();
     setDate();
     updateRealtimeDate();
     setInterval(updateRealtimeDate, 1000);
+});
+
+window.addEventListener('resize', () => {
+    handleSidebarToggleBtn();
+    if (window.innerWidth > 1024) closeSidebar();
 });

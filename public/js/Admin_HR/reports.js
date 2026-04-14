@@ -281,3 +281,115 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('dateTo').value = now.toISOString().slice(0, 10);
     renderReports();
 });
+
+/**
+ * Toggle between card and table view for report details
+ */
+function switchReportView(view) {
+    const tableView = document.getElementById('reportTableView');
+    const cardView = document.getElementById('reportCardView');
+    const btnTable = document.getElementById('btnReportTableView');
+    const btnCard = document.getElementById('btnReportCardView');
+
+    if (view === 'table') {
+        if (tableView) tableView.classList.remove('hidden');
+        if (cardView) cardView.classList.add('hidden');
+        if (btnTable) btnTable.classList.add('active');
+        if (btnCard) btnCard.classList.remove('active');
+    } else {
+        if (tableView) tableView.classList.add('hidden');
+        if (cardView) cardView.classList.remove('hidden');
+        if (btnTable) btnTable.classList.remove('active');
+        if (btnCard) btnCard.classList.add('active');
+        renderReportCards();
+    }
+}
+
+/**
+ * Render cards from the global _detailFull data (already populated by renderDetailTable)
+ */
+function renderReportCards() {
+    const cardContainer = document.getElementById('reportCardContainer');
+    if (!cardContainer || !_detailFull) return;
+
+    cardContainer.innerHTML = _detailFull.map(r => {
+        const percentage = r.rate + '%';
+        const initialsStr = initials(r.name);
+        const nameSub = r.name;
+        
+        return `
+            <div class="report-detail-card">
+                <div class="report-card-header">
+                    <div class="report-card-avatar" style="background:${divColor(r.div)}">${initialsStr}</div>
+                    <div class="flex-1">
+                        <p class="report-card-name">${nameSub}</p>
+                        <p class="report-card-division">${r.div}</p>
+                    </div>
+                </div>
+                <div class="report-card-body">
+                    <div class="report-stat-item">
+                        <span class="report-stat-label">Present</span>
+                        <span class="report-stat-value" style="color:#10b981">${r.present}</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="report-stat-label">Absent</span>
+                        <span class="report-stat-value" style="color:#ef4444">${r.absent}</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="report-stat-label">Late</span>
+                        <span class="report-stat-value" style="color:#f59e0b">${r.late}</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="report-stat-label">Sick</span>
+                        <span class="report-stat-value" style="color:#3b82f6">${r.sick}</span>
+                    </div>
+                    <div class="report-stat-item">
+                        <span class="report-stat-label">Permission</span>
+                        <span class="report-stat-value" style="color:#8b5cf6">${r.perm}</span>
+                    </div>
+                </div>
+                <div class="report-card-footer">
+                    <div class="report-percentage-bar">
+                        <div class="report-percentage-fill" style="width:${parseInt(percentage)}%"></div>
+                    </div>
+                    <p class="report-percentage-text">${percentage} Present</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function initials(name) {
+    if (!name) return '—';
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+}
+
+function divColor(div) {
+    const colors = {
+        'Engineering': '#0ea5e9',
+        'HR': '#ec4899',
+        'Finance': '#10b981',
+        'Marketing': '#f59e0b',
+        'IT': '#6366f1',
+        'Operasional': '#64748b'
+    };
+    return colors[div] || '#94a3b8';
+}
+
+function fmtDate(d) {
+    return new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+}
+
+function downloadCSV(filename, rows) {
+    const content = rows.map(e => e.join(',')).join("\n");
+    const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
