@@ -204,7 +204,40 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Refresh QR code every 10 seconds
-setInterval(function() {
-    generateQRCode();
-}, 10000);
+// Interval references
+let qrCountdownInterval;
+let currentCountdown = 10;
+
+// Refresh QR code and restart countdown
+function startQRCountdown() {
+    clearInterval(qrCountdownInterval);
+    currentCountdown = 10;
+    updateCountdownDisplay();
+
+    qrCountdownInterval = setInterval(() => {
+        currentCountdown--;
+        if (currentCountdown <= 0) {
+            generateQRCode();
+            currentCountdown = 10;
+        }
+        updateCountdownDisplay();
+    }, 1000);
+}
+
+function updateCountdownDisplay() {
+    const cdElement = document.getElementById('qr-countdown');
+    if (cdElement) {
+        cdElement.textContent = currentCountdown;
+    }
+}
+
+// Start countdown if we have a QR code generated
+document.addEventListener('DOMContentLoaded', function() {
+    // Start initial countdown logic
+    setTimeout(() => {
+        const qrCodeBox = document.getElementById('qrCodeBox');
+        if (qrCodeBox) {
+            startQRCountdown();
+        }
+    }, 500); // give a little time for initial render
+});

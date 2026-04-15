@@ -4,66 +4,6 @@
  */
 
 let _attFull = [];
-let _employees = []; // Cache employee list
-
-/* ========== EMPLOYEE AUTOCOMPLETE ========== */
-
-function loadEmployees() {
-    fetch('/attendance/employees')
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) _employees = data.data;
-        })
-        .catch(() => {});
-}
-
-function filterEmployeeDropdown(inputId, hiddenId, dropdownId) {
-    const input = document.getElementById(inputId);
-    const dropdown = document.getElementById(dropdownId);
-    const hidden = document.getElementById(hiddenId);
-
-    if (!input || !dropdown) return;
-
-    const q = input.value.toLowerCase().trim();
-    hidden.value = ''; // Reset selected id on typing
-
-    const filtered = q
-        ? _employees.filter(e => e.name.toLowerCase().includes(q) || (e.division || '').toLowerCase().includes(q))
-        : _employees;
-
-    if (!filtered.length) {
-        dropdown.innerHTML = '<li class="no-result">No employee found</li>';
-    } else {
-        dropdown.innerHTML = filtered.slice(0, 20).map(e => `
-            <li onclick="selectEmployee('${inputId}','${hiddenId}','${dropdownId}',${e.id},'${e.name.replace(/'/g,"\\'")}','${(e.division||'').replace(/'/g,"\\'")}')">
-                <span>${e.name}</span>
-                <small>${e.division || ''} ${e.position ? '· ' + e.position : ''}</small>
-            </li>
-        `).join('');
-    }
-
-    dropdown.style.display = 'block';
-}
-
-function selectEmployee(inputId, hiddenId, dropdownId, id, name, division) {
-    const input = document.getElementById(inputId);
-    const hidden = document.getElementById(hiddenId);
-    const dropdown = document.getElementById(dropdownId);
-    if (input) input.value = name;
-    if (hidden) hidden.value = id;
-    if (dropdown) dropdown.style.display = 'none';
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(e) {
-    document.querySelectorAll('.emp-dropdown').forEach(d => {
-        if (!d.previousElementSibling?.contains(e.target) && e.target !== d) {
-            d.style.display = 'none';
-        }
-    });
-});
-
-
 
 /* ========== API INTEGRATION ========== */
 
@@ -270,7 +210,6 @@ function exportAtt() {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof setDate === 'function') setDate();
-    loadEmployees();
     loadAttendanceData();
     updateStats();
     

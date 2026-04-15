@@ -50,7 +50,7 @@ class EmployeeController extends Controller
         $qrCodeBaseData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id;
         $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
         
-        return view('Employee.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData', 'guest'));
+        return view('Employee.pages.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData', 'guest'));
     }
 
     public function checkIn(Request $request)
@@ -117,7 +117,7 @@ class EmployeeController extends Controller
             'permission' => $attendances->where('status', 'Permission')->count(),
         ];
 
-        return view('Employee.history', compact('attendances', 'counts', 'user'));
+        return view('Employee.pages.history', compact('attendances', 'counts', 'user'));
     }
 
     public function profile()
@@ -135,7 +135,7 @@ class EmployeeController extends Controller
             ];
         }
 
-        return view('Employee.profile', compact('user'));
+        return view('Employee.pages.profile', compact('user'));
     }
 
     public function attendance()
@@ -167,11 +167,32 @@ class EmployeeController extends Controller
 
         $qrCodeData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
 
-        $permissions = $guest ? collect() : Permission::whereHas('employee', function($q) use($user) {
+        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user'));
+    }
+
+    public function leave()
+    {
+        $user = Auth::user();
+        $guest = false;
+
+        if (!$user) {
+            $guest = true;
+            $user = (object) [
+                'id' => 0,
+                'name' => 'Guest',
+                'email' => 'guest@attensys.id',
+                'division' => 'Employee',
+                'role' => 'Guest',
+                'created_at' => now(),
+            ];
+            $permissions = collect();
+        } else {
+            $permissions = Permission::whereHas('employee', function($q) use($user) {
                 $q->where('user_id', $user->id);
             })->orderBy('created_at', 'desc')->get();
+        }
 
-        return view('Employee.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user', 'permissions'));
+        return view('Employee.pages.leave', compact('user', 'permissions', 'guest'));
     }
 
     public function storePermission(Request $request)
@@ -184,7 +205,7 @@ class EmployeeController extends Controller
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'information' => 'required|string|max:255',
-            'attachment' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB PDF
+            'attachment' => 'required|file|mimes:pdf|max:2048', // Max 2MB PDF
         ]);
 
         $filePath = null;

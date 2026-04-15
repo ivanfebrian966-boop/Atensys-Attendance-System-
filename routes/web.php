@@ -59,6 +59,7 @@ Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->nam
 Route::prefix('employee')->group(function () {
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
+    Route::get('/leave', [EmployeeController::class, 'leave'])->name('employee.leave');
     Route::get('/profile', [EmployeeController::class, 'profile'])->name('employee.profile');
     Route::post('/attendance/checkin', [EmployeeController::class, 'checkIn'])->name('employee.attendance.checkin');
     Route::post('/attendance/checkout', [EmployeeController::class, 'checkOut'])->name('employee.attendance.checkout');
