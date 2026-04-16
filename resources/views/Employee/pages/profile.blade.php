@@ -90,7 +90,7 @@
             </div>
             <div class="text-right">
                 <p class="text-xs text-slate-500 font-medium">NIP</p>
-                <p class="text-slate-900 font-bold text-sm tracking-wider">{{ $user->employee->nip ?? '-' }}</p>
+                <p class="text-slate-900 font-bold text-sm tracking-wider">{{ $user->nip ?? '-' }}</p>
             </div>
         </div>
     </div>
@@ -120,7 +120,7 @@
             </div>
             <div class="text-right">
                 <p class="text-xs text-slate-500 font-medium">Divisi</p>
-                <p class="text-slate-900 font-bold text-sm">{{ isset($user->employee->division->division_name) ? $user->employee->division->division_name : ($user->division ?? 'Not set') }}</p>
+                <p class="text-slate-900 font-bold text-sm">{{ $user->division->division_name ?? '-' }}</p>
             </div>
         </div>
     </div>
@@ -162,7 +162,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">NIP</p>
-                        <p class="text-base text-slate-900 font-semibold tracking-wider">{{ $user->employee->nip ?? '-' }}</p>
+                        <p class="text-base text-slate-900 font-semibold tracking-wider">{{ $user->nip ?? '-' }}</p>
                     </div>
                 </div>
 
@@ -201,7 +201,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Divisi</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ isset($user->employee->division->division_name) ? $user->employee->division->division_name : ($user->division ?? 'Belum diisi') }}</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->division->division_name ?? 'Belum diisi' }}</p>
                     </div>
                 </div>
 
@@ -227,7 +227,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Telepon</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? ($user->employee->no_hp ?? 'Belum diisi') }}</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->no_hp ?? 'Belum diisi' }}</p>
                     </div>
                 </div>
 
@@ -240,7 +240,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Alamat</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? ($user->employee->alamat ?? 'Belum diisi') }}</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->alamat ?? 'Belum diisi' }}</p>
                     </div>
                 </div>
             </div>
@@ -273,13 +273,13 @@
                 <!-- Tanggal Terdaftar -->
                 <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
                     <p class="text-xs text-slate-600 font-medium mb-2">Tanggal Terdaftar</p>
-                    <p class="text-sm font-semibold text-slate-900">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d MMMM Y') : '-' }}</p>
+                    <p class="text-sm font-semibold text-slate-900">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d F Y') : '-' }}</p>
                 </div>
 
                 <!-- Last Update -->
                 <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
                     <p class="text-xs text-slate-600 font-medium mb-2">Update Terakhir</p>
-                    <p class="text-sm font-semibold text-slate-900">{{ isset($user->updated_at) && $user->updated_at ? $user->updated_at->translatedFormat('d MMMM Y') : '-' }}</p>
+                    <p class="text-sm font-semibold text-slate-900">{{ isset($user->updated_at) && $user->updated_at ? $user->updated_at->translatedFormat('d F Y') : '-' }}</p>
                 </div>
             </div>
         </div>

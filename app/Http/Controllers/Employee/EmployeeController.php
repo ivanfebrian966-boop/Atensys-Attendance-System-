@@ -14,107 +14,72 @@ class EmployeeController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $guest = false;
+        if (!$user) return redirect()->route('login');
 
-        if (!$user) {
-            $guest = true;
-            $user = (object) [
-                'id' => 0,
-                'name' => 'Guest',
-                'email' => 'guest@attensys.id',
-                'division' => 'Employee',
-                'role' => 'Guest',
-                'created_at' => now(),
-            ];
-        }
-
-        $todayAttendance = $guest ? null : Attendance::where('user_id', $user->id)
-            ->where('date', Carbon::today()->toDateString())
+        $todayAttendance = Attendance::where('nip', $user->nip)
+            ->whereDate('check_in', Carbon::today())
             ->first();
         
-        // Monthly stats
-        $monthStats = $guest ? [
-            'present' => 0,
-            'late' => 0,
-            'absent' => 0,
-            'sick_permission' => 0,
-        ] : [
-            'present' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Present')->count(),
-            'late' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Late')->count(),
-            'absent' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->where('status', 'Absent')->count(),
-            'sick_permission' => Attendance::where('user_id', $user->id)->whereMonth('date', Carbon::now()->month)->whereIn('status', ['Sick', 'Permission'])->count(),
+        $monthStats = [
+            'present' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Hadir')->count(),
+            'late' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Terlambat')->count(),
+            'absent' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Alpa')->count(),
+            'sick_permission' => Permission::where('nip', $user->nip)->whereMonth('start_date', Carbon::now()->month)->count(),
         ];
         
-        $recentAttendances = $guest ? collect() : Attendance::where('user_id', $user->id)->orderBy('date', 'desc')->limit(7)->get();
+        $recentAttendances = Attendance::where('nip', $user->nip)->orderBy('check_in', 'desc')->limit(7)->get();
         
-        $qrCodeBaseData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id;
+        $qrCodeBaseData = 'ATTENSYS:EMP:' . $user->nip;
         $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
         
-        return view('Employee.pages.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData', 'guest'));
+        return view('Employee.pages.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData'));
     }
 
     public function checkIn(Request $request)
     {
         $user = Auth::user();
-
-        if (!$user) {
-            return redirect()->route('login');
-        }
+        if (!$user) return redirect()->route('login');
 
         Attendance::create([
-            'user_id' => $user->id,
-            'date' => Carbon::today(),
+            'nip' => $user->nip,
             'check_in' => Carbon::now(),
-            'status' => 'Present'
+            'status' => 'Hadir', // Basic logic, can be refined based on time
+            'qr_code' => $request->qr_code ?? 'MANUAL',
         ]);
         
-        return back()->with('success', 'Checked in successfully!');
+        return back()->with('success', 'Berhasil Check-in!');
     }
 
     public function checkOut(Request $request)
     {
         $user = Auth::user();
+        if (!$user) return redirect()->route('login');
 
-        if (!$user) {
-            return redirect()->route('login');
-        }
-
-        $attendance = Attendance::where('user_id', $user->id)
-            ->where('date', Carbon::today()->toDateString())
+        $attendance = Attendance::where('nip', $user->nip)
+            ->whereDate('check_in', Carbon::today())
             ->first();
+
         if ($attendance) {
             $attendance->update(['check_out' => Carbon::now()]);
+            return back()->with('success', 'Berhasil Check-out!');
         }
         
-        return back()->with('success', 'Checked out successfully!');
+        return back()->with('error', 'Data check-in tidak ditemukan untuk hari ini.');
     }
 
     public function history()
     {
         $user = Auth::user();
+        if (!$user) return redirect()->route('login');
 
-        if (!$user) {
-            $user = (object) [
-                'id' => 0,
-                'name' => 'Guest',
-                'email' => 'guest@attensys.id',
-                'division' => 'Employee',
-                'role' => 'Guest',
-                'created_at' => now(),
-            ];
-            $attendances = collect();
-        } else {
-            $attendances = Attendance::where('user_id', $user->id)
-                ->orderBy('date', 'desc')
-                ->get();
-        }
+        $attendances = Attendance::where('nip', $user->nip)
+            ->orderBy('check_in', 'desc')
+            ->get();
 
         $counts = [
-            'present' => $attendances->where('status', 'Present')->count(),
-            'late' => $attendances->where('status', 'Late')->count(),
-            'absent' => $attendances->where('status', 'Absent')->count(),
-            'sick' => $attendances->where('status', 'Sick')->count(),
-            'permission' => $attendances->where('status', 'Permission')->count(),
+            'present' => $attendances->where('status', 'Hadir')->count(),
+            'late' => $attendances->where('status', 'Terlambat')->count(),
+            'absent' => $attendances->where('status', 'Alpa')->count(),
         ];
 
         return view('Employee.pages.history', compact('attendances', 'counts', 'user'));
@@ -123,17 +88,7 @@ class EmployeeController extends Controller
     public function profile()
     {
         $user = Auth::user();
-
-        if (!$user) {
-            $user = (object) [
-                'id' => 0,
-                'name' => 'Guest',
-                'email' => 'guest@attensys.id',
-                'division' => 'Employee',
-                'role' => 'Guest',
-                'created_at' => now(),
-            ];
-        }
+        if (!$user) return redirect()->route('login');
 
         return view('Employee.pages.profile', compact('user'));
     }
@@ -141,58 +96,31 @@ class EmployeeController extends Controller
     public function attendance()
     {
         $user = Auth::user();
-        $guest = false;
+        if (!$user) return redirect()->route('login');
 
-        if (!$user) {
-            $guest = true;
-            $user = (object) [
-                'id' => 0,
-                'name' => 'Guest',
-                'email' => 'guest@attensys.id',
-                'division' => 'Employee',
-                'role' => 'Guest',
-                'created_at' => now(),
-            ];
-            $todayAttendance = null;
-            $recentAttendances = collect();
-        } else {
-            $todayAttendance = Attendance::where('user_id', $user->id)
-                ->where('date', Carbon::today()->toDateString())
-                ->first();
-            $recentAttendances = Attendance::where('user_id', $user->id)
-                ->orderBy('date', 'desc')
-                ->limit(7)
-                ->get();
-        }
+        $todayAttendance = Attendance::where('nip', $user->nip)
+            ->whereDate('check_in', Carbon::today())
+            ->first();
 
-        $qrCodeData = $guest ? 'ATTENSYS:GUEST' : 'ATTENSYS:EMP:' . $user->id . ':' . now()->timestamp;
+        $recentAttendances = Attendance::where('nip', $user->nip)
+            ->orderBy('check_in', 'desc')
+            ->limit(7)
+            ->get();
 
-        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'user'));
+        $qrCodeBaseData = 'ATTENSYS:EMP:' . $user->nip;
+        $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
+
+        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user'));
     }
 
     public function leave()
     {
         $user = Auth::user();
-        $guest = false;
+        if (!$user) return redirect()->route('login');
 
-        if (!$user) {
-            $guest = true;
-            $user = (object) [
-                'id' => 0,
-                'name' => 'Guest',
-                'email' => 'guest@attensys.id',
-                'division' => 'Employee',
-                'role' => 'Guest',
-                'created_at' => now(),
-            ];
-            $permissions = collect();
-        } else {
-            $permissions = Permission::whereHas('employee', function($q) use($user) {
-                $q->where('user_id', $user->id);
-            })->orderBy('created_at', 'desc')->get();
-        }
+        $permissions = Permission::where('nip', $user->nip)->orderBy('created_at', 'desc')->get();
 
-        return view('Employee.pages.leave', compact('user', 'permissions', 'guest'));
+        return view('Employee.pages.leave', compact('user', 'permissions'));
     }
 
     public function storePermission(Request $request)
@@ -201,30 +129,29 @@ class EmployeeController extends Controller
         if (!$user) return redirect()->route('login');
 
         $request->validate([
-            'type' => 'required|in:Izin,Sakit',
+            'type' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'information' => 'required|string|max:255',
-            'attachment' => 'required|file|mimes:pdf|max:2048', // Max 2MB PDF
+            'file' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB pdf
         ]);
 
         $filePath = null;
-        if ($request->hasFile('attachment')) {
-            $file = $request->file('attachment');
-            $fileName = time() . '_' . $user->id . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('permissions', $fileName, 'public');
+        if ($request->hasFile('file')) {
+            $fileName = time() . '_' . $user->nip . '.pdf';
+            $filePath = $request->file('file')->storeAs('permissions', $fileName, 'public');
         }
 
         Permission::create([
-            'employee_id' => $user->employee->id,
+            'nip' => $user->nip,
             'type' => $request->type,
             'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
+            'completion_date' => $request->end_date,
             'information' => $request->information,
+            'file' => $filePath,
             'status' => 'Pending',
-            'attachment' => $filePath,
         ]);
 
-        return back()->with('success', 'Leave request submitted successfully!');
+        return back()->with('success', 'Permohonan izin berhasil dikirim!');
     }
 }

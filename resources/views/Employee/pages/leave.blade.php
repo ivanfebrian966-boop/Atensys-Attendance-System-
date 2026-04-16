@@ -46,7 +46,7 @@
                         </div>
                         <div class="form-field">
                             <label class="form-label text-slate-700">Attachment (PDF) *</label>
-                            <input type="file" name="attachment" class="form-input" accept="application/pdf" required>
+                            <input type="file" name="file" class="form-input" accept="application/pdf" required>
                             <p class="text-[10px] text-slate-400 mt-1">Max: 2MB. Format: PDF only. File is REQUIRED.</p>
                         </div>
                     </div>
@@ -115,8 +115,8 @@
                                 {{ $perm->information }}
                             </td>
                             <td class="py-3 px-4">
-                                @if($perm->attachment)
-                                    <a href="{{ asset('storage/' . $perm->attachment) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold inline-flex items-center gap-1">
+                                @if($perm->file)
+                                    <a href="{{ asset('storage/' . $perm->file) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold inline-flex items-center gap-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                                         </svg>

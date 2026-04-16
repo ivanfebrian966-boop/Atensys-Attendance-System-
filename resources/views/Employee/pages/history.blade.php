@@ -58,7 +58,7 @@
             <tbody>
                 @forelse($attendances as $attendance)
                 <tr class="table-row">
-                    <td>{{ \Carbon\Carbon::parse($attendance->date)->translatedFormat('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($attendance->check_in)->translatedFormat('d M Y') }}</td>
                     <td>{{ $attendance->check_in ? \Carbon\Carbon::parse($attendance->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $attendance->check_out ? \Carbon\Carbon::parse($attendance->check_out)->format('H:i') : '-' }}</td>
                     <td>

@@ -53,10 +53,10 @@
 
     <div class="sidebar-user">
         <div class="flex items-center gap-3">
-            <div class="sidebar-avatar">HR</div>
+            <div class="sidebar-avatar">{{ strtoupper(substr($user->name ?? 'HR', 0, 2)) }}</div>
             <div class="flex-1 min-w-0">
-                <p class="text-white text-xs font-semibold truncate sora">{{ optional($user)->name ?? 'Admin HR' }}</p>
-                <p class="text-slate-400 text-xs truncate">{{ optional($user)->email ?? 'hr@attensys.id' }}</p>
+                <p class="text-white text-xs font-semibold truncate sora">{{ $user->name ?? 'Admin HR' }}</p>
+                <p class="text-slate-400 text-xs truncate">{{ $user->email ?? 'hr@attensys.id' }}</p>
             </div>
             <a href="{{ route('logout') }}" class="tooltip-wrap">
                 <svg class="w-4 h-4 text-slate-400 hover:text-red-400 transition-colors cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -74,18 +74,21 @@ function renderSummaryCards() {
     const present = filteredData.filter(r => r.status === 'Present').length;
     const absent = filteredData.filter(r => r.status === 'Absent').length;
     const late = filteredData.filter(r => r.status === 'Late').length;
-    const other = filteredData.filter(r => r.status === 'Sick' || r.status === 'Permission').length;
+    const sick = filteredData.filter(r => r.status === 'Sick').length;
+    const perm = filteredData.filter(r => r.status === 'Permission').length;
     const pct = v => total ? (v / total * 100).toFixed(1) + '%' : '—';
 
     document.getElementById('rTotal').textContent = total;
     document.getElementById('rPresent').textContent = present;
     document.getElementById('rAbsent').textContent = absent;
     document.getElementById('rLate').textContent = late;
-    document.getElementById('rOther').textContent = other;
+    document.getElementById('rSick').textContent = sick;
+    document.getElementById('rPerm').textContent = perm;
     document.getElementById('rPresentPct').textContent = pct(present);
     document.getElementById('rAbsentPct').textContent = pct(absent);
     document.getElementById('rLatePct').textContent = pct(late);
-    document.getElementById('rOtherPct').textContent = pct(other);
+    document.getElementById('rSickPct').textContent = pct(sick);
+    document.getElementById('rPermPct').textContent = pct(perm);
 }
 
 /* ---- Bar chart ---- */

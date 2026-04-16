@@ -231,18 +231,14 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($ru->role === 'hr_admin')
+                                        @if($ru->role === 'admin_hr')
                                             <span class="badge badge-hr">Admin HR</span>
                                         @else
                                             <span class="badge badge-employee">Karyawan</span>
                                         @endif
                                     </td>
                                     <td>
-                                        @if($ru->role === 'hr_admin')
-                                            <span class="text-slate-600 text-xs">Semua Divisi</span>
-                                        @else
-                                            <span class="text-slate-600 text-xs">{{ $ru->employee->division->division_name ?? '-' }}</span>
-                                        @endif
+                                        <span class="text-slate-600 text-xs">{{ $ru->division->division_name ?? '-' }}</span>
                                     </td>
                                     <td>
                                          @if($ru->status === 'Aktif')
@@ -361,19 +357,19 @@
                         </thead>
                         <tbody>
                             @foreach($employees as $emp)
-                            <tr data-status="{{ $emp->status ?? 'Aktif' }}" 
-                                data-id="{{ $emp->id }}"
-                                data-nip="{{ $emp->employee->nip ?? '' }}"
+                            <tr data-status="{{ $emp->status }}" 
+                                data-id="{{ $emp->nip }}"
+                                data-nip="{{ $emp->nip }}"
                                 data-name="{{ $emp->name }}"
                                 data-email="{{ $emp->email }}"
-                                data-division="{{ $emp->employee->division_id ?? '' }}"
-                                data-jabatan="{{ $emp->position ?? 'Staf' }}"
-                                data-no_hp="{{ $emp->employee->no_hp ?? '' }}"
-                                data-alamat="{{ $emp->employee->alamat ?? '' }}">
+                                data-division="{{ $emp->division_id }}"
+                                data-jabatan="{{ $emp->position }}"
+                                data-no_hp="{{ $emp->no_hp }}"
+                                data-alamat="{{ $emp->alamat }}">
                                 <td>
                                     <div class="flex items-center gap-3">
                                         <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
-                                            {{ substr($emp->name, 0, 2) }}
+                                            {{ strtoupper(substr($emp->name, 0, 2)) }}
                                         </div>
                                         <div>
                                             <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">{{ $emp->name }}</p>
@@ -381,17 +377,13 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="text-slate-500 text-xs font-mono">{{ $emp->employee->nip ?? '-' }}</span></td>
-                                <td><span class="text-slate-600 text-sm">{{ $emp->employee->division->division_name ?? '-' }}</span></td>
-                                <td><span class="text-slate-600 text-sm">{{ $emp->position ?? 'Staf' }}</span></td>
+                                <td><span class="text-slate-500 text-xs font-mono">{{ $emp->nip }}</span></td>
+                                <td><span class="text-slate-600 text-sm">{{ $emp->division->division_name ?? '-' }}</span></td>
+                                <td><span class="text-slate-600 text-sm">{{ $emp->position }}</span></td>
                                 <td>
-                                    @if(($emp->status ?? 'Aktif') === 'Aktif')
-                                        <span class="badge badge-active">● Aktif</span>
-                                    @elseif($emp->status === 'Pending')
-                                        <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
-                                    @else
-                                        <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
-                                    @endif
+                                    <span class="badge {{ $emp->status === 'Aktif' ? 'badge-active' : ($emp->status === 'Pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600') }}">
+                                        ● {{ $emp->status }}
+                                    </span>
                                 </td>
                                 <td><span class="text-slate-400 text-xs">{{ $emp->created_at->format('M Y') }}</span></td>
                                 <td>
@@ -455,19 +447,19 @@
                         </thead>
                         <tbody>
                             @foreach($hr_admins as $admin)
-                            <tr data-id="{{ $admin->id }}" 
+                            <tr data-id="{{ $admin->nip }}" 
                                 data-nip="{{ $admin->nip }}"
                                 data-name="{{ $admin->name }}" 
                                 data-email="{{ $admin->email }}"
-                                data-phone="{{ $admin->phone }}"
-                                data-address="{{ $admin->address }}"
+                                data-phone="{{ $admin->no_hp }}"
+                                data-address="{{ $admin->alamat }}"
                                 data-status="{{ $admin->status }}"
-                                data-division="{{ $admin->division }}"
+                                data-division="{{ $admin->division_id }}"
                                 data-position="{{ $admin->position }}">
                                 <td>
                                     <div class="flex items-center gap-3">
                                         <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
-                                            {{ substr($admin->name, 0, 2) }}
+                                            {{ strtoupper(substr($admin->name, 0, 2)) }}
                                         </div>
                                         <div>
                                             <p class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.82rem">{{ $admin->name }}</p>
@@ -475,19 +467,15 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td><span class="text-slate-500 text-xs font-mono">{{ $admin->nip ?? '-' }}</span></td>
-                                <td><span class="text-slate-600 text-sm">Semua Divisi</span></td>
+                                <td><span class="text-slate-500 text-xs font-mono">{{ $admin->nip }}</span></td>
+                                <td><span class="text-slate-600 text-sm">{{ $admin->division->division_name ?? 'Semua Divisi' }}</span></td>
                                 <td><span class="badge badge-admin">Full Access</span></td>
                                 <td>
-                                    @if(($admin->status ?? 'Aktif') === 'Aktif')
-                                        <span class="badge badge-active">● Aktif</span>
-                                    @elseif($admin->status === 'Pending')
-                                        <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
-                                    @else
-                                        <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
-                                    @endif
+                                    <span class="badge {{ $admin->status === 'Aktif' ? 'badge-active' : ($admin->status === 'Pending' ? 'bg-amber-100 text-amber-600' : 'bg-red-100 text-red-600') }}">
+                                        ● {{ $admin->status }}
+                                    </span>
                                 </td>
-                                <td><span class="text-slate-400 text-xs">Aktif Hari ini</span></td>
+                                <td><span class="text-slate-400 text-xs">Aktif</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
                                         <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
@@ -547,16 +535,16 @@
                                     <span class="font-semibold text-slate-800" style="font-family:'Sora',sans-serif;font-size:0.85rem">{{ $div->division_name }}</span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-employee">{{ ($div->employees->count() + $div->users->where('role', 'hr_admin')->count()) }} Karyawan</span>
+                                    <span class="badge badge-employee">{{ $div->employees->count() }} Anggota</span>
                                 </td>
                                 <td><span class="text-slate-400 text-xs">{{ $div->created_at->format('d M Y') }}</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
                                         <button class="btn-ghost py-1.5 px-3 text-xs" 
-                                                onclick="openEditDivision({{ $div->id }}, '{{ $div->division_name }}')">
+                                                onclick="openEditDivision({{ $div->division_id }}, '{{ $div->division_name }}')">
                                             Edit
                                         </button>
-                                        <form action="{{ route('super_admin.delete_division', $div->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus divisi ini?')">
+                                        <form action="{{ route('super_admin.delete_division', $div->division_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus divisi ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-ghost py-1.5 px-2 text-xs" style="color:#ef4444">Hapus</button>
@@ -583,9 +571,10 @@
                         <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-500 to-cyan-500 opacity-20"></div>
                         <div class="relative pt-6">
                             <div class="w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-3xl font-bold text-white shadow-2xl mb-4" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">
-                                {{ substr($user->name, 0, 2) }}
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
                             </div>
                             <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ $user->name }}</h3>
+                            <p class="text-indigo-600 font-semibold text-sm">{{ $user->role === 'super_admin' ? 'Super Admin' : ($user->role === 'admin_hr' ? 'HR Manager' : 'Karyawan') }}</p>
                             <p class="text-sm text-slate-500 mt-1">{{ $user->email }}</p>
                             <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-xs font-bold mt-4">Super Admin Account</span>
                         </div>
@@ -597,7 +586,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-slate-400 font-medium">Telepon</p>
-                                    <p class="text-sm font-semibold text-slate-700">{{ $user->phone ?? 'Belum diatur' }}</p>
+                                    <p class="text-sm font-semibold text-slate-700">{{ $user->no_hp ?? 'Belum diatur' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
@@ -606,7 +595,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-slate-400 font-medium">Alamat</p>
-                                    <p class="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{{ $user->address ?? 'Belum diatur' }}</p>
+                                    <p class="text-sm font-semibold text-slate-700 truncate max-w-[180px]">{{ $user->alamat ?? 'Belum diatur' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -631,11 +620,11 @@
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label">Nomor Telepon</label>
-                                    <input type="text" name="phone" class="form-input" value="{{ old('phone', $user->phone) }}" placeholder="08xxxx">
+                                    <input type="text" name="no_hp" class="form-input" value="{{ old('no_hp', $user->no_hp) }}" placeholder="08xxxx">
                                 </div>
                                 <div class="form-field">
                                     <label class="form-label">Alamat</label>
-                                    <input type="text" name="address" class="form-input" value="{{ old('address', $user->address) }}" placeholder="Alamat lengkap">
+                                    <input type="text" name="alamat" class="form-input" value="{{ old('alamat', $user->alamat) }}" placeholder="Alamat lengkap">
                                 </div>
                             </div>
 
@@ -684,24 +673,21 @@
                 <div class="form-field col-span-2">
                     <label class="form-label">Nama Lengkap</label>
                     <input type="text" name="name" class="form-input" placeholder="Nama lengkap karyawan" value="{{ old('name') }}" required>
-                    @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">Email</label>
                     <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
-                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">NIP</label>
                     <input type="text" name="nip" class="form-input" placeholder="Contoh: 19900101xxxx" value="{{ old('nip') }}" required>
-                    @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-field">
                     <label class="form-label">Divisi</label>
                     <select name="division_id" class="form-select" required>
                         <option value="">Pilih Divisi</option>
                         @foreach ($divisions as $div)
-                        <option value="{{ $div->id }}" {{ old('division_id') == $div->id ? 'selected' : '' }}>{{ $div->division_name }}</option>
+                        <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -728,17 +714,11 @@
                 <div class="form-field">
                     <label class="form-label">Password Sementara</label>
                     <input type="password" name="password" class="form-input" placeholder="Password (min 8 karakter)" required>
-                    @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
                 <button type="button" class="btn-ghost" onclick="closeModal('modalAddEmployee')">Batal</button>
-                <button type="submit" class="btn-primary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Simpan Akun
-                </button>
+                <button type="submit" class="btn-primary">Simpan Akun</button>
             </div>
         </form>
     </div>
@@ -759,28 +739,57 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-field">
                     <label class="form-label">Nama Lengkap</label>
-                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin HR" value="{{ old('name') }}" required>
-                    @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <input type="text" name="name" class="form-input" placeholder="Nama lengkap admin" required>
                 </div>
                 <div class="form-field">
                     <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-input" placeholder="NIP Admin" value="{{ old('nip') }}" required>
-                    @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <input type="text" name="nip" class="form-input" placeholder="NIP Admin" required>
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
-                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
                 </div>
                 <div class="form-field">
                     <label class="form-label">Divisi</label>
-                    <select name="division" class="form-select" required>
+                    <select name="division_id" class="form-select" required>
                         <option value="">Pilih Divisi</option>
                         @foreach ($divisions as $div)
-                        <option value="{{ $div->division_name }}">{{ $div->division_name }}</option>
+                        <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>
+                <div class="form-field">
+                    <label class="form-label">Posisi</label>
+                    <input type="text" name="position" class="form-input" placeholder="Contoh: HR Manager" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">No. Telepon</label>
+                    <input type="text" name="phone" class="form-input" placeholder="08xxxx" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Nonaktif">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Alamat</label>
+                    <textarea name="address" class="form-input" placeholder="Alamat lengkap" required></textarea>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Password Sementara</label>
+                    <input type="password" name="password" class="form-input" placeholder="Password (min 8 karakter)" required>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalAddAdmin')">Batal</button>
+                <button type="submit" class="btn-primary">Simpan Akun</button>
+            </div>
+        </form>
+    </div>
+</div>
                 <div class="form-field">
                     <label class="form-label">Posisi / Jabatan</label>
                     <input type="text" name="position" class="form-input" placeholder="Contoh: HR Manager" value="{{ old('position') }}" required>
@@ -904,7 +913,7 @@
                     <label class="form-label">Divisi</label>
                     <select name="division_id" id="edit_emp_division" class="form-select" required>
                         @foreach ($divisions as $div)
-                        <option value="{{ $div->id }}">{{ $div->division_name }}</option>
+                        <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -968,9 +977,9 @@
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div class="form-field">
                     <label class="form-label">Divisi</label>
-                    <select name="division" id="edit_admin_division" class="form-select" required>
+                    <select name="division_id" id="edit_admin_division" class="form-select" required>
                         @foreach ($divisions as $div)
-                        <option value="{{ $div->division_name }}">{{ $div->division_name }}</option>
+                        <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Super_Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
-use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use App\Models\Employee;
 use App\Models\Division;
 
 class SuperAdminController extends Controller
@@ -15,19 +15,19 @@ class SuperAdminController extends Controller
     {
         $user = Auth::user();
         
-        $employees = User::with('employee.division')->where('role', 'employee')->get();
-        $hr_admins = User::where('role', 'hr_admin')->get();
+        $employees = Employee::with('division')->where('role', 'karyawan')->get();
+        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
         $divisions = Division::all();
-        $recent_users = User::with('employee.division')
-            ->whereIn('role', ['employee', 'hr_admin'])
+        $recent_users = Employee::with('division')
+            ->whereIn('role', ['karyawan', 'admin_hr'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
         $status_counts = [
-            'aktif' => User::where('status', 'Aktif')->count(),
-            'pending' => User::where('status', 'Pending')->count(),
-            'nonaktif' => User::where('status', 'Nonaktif')->count(),
+            'aktif' => Employee::where('status', 'Aktif')->count(),
+            'pending' => Employee::where('status', 'Pending')->count(),
+            'nonaktif' => Employee::where('status', 'Nonaktif')->count(),
         ];
 
         return view('Super_Admin.super_admin', compact('user', 'employees', 'hr_admins', 'divisions', 'recent_users', 'status_counts'));
@@ -37,9 +37,9 @@ class SuperAdminController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:employees',
             'nip' => 'required|string|max:50|unique:employees',
-            'division_id' => 'required|exists:divisions,id',
+            'division_id' => 'required|exists:divisions,division_id',
             'jabatan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:20',
             'alamat' => 'required|string|max:500',
@@ -47,24 +47,17 @@ class SuperAdminController extends Controller
             'status' => 'required|in:Aktif,Pending,Nonaktif',
         ]);
 
-        $user = User::create([
+        Employee::create([
             'name' => $request->name,
             'email' => $request->email,
             'nip' => $request->nip,
-            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            'role' => 'employee',
-            'phone' => $request->no_hp,
-            'address' => $request->alamat,
-            'position' => $request->jabatan,
-            'status' => $request->status ?? 'Aktif',
-        ]);
-
-        // Save in employee model
-        $user->employee()->create([
-            'nip' => $request->nip,
-            'division_id' => $request->division_id,
+            'password' => Hash::make($request->password),
+            'role' => 'karyawan',
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
+            'position' => $request->jabatan,
+            'division_id' => $request->division_id,
+            'status' => $request->status,
         ]);
 
         return redirect()->back()->with('success', 'Karyawan berhasil ditambahkan!');
@@ -75,26 +68,26 @@ class SuperAdminController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'nip' => 'required|string|max:50|unique:users',
-                'email' => 'required|string|email|max:255|unique:users',
+                'nip' => 'required|string|max:50|unique:employees',
+                'email' => 'required|string|email|max:255|unique:employees',
                 'password' => 'required|string|min:8',
                 'phone' => 'required|string|max:20',
                 'address' => 'required|string|max:500',
                 'status' => 'required|in:Aktif,Pending,Nonaktif',
-                'division' => 'required|string',
+                'division_id' => 'required|exists:divisions,division_id',
                 'position' => 'required|string',
             ]);
 
-            User::create([
+            Employee::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'nip' => $request->nip,
-                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-                'role' => 'hr_admin',
-                'phone' => $request->phone,
-                'address' => $request->address,
+                'password' => Hash::make($request->password),
+                'role' => 'admin_hr',
+                'no_hp' => $request->phone,
+                'alamat' => $request->address,
                 'status' => $request->status,
-                'division' => $request->division,
+                'division_id' => $request->division_id,
                 'position' => $request->position,
             ]);
 
@@ -106,89 +99,83 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function updateEmployee(Request $request, $id)
+    public function updateEmployee(Request $request, $nip)
     {
-        $user = User::findOrFail($id);
+        $employee = Employee::findOrFail($nip);
         
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'nip' => 'required|string|max:50|unique:employees,nip,' . ($user->employee->id ?? 0),
-            'division_id' => 'required|exists:divisions,id',
+            'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
+            'division_id' => 'required|exists:divisions,division_id',
             'jabatan' => 'required|string|max:255',
             'no_hp' => 'required|string|max:20',
             'alamat' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Pending,Nonaktif',
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'nip' => $request->nip,
-            'phone' => $request->no_hp,
-            'address' => $request->alamat,
-            'position' => $request->jabatan,
-            'status' => $request->status ?? 'Aktif',
-        ]);
-
-        if ($request->filled('password')) {
-            $user->update(['password' => \Illuminate\Support\Facades\Hash::make($request->password)]);
-        }
-
-        $user->employee()->update([
-            'nip' => $request->nip,
-            'division_id' => $request->division_id,
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
-        ]);
+            'position' => $request->jabatan,
+            'division_id' => $request->division_id,
+            'status' => $request->status,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $employee->update($data);
 
         return redirect()->back()->with('success', 'Data karyawan berhasil diperbarui!');
     }
 
-    public function deleteEmployee($id)
+    public function deleteEmployee($nip)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $employee = Employee::findOrFail($nip);
+        $employee->delete();
         return redirect()->back()->with('success', 'Akun karyawan berhasil dihapus!');
     }
 
-    public function updateHrAdmin(Request $request, $id)
+    public function updateHrAdmin(Request $request, $nip)
     {
-        $user = User::findOrFail($id);
+        $employee = Employee::findOrFail($nip);
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'nip' => 'required|string|max:50|unique:users,nip,' . $id,
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+            'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Pending,Nonaktif',
-            'division' => 'required|string',
+            'division_id' => 'required|exists:divisions,division_id',
             'position' => 'required|string',
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'nip' => $request->nip,
-            'phone' => $request->phone,
-            'address' => $request->address,
+            'no_hp' => $request->phone,
+            'alamat' => $request->address,
             'status' => $request->status,
-            'division' => $request->division,
+            'division_id' => $request->division_id,
             'position' => $request->position,
-        ]);
+        ];
 
         if ($request->filled('password')) {
-            $user->update(['password' => \Illuminate\Support\Facades\Hash::make($request->password)]);
+            $data['password'] = Hash::make($request->password);
         }
+
+        $employee->update($data);
 
         return redirect()->back()->with('success', 'Akun HR Admin berhasil diperbarui!');
     }
 
-    public function deleteHrAdmin($id)
+    public function deleteHrAdmin($nip)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $employee = Employee::findOrFail($nip);
+        $employee->delete();
         return redirect()->back()->with('success', 'Akun HR Admin berhasil dihapus!');
     }
 
@@ -208,7 +195,7 @@ class SuperAdminController extends Controller
     public function updateDivision(Request $request, $id)
     {
         $request->validate([
-            'division_name' => 'required|string|max:255|unique:divisions,division_name,' . $id,
+            'division_name' => 'required|string|max:255|unique:divisions,division_name,' . $id . ',division_id',
         ]);
 
         $division = Division::findOrFail($id);
@@ -223,7 +210,6 @@ class SuperAdminController extends Controller
     {
         $division = Division::findOrFail($id);
         
-        // Check if division has employees
         if ($division->employees()->count() > 0) {
             return redirect()->back()->with('error', 'Tidak dapat menghapus divisi yang memiliki karyawan!');
         }
@@ -235,19 +221,22 @@ class SuperAdminController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        $employees = User::with('employee.division')->where('role', 'employee')->get();
-        $hr_admins = User::where('role', 'hr_admin')->get();
+        if (!$user) return redirect()->route('login');
+
+        // Reuse index logic but with active tab profile
+        $employees = Employee::with('division')->where('role', 'employee')->get();
+        $hr_admins = Employee::with('division')->where('role', 'hr_admin')->get();
         $divisions = Division::all();
-        $recent_users = User::with('employee.division')
+        $recent_users = Employee::with('division')
             ->whereIn('role', ['employee', 'hr_admin'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 
         $status_counts = [
-            'aktif' => User::where('status', 'Aktif')->count(),
-            'pending' => User::where('status', 'Pending')->count(),
-            'nonaktif' => User::where('status', 'Nonaktif')->count(),
+            'aktif' => Employee::where('status', 'Aktif')->count(),
+            'pending' => Employee::where('status', 'Pending')->count(),
+            'nonaktif' => Employee::where('status', 'Nonaktif')->count(),
         ];
 
         return view('Super_Admin.super_admin', compact('user', 'employees', 'hr_admins', 'divisions', 'recent_users', 'status_counts'))->with('active_tab', 'profile');
@@ -259,24 +248,24 @@ class SuperAdminController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:employees,email,' . $user->nip . ',nip',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'phone' => $request->phone,
-            'address' => $request->address,
-        ]);
+            'no_hp' => $request->phone,
+            'alamat' => $request->address,
+        ];
 
         if ($request->filled('password')) {
-            $user->update([
-                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-            ]);
+            $data['password'] = Hash::make($request->password);
         }
+
+        $user->update($data);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
