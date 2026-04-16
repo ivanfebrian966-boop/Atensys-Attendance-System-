@@ -24,6 +24,9 @@
         </div>
     </div>
 
+    <!-- ===== MODALS ===== -->
+    @yield('modals')
+
     <script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
     @yield('scripts')
 
