@@ -14,7 +14,15 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password,
+        ];
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
@@ -23,7 +31,7 @@ class LoginController extends Controller
             
             if ($role === 'super_admin') {
                 return redirect()->route('super_admin');
-            } elseif ($role === 'hr_admin') {
+            } elseif ($role === 'admin_hr') {
                 return redirect()->route('dashboardHR');
             }
 
@@ -31,7 +39,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'Email atau Password salah.',
         ]);
     }
 

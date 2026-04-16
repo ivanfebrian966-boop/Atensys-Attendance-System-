@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin_HR;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\User;
+use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,26 +21,21 @@ class DashboardHRController extends Controller
 
         $user = Auth::user();
 
-        // Retrieve total employees
-        $totalEmployees = User::where('role', 'employee')->count();
-        if ($totalEmployees === 0) {
-            // fallback if no employees found or role differs
-            $totalEmployees = User::count(); 
-        }
+        // Retrieve total employees (role: karyawan)
+        $totalEmployees = Employee::where('role', 'karyawan')->count();
 
         $today = Carbon::today();
         
-        $present = Attendance::whereDate('date', $today)->where('status', 'Present')->count();
-        $absentRecord = Attendance::whereDate('date', $today)->where('status', 'Absent')->count();
-        $late = Attendance::whereDate('date', $today)->where('status', 'Late')->count();
-        $sick = Attendance::whereDate('date', $today)->where('status', 'Sick')->count();
-        $permission = Attendance::whereDate('date', $today)->where('status', 'Permission')->count();
+        $present = Attendance::whereDate('check_in', $today)->where('status', 'Hadir')->count();
+        $late = Attendance::whereDate('check_in', $today)->where('status', 'Terlambat')->count();
+        $absent = Attendance::whereDate('check_in', $today)->where('status', 'Alpa')->count();
+        
+        // Note: For simplicity, assume Sick/Permission might be statuses in attendance or separate table
+        // But based on my migration, status is a string in attendances table.
+        $sick = Attendance::whereDate('check_in', $today)->where('status', 'Sakit')->count();
+        $permission = Attendance::whereDate('check_in', $today)->where('status', 'Izin')->count();
 
-        $recorded = $present + $late + $sick + $permission + $absentRecord;
-        $absent = $absentRecord;
-        if ($recorded < $totalEmployees) {
-            $absent += ($totalEmployees - $recorded);
-        }
+        $recorded = $present + $late + $sick + $permission + $absent;
 
         $presentPct = $totalEmployees > 0 ? round(($present / $totalEmployees) * 100) : 0;
         $absentPct = $totalEmployees > 0 ? round(($absent / $totalEmployees) * 100) : 0;
@@ -57,8 +52,8 @@ class DashboardHRController extends Controller
         
         for ($i = 0; $i < 6; $i++) {
             $date = $startOfWeek->copy()->addDays($i);
-            $count = Attendance::whereDate('date', $date)
-                ->whereIn('status', ['Present', 'Late'])
+            $count = Attendance::whereDate('check_in', $date)
+                ->whereIn('status', ['Hadir', 'Terlambat'])
                 ->count();
             
             $pct = $totalEmployees > 0 ? round(($count / $totalEmployees) * 100) : 0;
@@ -72,8 +67,8 @@ class DashboardHRController extends Controller
         
         $avgAttendance = $totalDays > 0 ? round($totalAttendanceThisWeek / $totalDays, 1) : 0;
 
-        $recentAttendances = Attendance::with('user')
-            ->whereDate('date', Carbon::today())
+        $recentAttendances = Attendance::with('employee')
+            ->whereDate('check_in', Carbon::today())
             ->orderBy('check_in', 'desc')
             ->take(5)
             ->get();

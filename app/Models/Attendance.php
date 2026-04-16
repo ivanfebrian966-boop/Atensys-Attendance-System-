@@ -9,23 +9,19 @@ class Attendance extends Model
 {
     use HasFactory;
 
+    protected $table = 'attendances';
+    protected $primaryKey = 'attendance_id';
+
     protected $fillable = [
-        'user_id',
-        'date',
+        'nip',
         'check_in',
         'check_out',
         'status',
-        'notes'
+        'qr_code',
     ];
 
-    protected $casts = [
-        'date' => 'date',
-        'check_in' => 'datetime',
-        'check_out' => 'datetime',
-    ];
-
-    public function user()
+    public function employee()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Employee::class, 'nip', 'nip');
     }
 }

@@ -109,7 +109,7 @@
             <tbody>
                 @forelse($recentAttendances as $att)
                 <tr class="table-row">
-                    <td>{{ \Carbon\Carbon::parse($att->date)->translatedFormat('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($att->check_in)->translatedFormat('d M Y') }}</td>
                     <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '-' }}</td>
                     <td>

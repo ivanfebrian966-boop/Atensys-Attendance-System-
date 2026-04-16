@@ -42,7 +42,7 @@
                                 {{ $user->position ?? 'HR Manager' }}
                             </span>
                             <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">
-                                {{ $user->division ?? 'HR Department' }}
+                                {{ $user->division->division_name ?? 'HR Department' }}
                             </span>
                         </div>
                     </div>
@@ -75,7 +75,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Division</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ $user->division ?? 'N/A' }}</p>
+                        <p class="text-slate-900 font-semibold text-sm">{{ $user->division->division_name ?? 'N/A' }}</p>
                     </div>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Phone</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ $user->phone ?? 'Not set' }}</p>
+                        <p class="text-slate-900 font-semibold text-sm">{{ $user->no_hp ?? 'Not set' }}</p>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                     </div>
                     <div class="text-right">
                         <p class="text-xs text-slate-500 font-medium">Joined Date</p>
-                        <p class="text-slate-900 font-semibold text-sm">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d M Y') : 'N/A' }}</p>
+                        <p class="text-slate-900 font-semibold text-sm">{{ $user->created_at ? $user->created_at->translatedFormat('d M Y') : 'N/A' }}</p>
                     </div>
                 </div>
             </div>
@@ -169,7 +169,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Division</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->division ?? 'HR Department' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->division->division_name ?? 'HR Department' }}</p>
                             </div>
                         </div>
 
@@ -182,7 +182,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Phone</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->phone ?? 'Not set' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->no_hp ?? 'Not set' }}</p>
                             </div>
                         </div>
 
@@ -195,7 +195,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Address</p>
-                                <p class="text-base text-slate-900 font-semibold">{{ $user->address ?? 'Not set' }}</p>
+                                <p class="text-base text-slate-900 font-semibold">{{ $user->alamat ?? 'Not set' }}</p>
                             </div>
                         </div>
                     </div>
@@ -226,7 +226,7 @@
 
                         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
                             <p class="text-xs text-slate-600 font-medium mb-2">Joined Date</p>
-                            <p class="text-sm font-semibold text-slate-900">{{ isset($user->join_date) && $user->join_date ? \Carbon\Carbon::parse($user->join_date)->translatedFormat('d MMMM Y') : 'N/A' }}</p>
+                            <p class="text-sm font-semibold text-slate-900">{{ $user->created_at ? $user->created_at->translatedFormat('d F Y') : 'N/A' }}</p>
                         </div>
 
                         <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">

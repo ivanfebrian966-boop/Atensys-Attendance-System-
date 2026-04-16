@@ -18,7 +18,7 @@
                 <div class="topbar-avatar">{{ substr($user->name ?? 'GE', 0, 2) }}</div>
                 <div class="hidden sm:block">
                     <p class="text-sm font-semibold text-slate-800" style="font-family:'Sora',sans-serif">{{ $user->name ?? 'Guest' }}</p>
-                    <p class="text-xs text-slate-400">{{ isset($user->employee->division->division_name) ? $user->employee->division->division_name : ($user->division ?? 'Employee') }}</p>
+                    <p class="text-xs text-slate-400">{{ $user->division->division_name ?? 'Employee' }}</p>
                 </div>
             </div>
         </div>

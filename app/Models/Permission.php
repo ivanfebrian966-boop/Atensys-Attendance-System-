@@ -9,18 +9,21 @@ class Permission extends Model
 {
     use HasFactory;
 
+    protected $table = 'permissions';
+    protected $primaryKey = 'permission_id';
+
     protected $fillable = [
-        'employee_id',
+        'nip',
         'type',
-        'start_date',
-        'end_date',
-        'information',
         'status',
-        'attachment',
+        'information',
+        'file',
+        'start_date',
+        'completion_date',
     ];
 
     public function employee()
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class, 'nip', 'nip');
     }
 }

@@ -242,22 +242,22 @@
                             <td class="p-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                                        {{ substr(strtoupper($att->user->name ?? '?'), 0, 2) }}
+                                        {{ substr(strtoupper($att->employee->name ?? '?'), 0, 2) }}
                                     </div>
-                                    <span class="font-semibold text-slate-800 text-sm sora">{{ $att->user->name ?? 'Unknown' }}</span>
+                                    <span class="font-semibold text-slate-800 text-sm sora">{{ $att->employee->name ?? 'Unknown' }}</span>
                                 </div>
                             </td>
-                            <td class="p-4 text-sm text-slate-600">{{ $att->user->division ?? '-' }}</td>
+                            <td class="p-4 text-sm text-slate-600">{{ $att->employee->division->division_name ?? '-' }}</td>
                             <td class="p-4 text-sm text-slate-600 font-medium">{{ Carbon\Carbon::parse($att->check_in)->format('H:i') }}</td>
                             <td class="p-4 text-center">
-                                @if($att->status === 'Present')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">✅ Present</span>
-                                @elseif($att->status === 'Late')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Late</span>
-                                @elseif($att->status === 'Sick')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">🏥 Sick</span>
-                                @elseif($att->status === 'Permission')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Permission</span>
+                                @if($att->status === 'Hadir')
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">✅ Hadir</span>
+                                @elseif($att->status === 'Terlambat')
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Terlambat</span>
+                                @elseif($att->status === 'Sakit')
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">🏥 Sakit</span>
+                                @elseif($att->status === 'Izin')
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Izin</span>
                                 @else
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">—</span>
                                 @endif

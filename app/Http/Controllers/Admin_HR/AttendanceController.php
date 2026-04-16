@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin_HR;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\User;
+use App\Models\Employee;
 use App\Models\Permission;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $pendingPermissions = Permission::with('employee.user')
+        $pendingPermissions = Permission::with('employee')
             ->where('status', 'Pending')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -24,7 +24,7 @@ class AttendanceController extends Controller
 
     /**
      * Process QR Code scan for Check In / Check Out
-     * QR Format: ATTENSYS:EMP:USER_ID or employee_id
+     * QR Format: ATTENSYS:EMP:NIP
      */
     public function processQr(Request $request)
     {
@@ -38,40 +38,36 @@ class AttendanceController extends Controller
                 ], 400);
             }
             
-            // Parse QR code - bisa format ATTENSYS:EMP:ID atau langsung ID
-            $employeeId = $qrData;
-            
+            // Parse QR code
+            $nip = $qrData;
             if (strpos($qrData, ':') !== false) {
                 $parts = explode(':', $qrData);
-                $employeeId = $parts[count($parts) - 1]; // Get last part as employee ID
+                $nip = end($parts);
             }
             
-            // Find the employee
-            $employee = User::find($employeeId);
+            $employee = Employee::where('nip', $nip)->first();
             
             if (!$employee) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Karyawan tidak ditemukan. Barcode: ' . $employeeId
+                    'message' => 'Karyawan tidak ditemukan. NIP: ' . $nip
                 ], 404);
             }
             
             $today = Carbon::today();
             $now = Carbon::now();
             
-            // Check if employee has checked in today
-            $todayAttendance = Attendance::where('user_id', $employeeId)
-                ->whereDate('date', $today)
+            // Check if checked in today
+            $todayAttendance = Attendance::where('nip', $nip)
+                ->whereDate('check_in', $today)
                 ->first();
             
             if (!$todayAttendance) {
-                // First scan = Check In
+                // Check In
                 $attendance = Attendance::create([
-                    'user_id' => $employeeId,
-                    'date' => $today,
+                    'nip' => $nip,
                     'check_in' => $now,
                     'status' => $this->determineStatus($now),
-                    'notes' => 'Auto check-in via QR'
                 ]);
                 
                 return response()->json([
@@ -82,32 +78,20 @@ class AttendanceController extends Controller
                     'time' => $now->format('H:i:s'),
                     'status' => $attendance->status
                 ]);
+            } elseif (!$todayAttendance->check_out) {
+                // Check Out
+                $todayAttendance->update([
+                    'check_out' => $now
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'type' => 'check_out',
                     'message' => 'Check Out berhasil',
                     'employee' => $employee->name,
-                    'time' => $now->format('H:i:s'),
-                    'duration' => $duration->format('%H:%I')
-                ]);
-            } elseif ($todayAttendance->status === 'Absent' && !$todayAttendance->check_in) {
-                // If marks as Absent by system but user scans QR -> update to Present/Late
-                $todayAttendance->update([
-                    'check_in' => $now,
-                    'status' => $this->determineStatus($now),
-                    'notes' => ($todayAttendance->notes ?? '') . ' | Overridden via QR'
-                ]);
-
-                return response()->json([
-                    'success' => true,
-                    'type' => 'check_in',
-                    'message' => 'Check In (Override Absent) berhasil',
-                    'employee' => $employee->name,
-                    'time' => $now->format('H:i:s'),
-                    'status' => $todayAttendance->status
+                    'time' => $now->format('H:i:s')
                 ]);
             } else {
-                // Already checked in and out
                 return response()->json([
                     'success' => false,
                     'message' => 'Karyawan ' . $employee->name . ' sudah check out hari ini'
@@ -121,49 +105,33 @@ class AttendanceController extends Controller
         }
     }
     
-    /**
-     * Determine attendance status based on check-in time
-     */
     private function determineStatus($checkInTime)
     {
-        $hour = $checkInTime->hour;
-        $minute = $checkInTime->minute;
-        $checkInMinutes = $hour * 60 + $minute;
-        
-        // Assume office start time is 08:00 (480 minutes)
-        $startTime = 8 * 60;
-        
-        if ($checkInMinutes <= $startTime) {
-            return 'Present';
-        } else {
-            return 'Late';
-        }
+        $limit = Carbon::today()->setHour(8)->setMinute(0);
+        return $checkInTime->greaterThan($limit) ? 'Terlambat' : 'Hadir';
     }
     
-    /**
-     * Get attendance data for table
-     */
     public function getAttendanceData(Request $request)
     {
         try {
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();
             
-            $attendances = Attendance::where('date', $parsedDate)
-                ->with('user')
+            $attendances = Attendance::whereDate('check_in', $parsedDate)
+                ->with('employee')
                 ->orderBy('check_in', 'desc')
                 ->get()
                 ->map(function ($attendance) {
                     return [
-                        'id' => $attendance->id,
-                        'name' => $attendance->user?->name ?? 'Unknown',
-                        'division' => $attendance->user?->division ?? 'Unknown',
-                        'date' => $attendance->date->format('Y-m-d'),
+                        'id' => $attendance->attendance_id,
+                        'name' => $attendance->employee?->name ?? 'Unknown',
+                        'division' => $attendance->employee?->division->division_name ?? '—',
+                        'date' => Carbon::parse($attendance->check_in)->format('Y-m-d'),
                         'status' => $attendance->status,
-                        'check_in' => $attendance->check_in ? $attendance->check_in->format('H:i:s') : '—',
-                        'check_out' => $attendance->check_out ? $attendance->check_out->format('H:i:s') : '—',
+                        'check_in' => Carbon::parse($attendance->check_in)->format('H:i:s'),
+                        'check_out' => $attendance->check_out ? Carbon::parse($attendance->check_out)->format('H:i:s') : '—',
                         'duration' => $this->calculateDuration($attendance->check_in, $attendance->check_out),
-                        'notes' => $attendance->notes ?? ''
+                        'notes' => ''
                     ];
                 });
             
@@ -179,22 +147,19 @@ class AttendanceController extends Controller
         }
     }
     
-    /**
-     * Get stats for dashboard
-     */
     public function getStats(Request $request)
     {
         try {
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();
             
-            $stats = Attendance::where('date', $parsedDate)
+            $stats = Attendance::whereDate('check_in', $parsedDate)
                 ->selectRaw('COUNT(*) as total, 
-                            SUM(CASE WHEN status = "Present" THEN 1 ELSE 0 END) as present,
-                            SUM(CASE WHEN status = "Absent" THEN 1 ELSE 0 END) as absent,
-                            SUM(CASE WHEN status = "Late" THEN 1 ELSE 0 END) as late,
-                            SUM(CASE WHEN status = "Sick" THEN 1 ELSE 0 END) as sick,
-                            SUM(CASE WHEN status = "Permission" THEN 1 ELSE 0 END) as permission')
+                            SUM(CASE WHEN status = "Hadir" THEN 1 ELSE 0 END) as present,
+                            SUM(CASE WHEN status = "Alpa" THEN 1 ELSE 0 END) as absent,
+                            SUM(CASE WHEN status = "Terlambat" THEN 1 ELSE 0 END) as late,
+                            SUM(CASE WHEN status = "Sakit" THEN 1 ELSE 0 END) as sick,
+                            SUM(CASE WHEN status = "Izin" THEN 1 ELSE 0 END) as permission')
                 ->first();
             
             return response()->json([
@@ -209,26 +174,18 @@ class AttendanceController extends Controller
         }
     }
     
-    /**
-     * Calculate duration between check-in and check-out
-     */
     private function calculateDuration($checkIn, $checkOut)
     {
-        if (!$checkIn || !$checkOut) {
-            return '—';
-        }
-        
+        if (!$checkIn || !$checkOut) return '—';
         $duration = Carbon::parse($checkOut)->diff(Carbon::parse($checkIn));
         return sprintf('%02d:%02d', $duration->h, $duration->i);
     }
-    /**
-     * Get list of employees for autocomplete
-     */
+
     public function getEmployees()
     {
-        $employees = User::where('role', 'employee')
+        $employees = Employee::where('role', 'karyawan')
             ->orderBy('name')
-            ->get(['id', 'name', 'division', 'position']);
+            ->get(['nip', 'name', 'position']);
 
         return response()->json([
             'success' => true,
@@ -236,83 +193,46 @@ class AttendanceController extends Controller
         ]);
     }
 
-    /**
-     * Approve leave permission
-     */
     public function approvePermission($id)
     {
         try {
             DB::beginTransaction();
-
-            $permission = Permission::with('employee.user')->findOrFail($id);
+            $permission = Permission::findOrFail($id);
             $permission->update(['status' => 'Approved']);
 
-            // Create attendance records for the date range
             $start = Carbon::parse($permission->start_date);
-            $end = Carbon::parse($permission->end_date);
-            $userId = $permission->employee->user_id;
+            $end = Carbon::parse($permission->completion_date);
 
             for ($date = $start; $date->lte($end); $date->addDay()) {
-                // Don't overwrite existing present/late attendance
-                $exists = Attendance::where('user_id', $userId)
-                    ->whereDate('date', $date->toDateString())
+                $exists = Attendance::where('nip', $permission->nip)
+                    ->whereDate('check_in', $date->toDateString())
                     ->exists();
 
                 if (!$exists) {
                     Attendance::create([
-                        'user_id' => $userId,
-                        'date' => $date->toDateString(),
-                        'status' => $permission->type === 'Sakit' ? 'Sick' : 'Permission',
-                        'notes' => "Approved leave: " . $permission->information
+                        'nip' => $permission->nip,
+                        'check_in' => $date->setHour(8)->setMinute(0),
+                        'status' => $permission->type === 'Sakit' ? 'Sakit' : 'Izin',
                     ]);
                 }
             }
 
             DB::commit();
-            return back()->with('success', 'Permission approved successfully!');
+            return back()->with('success', 'Perizinan disetujui!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to approve: ' . $e->getMessage());
+            return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Reject leave permission
-     */
     public function rejectPermission($id)
     {
         try {
-            DB::beginTransaction();
-            $permission = Permission::with('employee.user')->findOrFail($id);
+            $permission = Permission::findOrFail($id);
             $permission->update(['status' => 'Rejected']);
-
-            // Create 'Absent' records for the date range
-            $start = Carbon::parse($permission->start_date);
-            $end = Carbon::parse($permission->end_date);
-            $userId = $permission->employee->user_id;
-
-            for ($date = $start; $date->lte($end); $date->addDay()) {
-                $exists = Attendance::where('user_id', $userId)
-                    ->whereDate('date', $date->toDateString())
-                    ->exists();
-
-                if (!$exists) {
-                    Attendance::create([
-                        'user_id' => $userId,
-                        'date' => $date->toDateString(),
-                        'status' => 'Absent',
-                        'notes' => "Rejected leave: " . $permission->information
-                    ]);
-                }
-            }
-
-            DB::commit();
-            return back()->with('success', 'Permission rejected and marked as Absent.');
+            return back()->with('success', 'Perizinan ditolak.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Failed to reject: ' . $e->getMessage());
+            return back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 }
-
-

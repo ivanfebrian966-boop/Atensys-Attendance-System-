@@ -12,13 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('nip')->unique();
-            $table->foreignId('division_id')->constrained()->onDelete('cascade');
+            $table->string('nip')->primary();
+            $table->string('password');
+            $table->string('name');
+            $table->string('role');
+            $table->string('position');
+            $table->string('email')->unique();
+            $table->unsignedBigInteger('division_id');
             $table->string('no_hp');
             $table->text('alamat');
+            $table->string('status')->default('Aktif');
             $table->timestamps();
+
+            $table->foreign('division_id')->references('division_id')->on('divisions')->onDelete('cascade');
         });
     }
 
