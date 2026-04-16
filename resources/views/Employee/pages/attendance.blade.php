@@ -1,17 +1,20 @@
 @extends('Employee.layouts.main')
 
 @section('title', 'Employee Attendance — ATTENSYS')
-@section('page_title', 'Employee Attendance')
-@section('page_subtitle', 'Manage your attendance here')
+@section('page_title', 'Attendance')
+@section('page_subtitle', 'Track your attendance & manage leave requests')
 
 @section('content')
 
+{{-- ===== TOP CARDS: TODAY + QR ===== --}}
 <div class="grid lg:grid-cols-2 gap-4 mb-6">
+
+    {{-- Today's Attendance --}}
     <div class="panel fade-up d1">
         <div class="panel-header">
             <div>
                 <h3 class="panel-title">Today's Attendance</h3>
-                <p class="panel-subtitle">{{ now()->translatedFormat('d F Y') }}</p>
+                <p class="panel-subtitle">{{ now()->format('l, d F Y') }}</p>
             </div>
             <span class="badge-rate">{{ $todayAttendance && $todayAttendance->check_in ? ($todayAttendance->check_out ? 'Completed' : 'Checked In') : 'Not Yet' }}</span>
         </div>
@@ -30,12 +33,12 @@
                                 Check In
                             </button>
                         </form>
-                        <a href="{{ route('employee.leave') }}" class="btn-secondary w-full justify-center flex">
+                        <button onclick="openLeaveModal()" class="btn-secondary w-full justify-center flex">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Request Leave (Izin/Sakit)
-                        </a>
+                            Request Leave / Sick
+                        </button>
                     </div>
                 </div>
             @elseif($todayAttendance->check_in && !$todayAttendance->check_out)
@@ -63,6 +66,7 @@
         </div>
     </div>
 
+    {{-- QR Code --}}
     <div class="panel fade-up d2">
         <div class="panel-header">
             <div>
@@ -89,7 +93,8 @@
     </div>
 </div>
 
-<div class="panel fade-up d3">
+{{-- ===== RECENT ATTENDANCE ===== --}}
+<div class="panel fade-up d3 mb-6">
     <div class="panel-header">
         <div>
             <h3 class="panel-title">Recent Attendance</h3>
@@ -109,7 +114,7 @@
             <tbody>
                 @forelse($recentAttendances as $att)
                 <tr class="table-row">
-                    <td>{{ \Carbon\Carbon::parse($att->check_in)->translatedFormat('d M Y') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($att->check_in)->format('d M Y') }}</td>
                     <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '-' }}</td>
                     <td>
@@ -128,7 +133,180 @@
     </div>
 </div>
 
-
+{{-- ===== LEAVE REQUEST HISTORY ===== --}}
+<div class="panel fade-up d4">
+    <div class="panel-header border-b border-slate-100 mb-0 pb-4">
+        <div>
+            <h3 class="panel-title">Leave Requests</h3>
+            <p class="panel-subtitle">History of your permission / sick requests</p>
+        </div>
+        <button onclick="openLeaveModal()" class="btn-primary inline-flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            New Request
+        </button>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Date Range</th>
+                    <th>Status</th>
+                    <th>Information</th>
+                    <th>Attachment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($permissions as $perm)
+                <tr class="table-row border-b border-slate-50 last:border-0 hover:bg-slate-50">
+                    <td class="py-3 px-4">
+                        <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
+                            ● {{ $perm->type === 'Sakit' ? 'Sick' : 'Permission' }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-sm">
+                        {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} —
+                        {{ \Carbon\Carbon::parse($perm->completion_date ?? $perm->end_date ?? $perm->start_date)->format('d M Y') }}
+                    </td>
+                    <td class="py-3 px-4">
+                        @php
+                            $sc = match($perm->status) {
+                                'Pending'  => 'bg-amber-100 text-amber-600',
+                                'Approved' => 'bg-emerald-100 text-emerald-600',
+                                'Rejected' => 'bg-red-100 text-red-600',
+                                default    => 'bg-slate-100 text-slate-600'
+                            };
+                        @endphp
+                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $sc }}">{{ $perm->status }}</span>
+                    </td>
+                    <td class="py-3 px-4 max-w-[180px] truncate text-xs text-slate-500" title="{{ $perm->information }}">
+                        {{ $perm->information }}
+                    </td>
+                    <td class="py-3 px-4">
+                        @if($perm->file)
+                            <a href="{{ asset('storage/' . $perm->file) }}" target="_blank"
+                               class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold inline-flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                </svg>
+                                View PDF
+                            </a>
+                        @else
+                            <span class="text-slate-400 text-sm">—</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-slate-400 py-8 text-sm">No leave requests yet. Click <strong>New Request</strong> to submit one.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
 @endsection
 
+@section('modals')
+{{-- ===== LEAVE REQUEST MODAL ===== --}}
+<div id="leaveModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50"
+     onclick="if(event.target===this)closeLeaveModal()">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">New Leave Request</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Fill in the details for your leave or sick request</p>
+            </div>
+            <button onclick="closeLeaveModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Form --}}
+        <form action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="px-6 py-5 space-y-4">
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Type <span class="text-red-500">*</span></label>
+                    <select name="type" class="form-select" required>
+                        <option value="Izin">Permission (Personal)</option>
+                        <option value="Sakit">Sick (Medical)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">Start Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">End Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Reason / Information <span class="text-red-500">*</span></label>
+                    <textarea name="information" class="form-input" rows="3" required
+                              placeholder="e.g. Taking care of family / Medical appointment..."></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Attachment (PDF) <span class="text-red-500">*</span></label>
+                    <input type="file" name="file" class="form-input" accept="application/pdf">
+                    <p class="text-[10px] text-slate-400 mt-1">Max: 2MB · PDF only</p>
+                </div>
+
+                @if($errors->any())
+                    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-xs text-red-600">
+                        @foreach($errors->all() as $e) <p>• {{ $e }}</p> @endforeach
+                    </div>
+                @endif
+
+            </div>
+
+            {{-- Footer --}}
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
+                <button type="button" onclick="closeLeaveModal()" class="btn-ghost px-5">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Submit Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    function openLeaveModal() {
+        const m = document.getElementById('leaveModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+    }
+    function closeLeaveModal() {
+        const m = document.getElementById('leaveModal');
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+    @if($errors->any())
+        document.addEventListener('DOMContentLoaded', () => openLeaveModal());
+    @endif
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', () => {
+            if(typeof showToast === 'function') showToast('✅', '{{ session("success") }}');
+        });
+    @endif
+</script>
+@endsection

@@ -2,7 +2,7 @@
 
 @section('title', 'Attendance History — ATTENSYS')
 @section('page_title', 'Attendance History')
-@section('page_subtitle', 'Riwayat kehadiran karyawan')
+@section('page_subtitle', 'Your complete attendance history')
 
 @section('content')
 

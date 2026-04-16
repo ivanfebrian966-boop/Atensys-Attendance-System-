@@ -47,7 +47,7 @@ class EmployeeController extends Controller
             'qr_code' => $request->qr_code ?? 'MANUAL',
         ]);
         
-        return back()->with('success', 'Berhasil Check-in!');
+        return back()->with('success', 'Check-in recorded successfully!');
     }
 
     public function checkOut(Request $request)
@@ -61,10 +61,10 @@ class EmployeeController extends Controller
 
         if ($attendance) {
             $attendance->update(['check_out' => Carbon::now()]);
-            return back()->with('success', 'Berhasil Check-out!');
+            return back()->with('success', 'Check-out recorded successfully!');
         }
         
-        return back()->with('error', 'Data check-in tidak ditemukan untuk hari ini.');
+        return back()->with('error', 'No check-in record found for today.');
     }
 
     public function history()
@@ -110,7 +110,9 @@ class EmployeeController extends Controller
         $qrCodeBaseData = 'ATTENSYS:EMP:' . $user->nip;
         $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
 
-        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user'));
+        $permissions = Permission::where('nip', $user->nip)->orderBy('created_at', 'desc')->get();
+
+        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user', 'permissions'));
     }
 
     public function leave()
@@ -152,6 +154,6 @@ class EmployeeController extends Controller
             'status' => 'Pending',
         ]);
 
-        return back()->with('success', 'Permohonan izin berhasil dikirim!');
+        return back()->with('success', 'Leave request submitted successfully!');
     }
 }

@@ -72,7 +72,7 @@
             <!-- Badge -->
             <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-3 text-center">
                 <p class="text-2xl font-bold text-white">{{ $totalAttendance ?? 0 }}</p>
-                <p class="text-xs text-white/80">Total Kehadiran</p>
+                <p class="text-xs text-white/80">Total Attendance</p>
             </div>
         </div>
     </div>
@@ -104,7 +104,7 @@
                 </svg>
             </div>
             <div class="text-right">
-                <p class="text-xs text-slate-500 font-medium">Jabatan</p>
+                <p class="text-xs text-slate-500 font-medium">Position</p>
                 <p class="text-slate-900 font-bold text-sm">{{ $user->position ?? 'Staff' }}</p>
             </div>
         </div>
@@ -119,7 +119,7 @@
                 </svg>
             </div>
             <div class="text-right">
-                <p class="text-xs text-slate-500 font-medium">Divisi</p>
+                <p class="text-xs text-slate-500 font-medium">Division</p>
                 <p class="text-slate-900 font-bold text-sm">{{ $user->division->division_name ?? '-' }}</p>
             </div>
         </div>
@@ -134,7 +134,7 @@
                 </svg>
             </div>
             <div class="text-right">
-                <p class="text-xs text-slate-500 font-medium">Bergabung</p>
+                <p class="text-xs text-slate-500 font-medium">Joined</p>
                 <p class="text-slate-900 font-bold text-sm">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d M Y') : '-' }}</p>
             </div>
         </div>
@@ -148,8 +148,8 @@
     <div class="lg:col-span-2">
         <div class="glass-card rounded-2xl p-6">
             <div class="mb-6 pb-4 border-b border-slate-200">
-                <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent" style="font-family:'Sora',sans-serif">Informasi Pribadi</h2>
-                <p class="text-sm text-slate-500 mt-1">Data lengkap profil karyawan Anda</p>
+                <h2 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent" style="font-family:'Sora',sans-serif">Personal Information</h2>
+                <p class="text-sm text-slate-500 mt-1">Complete data of your employee profile</p>
             </div>
 
             <div class="space-y-5">
@@ -174,7 +174,7 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Nama Lengkap</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Full Name</p>
                         <p class="text-base text-slate-900 font-semibold">{{ $user->name ?? 'Guest' }}</p>
                     </div>
                 </div>
@@ -200,8 +200,8 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Divisi</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ $user->division->division_name ?? 'Belum diisi' }}</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Division</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->division->division_name ?? 'Not set' }}</p>
                     </div>
                 </div>
 
@@ -213,7 +213,7 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Jabatan</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Position</p>
                         <p class="text-base text-slate-900 font-semibold">{{ $user->position ?? 'Staff' }}</p>
                     </div>
                 </div>
@@ -226,8 +226,8 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Telepon</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ $user->no_hp ?? 'Belum diisi' }}</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Phone</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->no_hp ?? 'Not set' }}</p>
                     </div>
                 </div>
 
@@ -239,8 +239,8 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Alamat</p>
-                        <p class="text-base text-slate-900 font-semibold">{{ $user->alamat ?? 'Belum diisi' }}</p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Address</p>
+                        <p class="text-base text-slate-900 font-semibold">{{ $user->alamat ?? 'Not set' }}</p>
                     </div>
                 </div>
             </div>
@@ -256,8 +256,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Status Akun</h3>
-                <p class="text-xs text-slate-500 mt-1">Informasi status karyawan</p>
+                <h3 class="text-xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Account Status</h3>
+                <p class="text-xs text-slate-500 mt-1">Employee account information</p>
             </div>
 
             <div class="space-y-4">
@@ -265,20 +265,20 @@
                 <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg p-4 border border-emerald-200">
                     <div class="flex items-center gap-3 mb-2">
                         <div class="w-2 h-2 bg-emerald-600 rounded-full animate-pulse"></div>
-                        <p class="text-sm font-semibold text-emerald-900">Akun Aktif</p>
+                        <p class="text-sm font-semibold text-emerald-900">Active Account</p>
                     </div>
-                    <p class="text-xs text-emerald-700">Akun Anda dalam status aktif dan siap digunakan</p>
+                    <p class="text-xs text-emerald-700">Your account is active and ready to use</p>
                 </div>
 
                 <!-- Tanggal Terdaftar -->
                 <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <p class="text-xs text-slate-600 font-medium mb-2">Tanggal Terdaftar</p>
+                    <p class="text-xs text-slate-600 font-medium mb-2">Registered Date</p>
                     <p class="text-sm font-semibold text-slate-900">{{ isset($user->created_at) && $user->created_at ? $user->created_at->translatedFormat('d F Y') : '-' }}</p>
                 </div>
 
                 <!-- Last Update -->
                 <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <p class="text-xs text-slate-600 font-medium mb-2">Update Terakhir</p>
+                    <p class="text-xs text-slate-600 font-medium mb-2">Last Updated</p>
                     <p class="text-sm font-semibold text-slate-900">{{ isset($user->updated_at) && $user->updated_at ? $user->updated_at->translatedFormat('d F Y') : '-' }}</p>
                 </div>
             </div>

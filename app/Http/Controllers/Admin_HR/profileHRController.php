@@ -20,28 +20,43 @@ class ProfileHRController extends Controller
     }
 
     /**
-     * Update personal information.
+     * Update profile info (no_hp, alamat) + optionally change password in one form.
      */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'name'      => 'required|string|max:255',
-            'email'     => 'required|email|max:255|unique:employees,email,' . $user->nip . ',nip',
-            'no_hp'     => 'nullable|string|max:20',
-            'alamat'    => 'nullable|string|max:500',
+        $rules = [
+            'no_hp'            => 'nullable|string|max:20',
+            'alamat'           => 'nullable|string|max:500',
+            'current_password' => 'nullable|string',
+            'new_password'     => ['nullable', 'string', 'min:8', 'confirmed'],
+        ];
+
+        $validated = $request->validate($rules);
+
+        // Update basic info
+        $user->update([
+            'no_hp'  => $validated['no_hp']  ?? $user->no_hp,
+            'alamat' => $validated['alamat'] ?? $user->alamat,
         ]);
 
-        $user->update($validated);
+        // Handle optional password change
+        if ($request->filled('new_password')) {
+            if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
+                return back()
+                    ->withErrors(['current_password' => 'Current password is incorrect.'])
+                    ->withInput();
+            }
+            $user->update(['password' => Hash::make($request->new_password)]);
+        }
 
         return redirect()->route('profileHR')
-            ->with('success', 'Profil berhasil diperbarui.');
+            ->with('success', 'Profile updated successfully.');
     }
 
-
     /**
-     * Change password.
+     * Change password (kept for backward compat).
      */
     public function changePassword(Request $request)
     {
@@ -54,9 +69,8 @@ class ProfileHRController extends Controller
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()
-                ->withErrors(['current_password' => 'Password saat ini tidak sesuai.'])
-                ->withInput()
-                ->with('open_tab', 'security');
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
         }
 
         $user->update([
@@ -64,7 +78,6 @@ class ProfileHRController extends Controller
         ]);
 
         return redirect()->route('profileHR')
-            ->with('success', 'Password berhasil diubah.')
-            ->with('open_tab', 'security');
+            ->with('success', 'Password changed successfully.');
     }
 }

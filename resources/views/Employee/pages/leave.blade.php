@@ -1,142 +1,195 @@
 @extends('Employee.layouts.main')
 
-@section('title', 'Leave / Perizinan — ATTENSYS')
-@section('page_title', 'Leave / Perizinan')
+@section('title', 'Leave Request — ATTENSYS')
+@section('page_title', 'Leave Request')
 @section('page_subtitle', 'Manage your leave requests')
 
 @section('content')
 
 <!-- Header Title -->
-<div class="mb-6 fade-up d1">
-    <h2 class="text-xl font-bold text-slate-800" style="font-family:'Sora',sans-serif">Permohonan Izin / Sakit</h2>
-    <p class="text-sm text-slate-500 mt-1">Ajukan surat izin atau keterangan sakit Anda di sini beserta bukti PDF.</p>
+<div class="mb-6 fade-up d1 flex items-center justify-between">
+    <div>
+        <h2 class="text-xl font-bold text-slate-800" style="font-family:'Sora',sans-serif">Leave / Sick Request</h2>
+        <p class="text-sm text-slate-500 mt-1">Submit a leave or sick letter along with your PDF proof.</p>
+    </div>
+    <button onclick="openLeaveModal()" class="btn-primary inline-flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New Request
+    </button>
 </div>
 
-<div class="grid lg:grid-cols-3 gap-6">
-    <!-- ===== FORM REQUEST LEAVE ===== -->
-    <div class="lg:col-span-1">
-        <div class="panel fade-up d2">
-            <div class="panel-header border-b border-slate-100 mb-4 pb-4">
-                <div>
-                    <h3 class="panel-title">Form Pengajuan</h3>
-                </div>
-            </div>
-            <div class="p-5">
-                <form action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="space-y-4">
-                        <div class="form-field">
-                            <label class="form-label text-slate-700">Type *</label>
-                            <select name="type" class="form-select" required>
-                                <option value="Izin">Izin (Personal)</option>
-                                <option value="Sakit">Sakit (Medical)</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label text-slate-700">Start Date *</label>
-                            <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label text-slate-700">End Date *</label>
-                            <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label text-slate-700">Information / Reason *</label>
-                            <textarea name="information" class="form-input" rows="3" required placeholder="e.g. Taking care of family / Medical appointment..."></textarea>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label text-slate-700">Attachment (PDF) *</label>
-                            <input type="file" name="file" class="form-input" accept="application/pdf" required>
-                            <p class="text-[10px] text-slate-400 mt-1">Max: 2MB. Format: PDF only. File is REQUIRED.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-6">
-                        <button type="submit" class="btn-primary w-full justify-center">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                            </svg>
-                            Submit Surat Izin
-                        </button>
-                    </div>
-                </form>
-            </div>
+<!-- ===== LEAVE REQUEST HISTORY ===== -->
+<div class="panel fade-up d2">
+    <div class="panel-header border-b border-slate-100 mb-0 pb-4">
+        <div>
+            <h3 class="panel-title">My Leave Requests</h3>
+            <p class="panel-subtitle">History of your permission / sick requests</p>
         </div>
     </div>
-
-    <!-- ===== LEAVE REQUEST HISTORY ===== -->
-    <div class="lg:col-span-2">
-        <div class="panel fade-up d3">
-            <div class="panel-header border-b border-slate-100 mb-0 pb-4">
-                <div>
-                    <h3 class="panel-title">My Leave Requests</h3>
-                    <p class="panel-subtitle">History of your permission/sick requests</p>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Date Range</th>
-                            <th>Status</th>
-                            <th>Information</th>
-                            <th>Attachment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($permissions as $perm)
-                        <tr class="table-row border-b border-slate-50 last:border-0 hover:bg-slate-50">
-                            <td class="py-3 px-4">
-                                <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
-                                    ● {{ $perm->type }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4">
-                                <span class="text-sm">
-                                    {{ \Carbon\Carbon::parse($perm->start_date)->translatedFormat('d M') }} — 
-                                    {{ \Carbon\Carbon::parse($perm->end_date)->translatedFormat('d M Y') }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4">
-                                @php
-                                    $statusClass = match($perm->status) {
-                                        'Pending' => 'bg-amber-100 text-amber-600',
-                                        'Approved' => 'bg-emerald-100 text-emerald-600',
-                                        'Rejected' => 'bg-red-100 text-red-600',
-                                        default => 'bg-slate-100 text-slate-600'
-                                    };
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $statusClass }}">
-                                    {{ $perm->status }}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 max-w-xs truncate text-xs text-slate-500" title="{{ $perm->information }}">
-                                {{ $perm->information }}
-                            </td>
-                            <td class="py-3 px-4">
-                                @if($perm->file)
-                                    <a href="{{ asset('storage/' . $perm->file) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold inline-flex items-center gap-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                                        </svg>
-                                        View PDF
-                                    </a>
-                                @else
-                                    <span class="text-slate-400 text-sm">-</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-slate-400 py-8 text-sm">No leave requests found.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div class="overflow-x-auto">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Date Range</th>
+                    <th>Status</th>
+                    <th>Information</th>
+                    <th>Attachment</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($permissions as $perm)
+                <tr class="table-row border-b border-slate-50 last:border-0 hover:bg-slate-50">
+                    <td class="py-3 px-4">
+                        <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
+                            ● {{ $perm->type === 'Sakit' ? 'Sick' : 'Permission' }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="text-sm">
+                            {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} —
+                            {{ \Carbon\Carbon::parse($perm->end_date)->format('d M Y') }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4">
+                        @php
+                            $statusClass = match($perm->status) {
+                                'Pending'  => 'bg-amber-100 text-amber-600',
+                                'Approved' => 'bg-emerald-100 text-emerald-600',
+                                'Rejected' => 'bg-red-100 text-red-600',
+                                default    => 'bg-slate-100 text-slate-600'
+                            };
+                        @endphp
+                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $statusClass }}">
+                            {{ $perm->status }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 max-w-xs truncate text-xs text-slate-500" title="{{ $perm->information }}">
+                        {{ $perm->information }}
+                    </td>
+                    <td class="py-3 px-4">
+                        @if($perm->file)
+                            <a href="{{ asset('storage/' . $perm->file) }}" target="_blank"
+                               class="text-indigo-600 hover:text-indigo-800 text-sm font-semibold inline-flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                </svg>
+                                View PDF
+                            </a>
+                        @else
+                            <span class="text-slate-400 text-sm">—</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="text-center text-slate-400 py-8 text-sm">No leave requests found.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
+@endsection
+
+@section('modals')
+<!-- ===== LEAVE REQUEST MODAL ===== -->
+<div id="leaveModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50"
+     onclick="closeLeaveModalOutside(event)">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" onclick="event.stopPropagation()">
+
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">New Leave Request</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Fill in the details for your leave or sick request</p>
+            </div>
+            <button onclick="closeLeaveModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="px-6 py-5 space-y-4">
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Type <span class="text-red-500">*</span></label>
+                    <select name="type" class="form-select" required>
+                        <option value="Izin">Permission (Personal)</option>
+                        <option value="Sakit">Sick (Medical)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">Start Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label text-slate-700">End Date <span class="text-red-500">*</span></label>
+                        <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Reason / Information <span class="text-red-500">*</span></label>
+                    <textarea name="information" class="form-input" rows="3" required
+                              placeholder="e.g. Taking care of family / Medical appointment..."></textarea>
+                </div>
+
+                <div class="form-field">
+                    <label class="form-label text-slate-700">Attachment (PDF) <span class="text-red-500">*</span></label>
+                    <input type="file" name="file" class="form-input" accept="application/pdf" required>
+                    <p class="text-[10px] text-slate-400 mt-1">Max: 2MB. Format: PDF only. File is required.</p>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
+                <button type="button" onclick="closeLeaveModal()"
+                        class="btn-ghost px-5">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    Submit Request
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    function openLeaveModal() {
+        const m = document.getElementById('leaveModal');
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+    }
+    function closeLeaveModal() {
+        const m = document.getElementById('leaveModal');
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+    }
+    function closeLeaveModalOutside(e) {
+        if (e.target === document.getElementById('leaveModal')) {
+            closeLeaveModal();
+        }
+    }
+
+    // Auto-open modal if there are validation errors (from a failed submission)
+    @if($errors->any())
+        document.addEventListener('DOMContentLoaded', function() { openLeaveModal(); });
+    @endif
+</script>
 @endsection

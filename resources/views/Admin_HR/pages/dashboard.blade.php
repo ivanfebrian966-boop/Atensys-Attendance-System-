@@ -251,13 +251,13 @@
                             <td class="p-4 text-sm text-slate-600 font-medium">{{ Carbon\Carbon::parse($att->check_in)->format('H:i') }}</td>
                             <td class="p-4 text-center">
                                 @if($att->status === 'Hadir')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">✅ Hadir</span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">✅ Present</span>
                                 @elseif($att->status === 'Terlambat')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Terlambat</span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Late</span>
                                 @elseif($att->status === 'Sakit')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">🏥 Sakit</span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">🏥 Sick</span>
                                 @elseif($att->status === 'Izin')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Izin</span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Permission</span>
                                 @else
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">—</span>
                                 @endif
