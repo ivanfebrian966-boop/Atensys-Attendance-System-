@@ -190,12 +190,51 @@
                     <p class="text-sm text-slate-500 mt-1">Total Divisi</p>
                     <p class="text-xs text-emerald-600 font-semibold mt-2">Ditambahkan</p>
                 </div>
+                <!-- Status Akun -->
+                <div class="panel p-5 fade-up d4">
+                    <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Status Akun</h3>
+                    <div class="space-y-3">
+                        @php
+                            $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['pending'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
+                            $aktif_p = (($status_counts['aktif'] ?? 0) / $total_users) * 100;
+                            $pending_p = (($status_counts['pending'] ?? 0) / $total_users) * 100;
+                            $nonaktif_p = (($status_counts['nonaktif'] ?? 0) / $total_users) * 100;
+                        @endphp
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                                <span class="text-sm text-slate-600">Aktif</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['aktif'] ?? 0 }}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                                <span class="text-sm text-slate-600">Pending</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['pending'] ?? 0 }}</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                                <span class="text-sm text-slate-600">Off</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['nonaktif'] ?? 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Recent activity + Summary -->
-            <div class="grid lg:grid-cols-3 gap-4">
+            <!-- Recent activity -->
+            <div class="grid lg:grid-cols-1 gap-4">
                 <!-- Recent Accounts -->
-                <div class="lg:col-span-2 panel fade-up d5">
+                <div class="panel fade-up d5">
                     <div class="panel-header">
                         <div>
                             <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Akun Terbaru</h3>
@@ -257,57 +296,6 @@
                     </div>
                 </div>
 
-                <!-- Summary -->
-                <div class="space-y-4 fade-up d6">
-                    <!-- Status ringkasan -->
-                    <div class="panel p-5">
-                        <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Status Akun</h3>
-                        <div class="space-y-3">
-                            @php
-                                $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['pending'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
-                                $aktif_p = (($status_counts['aktif'] ?? 0) / $total_users) * 100;
-                                $pending_p = (($status_counts['pending'] ?? 0) / $total_users) * 100;
-                                $nonaktif_p = (($status_counts['nonaktif'] ?? 0) / $total_users) * 100;
-                            @endphp
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-                                    <span class="text-sm text-slate-600">Aktif</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="h-1.5 rounded-full bg-emerald-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-emerald-500" style="width:{{ $aktif_p }}%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['aktif'] ?? 0 }}</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                                    <span class="text-sm text-slate-600">Pending</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="h-1.5 rounded-full bg-amber-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-amber-400" style="width:{{ $pending_p }}%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['pending'] ?? 0 }}</span>
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                                    <span class="text-sm text-slate-600">Nonaktif</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="h-1.5 rounded-full bg-red-100 w-24 overflow-hidden">
-                                        <div class="h-full rounded-full bg-red-400" style="width:{{ $nonaktif_p }}%"></div>
-                                    </div>
-                                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['nonaktif'] ?? 0 }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -786,44 +774,6 @@
             <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
                 <button type="button" class="btn-ghost" onclick="closeModal('modalAddAdmin')">Batal</button>
                 <button type="submit" class="btn-primary">Simpan Akun</button>
-            </div>
-        </form>
-    </div>
-</div>
-                <div class="form-field">
-                    <label class="form-label">Posisi / Jabatan</label>
-                    <input type="text" name="position" class="form-input" placeholder="Contoh: HR Manager" value="{{ old('position') }}" required>
-                </div>
-                <div class="form-field">
-                    <label class="form-label">No. Telepon</label>
-                    <input type="text" name="phone" class="form-input" placeholder="08xxxx" value="{{ old('phone') }}" required>
-                </div>
-                <div class="form-field">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select" required>
-                        <option value="Aktif">Aktif</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Nonaktif">Nonaktif</option>
-                    </select>
-                </div>
-                <div class="form-field col-span-2">
-                    <label class="form-label">Alamat</label>
-                    <textarea name="address" class="form-input" placeholder="Alamat lengkap admin" required>{{ old('address') }}</textarea>
-                </div>
-                <div class="form-field col-span-2">
-                    <label class="form-label">Password Sementara</label>
-                    <input type="password" name="password" class="form-input" placeholder="Password (min 8 karakter)" required>
-                    @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-            </div>
-            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
-                <button type="button" class="btn-ghost" onclick="closeModal('modalAddAdmin')">Batal</button>
-                <button type="submit" class="btn-primary">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Simpan Admin HR
-                </button>
             </div>
         </form>
     </div>

@@ -224,11 +224,11 @@ class SuperAdminController extends Controller
         if (!$user) return redirect()->route('login');
 
         // Reuse index logic but with active tab profile
-        $employees = Employee::with('division')->where('role', 'employee')->get();
-        $hr_admins = Employee::with('division')->where('role', 'hr_admin')->get();
+        $employees = Employee::with('division')->where('role', 'karyawan')->get();
+        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
         $divisions = Division::all();
         $recent_users = Employee::with('division')
-            ->whereIn('role', ['employee', 'hr_admin'])
+            ->whereIn('role', ['karyawan', 'admin_hr'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
