@@ -129,11 +129,11 @@
                                     @if($perm->attachment)
                                         <a href="{{ asset('storage/' . $perm->attachment) }}" target="_blank" class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">View PDF</a>
                                     @endif
-                                    <form action="{{ route('attendance.permission.approve', $perm->id) }}" method="POST">
+                                    <form action="{{ route('admin-hr.attendance.permission.approve', $perm->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn-approve">ACC</button>
                                     </form>
-                                    <form action="{{ route('attendance.permission.reject', $perm->id) }}" method="POST">
+                                    <form action="{{ route('admin-hr.attendance.permission.reject', $perm->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn-reject">Reject</button>
                                     </form>
@@ -359,6 +359,10 @@
 @endsection
 
 @section('scripts')
+<script>
+    const ATTENDANCE_DATA_URL = "{{ route('admin-hr.attendance.data') }}";
+    const ATTENDANCE_STATS_URL = "{{ route('admin-hr.attendance.stats') }}";
+</script>
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
 <script src="{{ asset('js/Admin_HR/attendance_qr.js') }}"></script>
 @endsection

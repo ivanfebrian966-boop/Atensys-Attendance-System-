@@ -51,7 +51,7 @@ class ProfileHRController extends Controller
             $user->update(['password' => Hash::make($request->new_password)]);
         }
 
-        return redirect()->route('profileHR')
+        return redirect()->route('admin-hr.profile')
             ->with('success', 'Profile updated successfully.');
     }
 
@@ -77,7 +77,7 @@ class ProfileHRController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
 
-        return redirect()->route('profileHR')
+        return redirect()->route('admin-hr.profile')
             ->with('success', 'Password changed successfully.');
     }
 }

@@ -1,5 +1,8 @@
-<!DOCTYPE html>
 @extends('Admin_HR.layouts.main')
+
+@php
+    $user = $user ?? Auth::user();
+@endphp
 
 @section('title', 'HR Admin Profile — ATTENSYS')
 @section('body_class', 'bg-gradient-to-br from-slate-50 via-cyan-50/20 to-blue-50/20')
@@ -69,7 +72,7 @@
                             {{ $user->position ?? 'HR Manager' }}
                         </span>
                         <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">
-                            {{ optional($user->division)->division_name ?? 'HR Department' }}
+                            {{ $user?->division?->division_name ?? 'HR Department' }}
                         </span>
                     </div>
                 </div>
@@ -89,7 +92,7 @@
                 $infoCards = [
                     ['icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'label'=>'Email', 'value'=>$user->email ?? 'N/A', 'from'=>'from-blue-500','to'=>'to-blue-600'],
                     ['icon'=>'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2', 'label'=>'NIP', 'value'=>$user->nip ?? '-', 'from'=>'from-purple-500','to'=>'to-purple-600'],
-                    ['icon'=>'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'label'=>'Division', 'value'=>optional($user->division)->division_name ?? '-', 'from'=>'from-cyan-500','to'=>'to-cyan-600'],
+                    ['icon'=>'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'label'=>'Division', 'value'=>$user?->division?->division_name ?? '-', 'from'=>'from-cyan-500','to'=>'to-cyan-600'],
                     ['icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', 'label'=>'Joined', 'value'=>$user->created_at ? $user->created_at->format('d M Y') : 'N/A', 'from'=>'from-teal-500','to'=>'to-teal-600'],
                 ];
             @endphp
@@ -111,10 +114,10 @@
         </div>
 
         {{-- ===== MAIN GRID ===== --}}
-        <div class="grid lg:grid-cols-3 gap-6 fade-slide-up" style="animation-delay:0.2s">
+        <div class="flex flex-col lg:flex-row gap-6 w-full fade-slide-up" style="animation-delay:0.2s">
 
             {{-- LEFT: Personal Info --}}
-            <div class="lg:col-span-2 space-y-5">
+            <div class="flex-1 space-y-5">
                 <div class="glass-card rounded-2xl p-6">
                     <div class="mb-5 pb-4 border-b border-slate-100 flex items-center justify-between">
                         <div>
@@ -131,7 +134,7 @@
                             ['label'=>'Email',      'value'=>$user->email ?? 'N/A',      'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'clr'=>'blue'],
                             ['label'=>'NIP',        'value'=>$user->nip ?? '-',           'icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',  'clr'=>'purple'],
                             ['label'=>'Position',   'value'=>$user->position ?? 'HR Manager', 'icon'=>'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'clr'=>'violet'],
-                            ['label'=>'Division',   'value'=>optional($user->division)->division_name ?? '-', 'icon'=>'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'clr'=>'cyan'],
+                            ['label'=>'Division',   'value'=>$user?->division?->division_name ?? '-', 'icon'=>'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'clr'=>'cyan'],
                             ['label'=>'Phone',      'value'=>$user->no_hp ?? 'Not set',   'icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2', 'clr'=>'teal'],
                             ['label'=>'Address',    'value'=>$user->alamat ?? 'Not set',  'icon'=>'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', 'clr'=>'pink'],
                         ];
@@ -153,9 +156,10 @@
                         @endforeach
                     </div>
                 </div>
+            </div>
 
             {{-- RIGHT: Status --}}
-            <div class="space-y-4">
+            <div class="w-full lg:w-80 space-y-4">
                 <div class="glass-card rounded-2xl p-6 sticky top-24">
                     <div class="text-center mb-6">
                         <div class="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl

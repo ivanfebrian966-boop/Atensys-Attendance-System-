@@ -36,22 +36,27 @@ Route::post('/super-admin/division/{id}', [SuperAdminController::class, 'updateD
 Route::delete('/super-admin/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('super_admin.delete_division');
 
 // Admin HR
-Route::get('/dashboardHR', [DashboardHRController::class, 'index'])->name('dashboardHR');
-Route::get('/profileHR', [ProfileHRController::class, 'index'])->name('profileHR');
-Route::post('/profileHR/update', [ProfileHRController::class, 'updateProfile'])->name('profileHR.update');
-Route::post('/profileHR/password', [ProfileHRController::class, 'changePassword'])->name('profileHR.password');
+Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.'], function () {
+    Route::get('/dashboard', [DashboardHRController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [ProfileHRController::class, 'index'])->name('profile');
+    Route::post('/profile/update', [ProfileHRController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [ProfileHRController::class, 'changePassword'])->name('profile.password');
 
-Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
-Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
-Route::get('/reports/data', [ReportsController::class, 'getData'])->name('reports.data');
-Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
-Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr'])->name('attendance.process-qr');
-Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');
-Route::get('/attendance/stats', [AttendanceController::class, 'getStats'])->name('attendance.stats');
-Route::get('/attendance/employees', [AttendanceController::class, 'getEmployees'])->name('attendance.employees');
-Route::post('/attendance/permission/{id}/approve', [AttendanceController::class, 'approvePermission'])->name('attendance.permission.approve');
-Route::post('/attendance/permission/{id}/reject', [AttendanceController::class, 'rejectPermission'])->name('attendance.permission.reject');
-Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+    Route::get('/reports/data', [ReportsController::class, 'getData'])->name('reports.data');
+
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr'])->name('attendance.process-qr');
+    Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');
+    Route::get('/attendance/stats', [AttendanceController::class, 'getStats'])->name('attendance.stats');
+    Route::get('/attendance/employees', [AttendanceController::class, 'getEmployees'])->name('attendance.employees');
+
+    Route::post('/attendance/permission/{id}/approve', [AttendanceController::class, 'approvePermission'])->name('attendance.permission.approve');
+    Route::post('/attendance/permission/{id}/reject', [AttendanceController::class, 'rejectPermission'])->name('attendance.permission.reject');
+
+    Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
+    Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
+});
 
 // Employee Routes
 Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');

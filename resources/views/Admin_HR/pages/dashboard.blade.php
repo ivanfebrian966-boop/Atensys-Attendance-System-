@@ -205,11 +205,11 @@
                     </div>
                 </div>
                 <div class="p-5 flex-grow grid grid-cols-2 gap-3 items-stretch">
-                    <a href="/attendance" class="quick-action-card flex-grow" style="--qa-color:#6366f1;--qa-bg:#eef2ff">
+                    <a href="{{ route('admin-hr.attendance') }}" class="quick-action-card flex-grow" style="--qa-color:#6366f1;--qa-bg:#eef2ff">
                         <span class="text-2xl">📷</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Scan QR</span>
                     </a>
-                    <a href="/reports" class="quick-action-card flex-grow" style="--qa-color:#06b6d4;--qa-bg:#ecfeff">
+                    <a href="{{ route('admin-hr.reports') }}" class="quick-action-card flex-grow" style="--qa-color:#06b6d4;--qa-bg:#ecfeff">
                         <span class="text-2xl">📊</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Reports</span>
                     </a>
@@ -224,7 +224,7 @@
                     <h3 class="panel-title">Recent Check-ins Today</h3>
                     <p class="panel-subtitle">Latest attendance activities</p>
                 </div>
-                <button class="btn-secondary text-sm px-3 py-1.5" onclick="window.location.href='/attendance'">View All</button>
+                <button class="btn-secondary text-sm px-3 py-1.5" onclick="window.location.href='{{ route('admin-hr.attendance') }}'">View All</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">

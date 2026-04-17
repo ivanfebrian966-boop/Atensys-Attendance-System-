@@ -10,7 +10,7 @@ let _attFull = [];
 function loadAttendanceData() {
     const date = document.getElementById('filterDate')?.value || new Date().toISOString().split('T')[0];
     
-    fetch(`/attendance/data?date=${date}`)
+    fetch(`${ATTENDANCE_DATA_URL}?date=${date}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {
@@ -24,7 +24,7 @@ function loadAttendanceData() {
 function updateStats() {
     const date = document.getElementById('filterDate')?.value || new Date().toISOString().split('T')[0];
     
-    fetch(`/attendance/stats?date=${date}`)
+    fetch(`${ATTENDANCE_STATS_URL}?date=${date}`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.data) {

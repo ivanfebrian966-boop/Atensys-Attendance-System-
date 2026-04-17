@@ -47,7 +47,7 @@
 
 
             {{-- Profile Chip — klik untuk ke halaman profil --}}
-            <a href="{{ route('profileHR') }}" class="topbar-profile topbar-profile-link" title="View Profile">
+            <a href="{{ route('admin-hr.profile') }}" class="topbar-profile topbar-profile-link" title="View Profile">
                 <div class="topbar-avatar">
                     @if($authUser && $authUser->avatar)
                         <img src="{{ asset('storage/' . $authUser->avatar) }}"
