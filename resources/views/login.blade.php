@@ -325,6 +325,14 @@
         </div>
     </div>
 
+    <!-- ===== TOAST NOTIF ===== -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[200] opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium" style="font-family:'DM Sans',sans-serif">
+            <span id="toastIcon">⚠️</span>
+            <span id="toastMsg">{{ session('toast_error') }}</span>
+        </div>
+    </div>
+
     <script>
         function togglePwd() {
             const input = document.getElementById('pwd');
@@ -340,6 +348,17 @@
                 hide.classList.add('hidden');
             }
         }
+
+        @if(session('toast_error'))
+        document.addEventListener('DOMContentLoaded', function() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 4000);
+        });
+        @endif
     </script>
 </body>
 </html>

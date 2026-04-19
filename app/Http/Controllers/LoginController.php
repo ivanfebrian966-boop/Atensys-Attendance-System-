@@ -25,13 +25,19 @@ class LoginController extends Controller
         ];
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            
+            // Check account status
+            if ($user->role !== 'super_admin' && $user->status !== 'Aktif') {
+                Auth::logout();
+                return back()->with('toast_error', 'Akun Anda belum aktif. Silakan hubungi admin.');
+            }
+
             $request->session()->regenerate();
 
-            $role = Auth::user()->role;
-            
-            if ($role === 'super_admin') {
+            if ($user->role === 'super_admin') {
                 return redirect()->route('super_admin');
-            } elseif ($role === 'admin_hr') {
+            } elseif ($user->role === 'admin_hr') {
                 return redirect()->route('admin-hr.dashboard');
             }
 

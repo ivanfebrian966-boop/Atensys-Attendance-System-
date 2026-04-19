@@ -381,12 +381,7 @@
                                 <td>
                                     <div class="flex items-center gap-1 relative">
                                         <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditEmployee(this)">Edit</button>
-                                        <div class="relative">
-                                            <button class="btn-ghost py-1.5 px-2 text-xs" onclick="toggleDropdown(this)">⋮</button>
-                                            <div class="dropdown-menu">
-                                                <div class="dropdown-item danger" onclick="confirmDelete(this, 'employee')">🗑 Delete Account</div>
-                                            </div>
-                                        </div>
+                                        <button class="btn-ghost py-1.5 px-2 text-xs" style="color:#ef4444" onclick="confirmDelete(this, 'employee')">Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -433,7 +428,7 @@
                                 <th>Managed</th>
                                 <th>Access Rights</th>
                                 <th>Status</th>
-                                <th>Last Login</th>
+                                <th>Joined</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -471,7 +466,7 @@
                                         <span class="badge bg-red-100 text-red-600">● Inactive</span>
                                     @endif
                                 </td>
-                                <td><span class="text-slate-400 text-xs">Active</span></td>
+                                <td><span class="text-slate-400 text-xs">{{ $admin->created_at->format('M Y') }}</span></td>
                                 <td>
                                     <div class="flex items-center gap-1 relative">
                                         <button class="btn-ghost py-1.5 px-3 text-xs" onclick="openEditAdmin(this)">Edit</button>
