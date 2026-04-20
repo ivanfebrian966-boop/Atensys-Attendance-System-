@@ -561,9 +561,6 @@
                 {{-- HERO BANNER --}}
                 <div class="relative overflow-hidden rounded-3xl shadow-2xl fade-up d1" 
                      style="background: linear-gradient(135deg, #031a40ff 0%, #04378aff 50%, #1c3f7cff 100%)"> 
-                    <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40 animate-pulse"></div>
-                    <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32"></div>
-                    <div class="absolute top-1/2 right-1/3 w-32 h-32 bg-white/5 rounded-full animate-ping" style="animation-duration:4s"></div>
 
                     <div class="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-8 p-8 md:p-10">
                         <!-- Avatar -->
@@ -592,7 +589,7 @@
                 </div>
 
                 {{-- GRID: Info + Settings --}}
-                <div class="grid lg:grid-cols-2 gap-6 fade-up d3 max-w-6xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-6 fade-up d3">
 
                     {{-- Personal Info Card --}}
                     <div class="panel p-6">

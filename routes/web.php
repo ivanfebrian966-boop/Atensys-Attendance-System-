@@ -20,20 +20,22 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Super Admin
-Route::get('/super-admin', [SuperAdminController::class, 'index'])->name('super_admin');
-Route::get('/super-admin/profile', [SuperAdminController::class, 'profile'])->name('super_admin.profile');
-Route::post('/super-admin/profile', [SuperAdminController::class, 'updateProfile'])->name('super_admin.update_profile');
-Route::post('/super-admin/employee', [SuperAdminController::class, 'storeEmployee'])->name('super_admin.store_employee');
-Route::post('/super-admin/employee/{id}', [SuperAdminController::class, 'updateEmployee'])->name('super_admin.update_employee');
-Route::delete('/super-admin/employee/{id}', [SuperAdminController::class, 'deleteEmployee'])->name('super_admin.delete_employee');
+Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.'], function () {
+    Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [SuperAdminController::class, 'profile'])->name('profile');
+    Route::post('/profile', [SuperAdminController::class, 'updateProfile'])->name('update_profile');
+    Route::post('/employee', [SuperAdminController::class, 'storeEmployee'])->name('store_employee');
+    Route::post('/employee/{id}', [SuperAdminController::class, 'updateEmployee'])->name('update_employee');
+    Route::delete('/employee/{id}', [SuperAdminController::class, 'deleteEmployee'])->name('delete_employee');
 
-Route::post('/super-admin/hr-admin', [SuperAdminController::class, 'storeHrAdmin'])->name('super_admin.store_hr_admin');
-Route::post('/super-admin/hr-admin/{id}', [SuperAdminController::class, 'updateHrAdmin'])->name('super_admin.update_hr_admin');
-Route::delete('/super-admin/hr-admin/{id}', [SuperAdminController::class, 'deleteHrAdmin'])->name('super_admin.delete_hr_admin');
+    Route::post('/hr-admin', [SuperAdminController::class, 'storeHrAdmin'])->name('store_hr_admin');
+    Route::post('/hr-admin/{id}', [SuperAdminController::class, 'updateHrAdmin'])->name('update_hr_admin');
+    Route::delete('/hr-admin/{id}', [SuperAdminController::class, 'deleteHrAdmin'])->name('delete_hr_admin');
 
-Route::post('/super-admin/division', [SuperAdminController::class, 'storeDivision'])->name('super_admin.store_division');
-Route::post('/super-admin/division/{id}', [SuperAdminController::class, 'updateDivision'])->name('super_admin.update_division');
-Route::delete('/super-admin/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('super_admin.delete_division');
+    Route::post('/division', [SuperAdminController::class, 'storeDivision'])->name('store_division');
+    Route::post('/division/{id}', [SuperAdminController::class, 'updateDivision'])->name('update_division');
+    Route::delete('/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('delete_division');
+});
 
 // Admin HR
 Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.'], function () {
