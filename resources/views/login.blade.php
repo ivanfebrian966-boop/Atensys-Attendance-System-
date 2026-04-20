@@ -98,6 +98,16 @@
         }
         .btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
         .btn-login:active { transform: translateY(0); opacity: 1; }
+
+        /* Override browser autofill yellow background */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active{
+            -webkit-box-shadow: 0 0 0 30px #eef2ff inset !important;
+            -webkit-text-fill-color: #1e293b !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 <body class="min-h-screen flex overflow-hidden bg-slate-50">
@@ -122,11 +132,11 @@
                 <span class="text-cyan-300 text-xs font-semibold uppercase tracking-widest">Welcome Back</span>
 
                 <h1 class="text-4xl font-bold text-white mt-3 leading-tight" style="font-family:'Sora',sans-serif">
-                    Pantau absensi<br>
-                    <span style="background:linear-gradient(90deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">lebih cerdas.</span>
+                    Monitor absences<br>
+                    <span style="background:linear-gradient(90deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">more intell  igently.</span>
                 </h1>
                 <p class="text-slate-300 mt-4 text-sm leading-relaxed max-w-xs">
-                    Kelola check-in karyawan, buat laporan instan, dan beri tim HR kontrol penuh — semua dalam satu tempat.
+                    Manage employee check-ins, create instant reports, and give HR teams full control all in one place.
                 </p>
             </div>
 
@@ -136,23 +146,23 @@
                     <div class="text-2xl">📷</div>
                     <div>
                         <p class="text-white text-sm font-semibold" style="font-family:'Sora',sans-serif">QR Code Check-in</p>
-                        <p class="text-slate-400 text-xs">Instan & tanpa kontak</p>
+                        <p class="text-slate-400 text-xs">Instant & contact-free</p>
                     </div>
                     <div class="ml-auto w-2 h-2 bg-cyan-400 rounded-full"></div>
                 </div>
                 <div class="card-floating rounded-2xl px-5 py-3.5 flex items-center gap-4 animate-fade-up delay-1">
                     <div class="text-2xl">📊</div>
                     <div>
-                        <p class="text-white text-sm font-semibold" style="font-family:'Sora',sans-serif">Laporan Real-time</p>
-                        <p class="text-slate-400 text-xs">Dashboard langsung terbarui</p>
+                        <p class="text-white text-sm font-semibold" style="font-family:'Sora',sans-serif">Real-time Reports</p>
+                        <p class="text-slate-400 text-xs">Instantly updated dashboards</p>
                     </div>
                     <div class="ml-auto w-2 h-2 bg-cyan-400 rounded-full"></div>
                 </div>
                 <div class="card-floating rounded-2xl px-5 py-3.5 flex items-center gap-4 animate-fade-up delay-2">
                     <div class="text-2xl">👥</div>
                     <div>
-                        <p class="text-white text-sm font-semibold" style="font-family:'Sora',sans-serif">Manajemen Tim</p>
-                        <p class="text-slate-400 text-xs">Per divisi & jabatan</p>
+                        <p class="text-white text-sm font-semibold" style="font-family:'Sora',sans-serif">Team Management</p>
+                        <p class="text-slate-400 text-xs">By division & position</p>
                     </div>
                     <div class="ml-auto w-2 h-2 bg-cyan-400 rounded-full"></div>
                 </div>
@@ -163,7 +173,7 @@
         <div class="relative flex gap-4" style="z-index:1">
             <div class="stat-pill rounded-xl px-4 py-3 text-center flex-1">
                 <p class="font-bold text-white text-lg" style="font-family:'Sora',sans-serif">99%</p>
-                <p class="text-slate-400 text-xs mt-0.5">Akurasi</p>
+                <p class="text-slate-400 text-xs mt-0.5">Accuracy</p>
             </div>
             <div class="stat-pill rounded-xl px-4 py-3 text-center flex-1">
                 <p class="font-bold text-white text-lg" style="font-family:'Sora',sans-serif">24/7</p>
@@ -177,7 +187,7 @@
     </div>
 
     <!-- ===== PANEL KANAN (Form) ===== -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-white">
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-slate-50">
         <!-- Logo mobile -->
         <div class="absolute top-6 left-6 flex items-center gap-2 lg:hidden">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
@@ -186,7 +196,7 @@
             <span class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">ATTENSYS</span>
         </div>
 
-        <div class="w-full max-w-md animate-fade-up">
+        <div class="w-full max-w-md animate-fade-up bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 sm:p-10 relative z-10 mb-16 lg:mb-32">
             <!-- Header -->
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Login</h2>
@@ -292,36 +302,17 @@
                 <!-- Submit -->
                 <div class="pt-1">
                     <button type="submit" class="btn-login">
-                        Login to Dashboard →
+                        Login to Dashboard
                     </button>
                 </div>
             </form>
 
-            <!-- Divider -->
-            <div class="flex items-center gap-4 my-7">
-                <div class="flex-1 h-px bg-slate-200"></div>
-                <span class="text-slate-400 text-xs">diamankan oleh ATTENSYS</span>
-                <div class="flex-1 h-px bg-slate-200"></div>
-            </div>
-
-            <!-- Info box -->
-            <div class="bg-indigo-50 border border-indigo-100 rounded-xl px-5 py-4 flex gap-3 items-start">
-                <span class="text-indigo-500 mt-0.5 text-base">ℹ️</span>
-                <p class="text-indigo-700 text-xs leading-relaxed">
-                    Portal ini hanya untuk pengguna ATTENSYS yang berwenang. Jika belum memiliki akun, hubungi administrator HR Anda.
-                </p>
-            </div>
-
             <!-- Kembali ke beranda -->
             <div class="text-center mt-6">
                 <a href="/home" class="text-sm text-slate-400 hover:text-indigo-600 transition-colors">
-                    ← Back to Home
+                    Back to Home
                 </a>
             </div>
-
-            <p class="text-center text-slate-400 text-xs mt-6">
-                © 2026 ATTENSYS — Integrated Employee Attendance System
-            </p>
         </div>
     </div>
 
