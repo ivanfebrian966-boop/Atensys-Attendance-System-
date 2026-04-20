@@ -195,6 +195,7 @@
                     <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Account Status</h3>
                     <div class="space-y-3">
                         @php
+                        
                             $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['pending'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
                             $aktif_p = (($status_counts['aktif'] ?? 0) / $total_users) * 100;
                             $pending_p = (($status_counts['pending'] ?? 0) / $total_users) * 100;

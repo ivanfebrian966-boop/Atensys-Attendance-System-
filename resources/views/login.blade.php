@@ -129,11 +129,10 @@
         <!-- Konten tengah -->
         <div class="relative flex-1 flex flex-col justify-center py-12" style="z-index:1">
             <div class="mb-8">
-                <span class="text-cyan-300 text-xs font-semibold uppercase tracking-widest">Welcome Back</span>
 
                 <h1 class="text-4xl font-bold text-white mt-3 leading-tight" style="font-family:'Sora',sans-serif">
                     Monitor absences<br>
-                    <span style="background:linear-gradient(90deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">more intell  igently.</span>
+                    <span style="background:linear-gradient(90deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">more intelligently.</span>
                 </h1>
                 <p class="text-slate-300 mt-4 text-sm leading-relaxed max-w-xs">
                     Manage employee check-ins, create instant reports, and give HR teams full control all in one place.

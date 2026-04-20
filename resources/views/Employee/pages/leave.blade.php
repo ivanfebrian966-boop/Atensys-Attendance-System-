@@ -97,71 +97,62 @@
 
 @section('modals')
 <!-- ===== LEAVE REQUEST MODAL ===== -->
-<div id="leaveModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50"
+<div id="leaveModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity"
      onclick="closeLeaveModalOutside(event)">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden" onclick="event.stopPropagation()">
+    <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-lg mx-4 overflow-hidden p-6" onclick="event.stopPropagation()">
 
         <!-- Modal Header -->
-        <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div class="flex items-start justify-between mb-6">
             <div>
                 <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">New Leave Request</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Fill in the details for your leave or sick request</p>
+                <p class="text-[0.85rem] text-slate-400 mt-1">Fill in the details for your leave or sick request</p>
             </div>
-            <button onclick="closeLeaveModal()" class="p-2 rounded-xl hover:bg-slate-100 text-slate-400 transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
+            <button onclick="closeLeaveModal()" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
         </div>
 
         <!-- Modal Body -->
         <form action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <div class="px-6 py-5 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
 
-                <div class="form-field">
-                    <label class="form-label text-slate-700">Type <span class="text-red-500">*</span></label>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Type</label>
                     <select name="type" class="form-select" required>
                         <option value="Izin">Permission (Personal)</option>
                         <option value="Sakit">Sick (Medical)</option>
                     </select>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="form-field">
-                        <label class="form-label text-slate-700">Start Date <span class="text-red-500">*</span></label>
-                        <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
-                    </div>
-                    <div class="form-field">
-                        <label class="form-label text-slate-700">End Date <span class="text-red-500">*</span></label>
-                        <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
-                    </div>
+                <div class="form-field">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-input" required min="{{ date('Y-m-d') }}">
                 </div>
 
                 <div class="form-field">
-                    <label class="form-label text-slate-700">Reason / Information <span class="text-red-500">*</span></label>
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                </div>
+
+                <div class="form-field col-span-2">
+                    <label class="form-label">Reason / Information</label>
                     <textarea name="information" class="form-input" rows="3" required
                               placeholder="e.g. Taking care of family / Medical appointment..."></textarea>
                 </div>
 
-                <div class="form-field">
-                    <label class="form-label text-slate-700">Attachment (PDF) <span class="text-red-500">*</span></label>
-                    <input type="file" name="file" class="form-input" accept="application/pdf" required>
-                    <p class="text-[10px] text-slate-400 mt-1">Max: 2MB. Format: PDF only. File is required.</p>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Attachment (PDF)</label>
+                    <div class="relative w-full">
+                        <input type="file" name="file" class="block w-full text-sm text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-xl bg-slate-50 transition-all cursor-pointer focus:outline-none focus:border-indigo-500" accept="application/pdf" required>
+                    </div>
+                    <p class="text-[10.5px] text-slate-400 mt-1">Max: 2MB. Format: PDF only. File is required.</p>
                 </div>
 
             </div>
 
             <!-- Modal Footer -->
-            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50">
-                <button type="button" onclick="closeLeaveModal()"
-                        class="btn-ghost px-5">Cancel</button>
-                <button type="submit" class="btn-primary">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
-                    Submit Request
-                </button>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeLeaveModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Submit Request</button>
             </div>
         </form>
 
