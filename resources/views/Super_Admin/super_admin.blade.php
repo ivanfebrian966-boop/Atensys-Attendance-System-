@@ -558,8 +558,8 @@
             <div class="space-y-6">
 
                 {{-- HERO BANNER --}}
-                <div class="relative overflow-hidden rounded-3xl shadow-2xl fade-up d1"
-                     style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%)">
+                <div class="relative overflow-hidden rounded-3xl shadow-2xl fade-up d1" 
+                     style="background: linear-gradient(135deg, #031a40ff 0%, #04378aff 50%, #1c3f7cff 100%)"> 
                     <div class="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full -mr-40 -mt-40 animate-pulse"></div>
                     <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-32 -mb-32"></div>
                     <div class="absolute top-1/2 right-1/3 w-32 h-32 bg-white/5 rounded-full animate-ping" style="animation-duration:4s"></div>
@@ -568,13 +568,10 @@
                         <!-- Avatar -->
                         <div class="flex-shrink-0 group">
                             <div class="relative">
-                                <div class="absolute inset-0 rounded-full bg-white/30 animate-ping opacity-50" style="animation-duration:2s"></div>
                                 <div class="relative w-28 h-28 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/50
-                                            flex items-center justify-center text-4xl font-bold text-white shadow-2xl
-                                            transition-transform group-hover:scale-105 duration-300" style="font-family:'Sora',sans-serif">
+                                            flex items-center justify-center text-4xl font-bold text-white" style="font-family:'Sora',sans-serif">
                                     {{ strtoupper(substr($user->name, 0, 2)) }}
                                 </div>
-                                <div class="absolute bottom-1 right-1 w-7 h-7 bg-emerald-400 rounded-full border-4 border-white shadow-lg"></div>
                             </div>
                         </div>
 
@@ -587,48 +584,14 @@
                             <p class="text-white/70 text-sm mt-1">{{ $user->email }}</p>
                             <div class="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
                                 <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">Super Admin</span>
-                                <span class="px-3 py-1 bg-emerald-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">● Active</span>
-                            </div>
-                        </div>
-
-                        <!-- Badge -->
-                        <div class="bg-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 text-center min-w-[120px]">
-                            <p class="text-3xl mb-1">👑</p>
-                            <p class="text-white font-bold text-sm" style="font-family:'Sora',sans-serif">Super Admin</p>
-                            <p class="text-white/70 text-xs">Full Access</p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- QUICK INFO CARDS --}}
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 fade-up d2">
-                    @php
-                        $scards = [
-                            ['icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'label'=>'Email', 'value'=>$user->email, 'from'=>'from-indigo-500','to'=>'to-indigo-600'],
-                            ['icon'=>'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', 'label'=>'NIP', 'value'=>$user->nip ?? '-', 'from'=>'from-purple-500','to'=>'to-purple-600'],
-                            ['icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2', 'label'=>'Phone', 'value'=>$user->no_hp ?? 'Not set', 'from'=>'from-cyan-500','to'=>'to-cyan-600'],
-                            ['icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', 'label'=>'Joined', 'value'=>$user->created_at ? $user->created_at->format('d M Y') : 'N/A', 'from'=>'from-violet-500','to'=>'to-violet-600'],
-                        ];
-                    @endphp
-                    @foreach($scards as $sc)
-                    <div class="panel p-4" style="border-radius:1rem;transition:all 0.3s" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
-                        <div class="flex items-center gap-3">
-                            <div class="w-11 h-11 rounded-xl bg-gradient-to-br {{ $sc['from'] }} {{ $sc['to'] }} flex items-center justify-center shadow-lg flex-shrink-0">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $sc['icon'] }}"/>
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wide">{{ $sc['label'] }}</p>
-                                <p class="text-slate-800 font-semibold text-sm truncate">{{ $sc['value'] }}</p>
+                                <span class="px-3 py-1 bg-slate-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">Department</span>  
                             </div>
                         </div>
                     </div>
-                    @endforeach
                 </div>
 
                 {{-- GRID: Info + Settings --}}
-                <div class="grid lg:grid-cols-3 gap-6 fade-up d3">
+                <div class="grid lg:grid-cols-2 gap-6 fade-up d3 max-w-6xl mx-auto">
 
                     {{-- Personal Info Card --}}
                     <div class="panel p-6">
@@ -637,7 +600,7 @@
                                 <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Personal Info</h3>
                                 <p class="text-xs text-slate-400 mt-0.5">Account details</p>
                             </div>
-                            <span class="px-2 py-1 bg-indigo-100 text-indigo-600 rounded-full text-xs font-bold">Admin</span>
+                            <span class="px-3 py-1 bg-emerald-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">● Active</span>
                         </div>
 
                         <div class="space-y-4">
@@ -676,7 +639,7 @@
                     </div>
 
                     {{-- Settings Form --}}
-                    <div class="lg:col-span-2 panel p-6">
+                    <div class="panel p-6">
                         <div class="mb-5 pb-4 border-b border-slate-100">
                             <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Profile Settings</h3>
                             <p class="text-xs text-slate-400 mt-0.5">Update your account information and password</p>

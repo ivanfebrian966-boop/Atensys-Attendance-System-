@@ -11,7 +11,7 @@ function showTab(tab, el) {
     if (el) el.classList.add('active');
 
     // page title
-    const titles = { dashboard: 'Dashboard', employees: 'Akun Karyawan', admins: 'Akun Admin HR', divisions: 'Data Divisi', profile: 'Profil Pengaturan' };
+    const titles = { dashboard: 'Dashboard', employees: 'Employee Accounts', admins: 'Admin HR Accounts', divisions: 'Division Data', profile: 'Profile' };
     document.getElementById('pageTitle').textContent = titles[tab] || 'Dashboard';
 
     closeSidebar();
