@@ -14,7 +14,7 @@
                 </svg>
             </button>
             <div>
-                <h1 class="text-lg font-bold @if(request()->routeIs('employee.profile')) bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent @else text-slate-900 @endif" style="font-family:'Sora',sans-serif">
+                <h1 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">
                     @yield('page_title', 'Employee Dashboard')
                 </h1>
                 <p class="text-xs text-slate-400" id="realtime-date">

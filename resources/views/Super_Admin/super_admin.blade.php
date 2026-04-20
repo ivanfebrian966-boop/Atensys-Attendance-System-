@@ -591,7 +591,7 @@
                 </div>
 
                 {{-- GRID: Info + Settings --}}
-                <div class="grid lg:grid-cols-2 gap-6 fade-up d3 max-w-6xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-6 fade-up d3">
 
                     {{-- Personal Info Card --}}
                     <div class="panel p-6">

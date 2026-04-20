@@ -80,7 +80,7 @@
 </div>
 
 <!-- Main Content: Profile Info + Edit Form -->
-<div class="grid lg:grid-cols-2 gap-6 fade-up d3 max-w-6xl mx-auto" style="animation-delay: 0.2s">
+<div class="grid lg:grid-cols-2 gap-6 fade-up d3" style="animation-delay: 0.2s">
     
     {{-- LEFT: Personal Info --}}
     <div class="panel p-6">

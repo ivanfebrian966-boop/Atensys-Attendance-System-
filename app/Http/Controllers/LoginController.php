@@ -36,7 +36,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             if ($user->role === 'super_admin') {
-                return redirect()->route('super_admin');
+                return redirect()->route('super_admin.dashboard');
             } elseif ($user->role === 'admin_hr') {
                 return redirect()->route('admin-hr.dashboard');
             }
