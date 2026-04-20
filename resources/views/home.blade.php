@@ -138,72 +138,48 @@
     </header>
 
     <!-- ===== HERO ===== -->
-    <section class="relative min-h-screen flex items-center pt-24 hero-glow overflow-hidden">
-        <div class="absolute top-20 right-0 w-96 h-96 bg-indigo-100 blob opacity-50 animate-float-slow" style="z-index:0"></div>
-        <div class="absolute bottom-10 left-10 w-64 h-64 bg-cyan-100 blob opacity-40 animate-float" style="z-index:0"></div>
+    <section class="relative min-h-screen flex items-center pt-24 overflow-hidden">
+        <!-- Background Slider -->
+        <div id="hero-slider" class="absolute inset-0 z-0">
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-100" style="background-image: url('{{ asset('images/office 2.jpg.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 3.jpg.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 4.jpg.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 5.jpg.jpeg') }}')"></div>
+        </div>
+        
+        <!-- Dark Overlay for Text Readability -->
+        <div class="absolute inset-0 bg-slate-900/65 z-0"></div>
 
-        <div class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-2 gap-16 items-center relative" style="z-index:1">
-            <!-- Text -->
-            <div>
-                <div class="inline-flex items-center gap-2 text-indigo-700 text-xs font-semibold px-4 py-2 rounded-full mb-6 animate-fade-up border border-indigo-100 bg-indigo-50 text-hover">
-                    <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+        <div class="max-w-6xl mx-auto px-6 py-16 w-full relative z-10">
+            <!-- Text Content -->
+            <div class="max-w-3xl">
+                <div class="inline-flex items-center gap-2 text-white/90 text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-white/20 bg-white/10 backdrop-blur-sm animate-fade-up">
+                    <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
                     Smart Attendance Solution
                 </div>
-                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight text-slate-900 mb-4 animate-fade-up delay-1" style="font-family:'Sora',sans-serif">
-                    Attendance<br><span class="gradient-text">Made Simple</span>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-white mb-6 drop-shadow-lg animate-fade-up delay-1" style="font-family:'Sora',sans-serif">
+                    Attendance<br><span class="text-cyan-400">Made Simple</span>
                 </h1>
-                <p class="text-slate-500 text-lg leading-relaxed mb-8 animate-fade-up delay-2 sentence-hover">
+                <p class="text-slate-200 text-lg md:text-xl leading-relaxed mb-10 drop-shadow animate-fade-up delay-2">
                     ATTENSYS is a digital attendance system that helps companies manage employee attendance efficiently using QR Codes with real-time monitoring and instant reports.
                 </p>
                 <div class="flex flex-wrap gap-4 animate-fade-up delay-3">
-                    <a href="/login" class="text-white font-semibold px-7 py-3.5 rounded-xl shadow-lg transition hover:opacity-90" style="background:linear-gradient(135deg,#6366f1,#06b6d4);box-shadow:0 8px 24px rgba(99,102,241,0.25)">
-                        Get Started →
+                    <a href="/login" class="text-white font-semibold px-8 py-4 rounded-full shadow-lg transition hover:bg-cyan-500 bg-cyan-600 text-center">
+                        Get Started
                     </a>
-                    <a href="#features" class="border border-slate-200 text-slate-700 font-semibold px-7 py-3.5 rounded-xl hover:bg-slate-50 transition">
+                    <a href="#features" class="border border-white/40 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 backdrop-blur-sm transition text-center">
                         View Features
                     </a>
                 </div>
-
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-4 mt-12 animate-fade-up delay-4">
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-indigo-600 text-hover" style="font-family:'Sora',sans-serif">99%</p>
-                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Accuracy</p>
-                    </div>
-                    <div class="text-center border-x border-slate-100">
-                        <p class="text-3xl font-bold text-cyan-500 text-hover" style="font-family:'Sora',sans-serif">24/7</p>
-                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Uptime</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-3xl font-bold text-indigo-600 text-hover" style="font-family:'Sora',sans-serif">100+</p>
-                        <p class="text-xs text-slate-400 mt-1 sentence-hover">Companies</p>
-                    </div>
-                </div>
             </div>
-
-            <!-- Image -->
-            <div class="relative flex justify-center animate-fade-up delay-2">
-                <div class="relative w-full max-w-md">
-                    <div class="absolute inset-0 rounded-3xl blur-2xl opacity-20 scale-95" style="background:linear-gradient(135deg,#6366f1,#06b6d4)"></div>
-                    <img src="{{ asset('images/atten.jpg') }}"
-                         alt="ATTENSYS Dashboard"
-                         class="relative rounded-3xl w-full object-cover animate-float img-glow">
-                    <!-- Badge bawah kiri -->
-                    <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl px-5 py-3 flex items-center gap-3 border border-slate-100">
-                        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center text-xl">✅</div>
-                        <div>
-                            <p class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">Check-in Successful</p>
-                            <p class="text-xs text-slate-400">Just now via QR Code</p>
-                        </div>
-                    </div>
-                    <!-- Badge atas kanan -->
-                    <div class="absolute -top-5 -right-5 bg-white rounded-2xl shadow-xl px-4 py-3 border border-slate-100">
-                        <p class="font-bold text-indigo-600 text-lg">📊</p>
-                        <p class="text-xs font-semibold text-slate-700">Live Report</p>
-                        <p class="text-xs text-slate-400">42 karyawan hadir</p>
-                    </div>
-                </div>
-            </div>
+        </div>
+        
+        <!-- Slider Dots -->
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center gap-3 z-10" id="slider-dots">
+            <button class="w-2.5 h-2.5 rounded-full bg-white opacity-100 transition-opacity drop-shadow" onclick="setSlide(0)"></button>
+            <button class="w-2.5 h-2.5 rounded-full bg-white opacity-50 transition-opacity drop-shadow" onclick="setSlide(1)"></button>
+            <button class="w-2.5 h-2.5 rounded-full bg-white opacity-50 transition-opacity drop-shadow" onclick="setSlide(2)"></button>
+            <button class="w-2.5 h-2.5 rounded-full bg-white opacity-50 transition-opacity drop-shadow" onclick="setSlide(3)"></button>
         </div>
     </section>
 
@@ -349,6 +325,49 @@
                 document.getElementById('mobile-menu').classList.add('hidden');
             });
         });
+
+        // Background Slider Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slider-bg');
+        const dotsContainer = document.getElementById('slider-dots');
+        const dots = dotsContainer ? dotsContainer.querySelectorAll('button') : [];
+        let slideInterval;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('opacity-100');
+                slide.classList.add('opacity-0');
+                if (dots[i]) {
+                    dots[i].classList.remove('opacity-100');
+                    dots[i].classList.add('opacity-50');
+                }
+            });
+            if(slides[index]){
+                slides[index].classList.remove('opacity-0');
+                slides[index].classList.add('opacity-100');
+            }
+            if (dots[index]) {
+                dots[index].classList.remove('opacity-50');
+                dots[index].classList.add('opacity-100');
+            }
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            if(slides.length === 0) return;
+            let next = (currentSlide + 1) % slides.length;
+            showSlide(next);
+        }
+
+        window.setSlide = function(index) {
+            showSlide(index);
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 7000);
+        };
+        
+        if (slides.length > 0) {
+            slideInterval = setInterval(nextSlide, 7000);
+        }
     </script>
 </body>
 </html>
