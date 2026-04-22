@@ -188,15 +188,15 @@
     <!-- ===== PANEL KANAN (Form) ===== -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-slate-50">
         <!-- Logo mobile -->
-        <div class="absolute top-6 left-6 flex items-center gap-2 lg:hidden">
+        <div class="absolute top-6 left-6 flex items-center gap-1 lg:hidden">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
                 <span class="text-white font-bold text-xs">A</span>
             </div>
             <span class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">ATTENSYS</span>
         </div>
 
-        <div class="w-full max-w-md animate-fade-up bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 sm:p-10 relative z-10 mb-16 lg:mb-32">
-            <!-- Header -->
+        <div class="w-full max-w-[520px] animate-fade-up bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 sm:p-12 relative z-10">
+            <!-- Header --> 
             <div class="mb-8">
                 <h2 class="text-3xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">Login</h2>
                 <p class="text-slate-500 text-sm mt-2">Enter your credentials to access the dashboard.</p>

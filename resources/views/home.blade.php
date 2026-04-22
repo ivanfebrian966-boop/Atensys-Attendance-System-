@@ -215,10 +215,10 @@
     </section>
 
     <!-- ===== HOW IT WORKS ===== -->
-    <section id="howitworks" class="py-24 bg-white">
-        <div class="max-w-5xl mx-auto px-6">
+    <section id="howitworks" class="py-24 bg-white" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
+        <div class="max-w-5xl mx-auto px-6 relative">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-slate-900 mb-6 drop-shadow-lg animate-fade-up delay-1" style="font-family:'Sora',sans-serif">Easy & Fast</h2>
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-white mb-6 drop-shadow-lg animate-fade-up delay-1" style="font-family:'Sora',sans-serif">Easy & Fast</h2>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 text-center card-hover">
