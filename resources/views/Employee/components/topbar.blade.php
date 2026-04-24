@@ -1,3 +1,10 @@
+{{--
+    =====================================================================
+    ATTENSYS — Employee Topbar Partial
+    Params:
+      $pageTitle    : Judul halaman (opsional, default: 'Dashboard')
+    =====================================================================
+--}}
 @php
     use Illuminate\Support\Facades\Auth;
     $authUser = Auth::user();
@@ -18,7 +25,7 @@
                     @yield('page_title', 'Employee Dashboard')
                 </h1>
                 <p class="text-xs text-slate-400" id="realtime-date">
-                    @yield('page_subtitle', now()->format('l, d F Y'))
+                    {{ now()->format('l, d F Y | H:i:s') }}
                 </p>
             </div>
         </div>
@@ -46,3 +53,27 @@
 
     </div>
 </div>
+
+<script>
+    (function () {
+        const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function updateClock() {
+            const el = document.getElementById('realtime-date');
+            if (!el) return;
+            const now = new Date();
+            const day   = days[now.getDay()];
+            const date  = pad(now.getDate());
+            const month = months[now.getMonth()];
+            const year  = now.getFullYear();
+            const time  = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            el.textContent = `${day}, ${date} ${month} ${year} | ${time}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    })();
+</script>

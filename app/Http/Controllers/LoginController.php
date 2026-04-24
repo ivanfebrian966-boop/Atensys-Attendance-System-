@@ -14,10 +14,17 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+        $request->validate(
+            [
+                'email'    => 'required|email',
+                'password' => 'required',
+            ],
+            [
+                'email.required'    => 'Email address is required.',
+                'email.email'       => 'Please enter a valid email address.',
+                'password.required' => 'Password is required.',
+            ]
+        );
 
         $credentials = [
             'email' => $request->email,
@@ -30,7 +37,7 @@ class LoginController extends Controller
             // Check account status
             if ($user->role !== 'super_admin' && $user->status !== 'Aktif') {
                 Auth::logout();
-                return back()->with('toast_error', 'Akun Anda belum aktif. Silakan hubungi admin.');
+                return back()->with('toast_error', 'Your account is not active yet. Please contact the administrator.');
             }
 
             $request->session()->regenerate();
@@ -45,7 +52,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Email atau Password salah.',
+            'email' => 'Incorrect email or password.',
         ]);
     }
 

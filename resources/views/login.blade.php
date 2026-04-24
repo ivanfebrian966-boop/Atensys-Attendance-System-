@@ -242,7 +242,7 @@
                         </span>
                         <input type="email" name="email" value="{{ old('email') }}"
                                class="input-field {{ $errors->has('email') ? 'error' : '' }}"
-                               placeholder="anda@perusahaan.com" required autofocus>
+                               placeholder="you@company.com" required autofocus>
                     </div>
                     @error('email')
                     <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
