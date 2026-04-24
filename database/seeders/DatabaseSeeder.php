@@ -22,9 +22,9 @@ class DatabaseSeeder extends Seeder
         // 2. Create Super Admin
         Employee::create([
             'nip' => '00001',
-            'name' => 'Super Admin',
-            'email' => 'superadmin@attensys.id',
-            'password' => Hash::make('password123'),
+            'name' => 'Muhammad Faturrahman',
+            'email' => 'fatur123@gmail.com',
+            'password' => Hash::make('fatur123'),
             'role' => 'super_admin',
             'position' => 'System Administrator',
             'division_id' => $division->division_id,
@@ -36,9 +36,9 @@ class DatabaseSeeder extends Seeder
         // 3. Create Admin HR
         Employee::create([
             'nip' => '00002',
-            'name' => 'HR Manager',
-            'email' => 'adminhr@attensys.id',
-            'password' => Hash::make('password123'),
+            'name' => 'Muhammad Ivan Febrian',
+            'email' => 'ivan123@gmail.com',
+            'password' => Hash::make('ivan123'),
             'role' => 'admin_hr',
             'position' => 'HR Manager',
             'division_id' => $division->division_id,
@@ -47,12 +47,25 @@ class DatabaseSeeder extends Seeder
             'status' => 'Aktif',
         ]);
 
+         Employee::create([
+            'nip' => '00003',
+            'name' => 'Nur Iliyanie ',
+            'email' => 'lily123@gmail.com',
+            'password' => Hash::make('lily123'),
+            'role' => 'admin_hr',
+            'position' => 'HR Manager',
+            'division_id' => $division->division_id,
+            'no_hp' => '081234567891',
+            'alamat' => 'Gedung HR Lt. 2',
+            'status' => 'Aktif',
+        ]);
+
         // 4. Create Karyawan
         Employee::create([
             'nip' => '10001',
-            'name' => 'Ivan Febrian',
-            'email' => 'karyawan@attensys.id',
-            'password' => Hash::make('password123'),
+            'name' => 'Zahrah Athirah Baddiah',
+            'email' => 'zahrah123@gmail.com',
+            'password' => Hash::make('zahrah123'),
             'role' => 'karyawan',
             'position' => 'Software Engineer',
             'division_id' => $division->division_id,
@@ -61,4 +74,4 @@ class DatabaseSeeder extends Seeder
             'status' => 'Aktif',
         ]);
     }
-}
+} 
