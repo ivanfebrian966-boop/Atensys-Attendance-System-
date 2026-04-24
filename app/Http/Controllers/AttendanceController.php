@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -37,7 +37,7 @@ class AttendanceController extends Controller
             $empName = $matches[2];
             
             // Cek apakah karyawan exists
-            $employee = User::where('employee_id', $empId)->first();
+            $employee = Employee::where('nip', $empId)->first();
             
             if (!$employee) {
                 return response()->json([
@@ -50,21 +50,17 @@ class AttendanceController extends Controller
             $currentTime = Carbon::now()->format('H:i:s');
             
             // Cek apakah sudah ada check in hari ini
-            $attendance = Attendance::where('employee_id', $empId)
-                ->where('date', $today)
+            $attendance = Attendance::where('nip', $empId)
+                ->whereDate('check_in', $today)
                 ->first();
             
             if (!$attendance) {
                 // Belum check in, buat record baru dengan check in
                 $attendance = Attendance::create([
-                    'employee_id' => $empId,
-                    'employee_name' => $employee->name,
-                    'division' => $employee->division ?? 'Engineering',
-                    'date' => $today,
-                    'check_in' => $currentTime,
-                    'check_out' => null,
+                    'nip' => $empId,
+                    'check_in' => Carbon::now(),
                     'status' => $this->determineStatus($currentTime),
-                    'notes' => ''
+                    'qr_code' => $qrData,
                 ]);
                 
                 return response()->json([
@@ -85,7 +81,7 @@ class AttendanceController extends Controller
                 }
                 
                 $attendance->update([
-                    'check_out' => $currentTime
+                    'check_out' => Carbon::now()
                 ]);
                 
                 return response()->json([
@@ -144,10 +140,13 @@ class AttendanceController extends Controller
         $date = $request->input('date', Carbon::now()->format('Y-m-d'));
         $division = $request->input('division', null);
         
-        $query = Attendance::where('date', $date);
+        $query = Attendance::with('employee.division')
+            ->whereDate('check_in', $date);
         
         if ($division) {
-            $query->where('division', $division);
+            $query->whereHas('employee', function($q) use ($division) {
+                $q->where('division_id', $division);
+            });
         }
         
         $data = $query->orderBy('check_in', 'asc')->get();
