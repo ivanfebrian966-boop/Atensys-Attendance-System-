@@ -4,6 +4,7 @@
  */
 
 let _attFull = [];
+let _employees = [];
 
 /* ========== API INTEGRATION ========== */
 
@@ -33,11 +34,24 @@ function updateStats() {
                 if (document.getElementById('sPresent')) document.getElementById('sPresent').textContent = s.present || 0;
                 if (document.getElementById('sAbsent')) document.getElementById('sAbsent').textContent = s.absent || 0;
                 if (document.getElementById('sLate')) document.getElementById('sLate').textContent = s.late || 0;
+                if (document.getElementById('sPresent')) document.getElementById('sPresent').textContent = s.present || 0;
+                if (document.getElementById('sLate')) document.getElementById('sLate').textContent = s.late || 0;
                 if (document.getElementById('sSick')) document.getElementById('sSick').textContent = s.sick || 0;
                 if (document.getElementById('sPerm')) document.getElementById('sPerm').textContent = s.permission || 0;
             }
         })
         .catch(error => console.error('Error:', error));
+}
+
+function loadEmployees() {
+    fetch('/admin-hr/attendance/employees')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                _employees = data.data;
+            }
+        })
+        .catch(error => console.error('Error loading employees:', error));
 }
 
 /* ========== FILTER & RENDER ========== */
@@ -92,7 +106,6 @@ function renderAttendanceTable(data) {
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_in || '—'}</td>
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_out || '—'}</td>
             <td class="hidden lg:table-cell text-slate-600 text-sm">${r.duration || '—'}</td>
-            <td class="text-right text-xs text-slate-500">${r.notes || '—'}</td>
             <td class="text-right">
                 <button class="action-btn action-btn-edit" onclick="editAtt(${r.id})" title="Edit">✏️</button>
                 <button class="action-btn action-btn-delete" onclick="openDeleteModal(${r.id})" title="Hapus">🗑️</button>
@@ -125,6 +138,41 @@ function getStatusIcon(status) {
     return icons[status] || '—';
 }
 
+function filterEmployeeDropdown(inputId, hiddenId, dropdownId) {
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    const hidden = document.getElementById(hiddenId);
+    if (!input || !dropdown) return;
+
+    const val = input.value.toLowerCase();
+    hidden.value = ''; // Reset ID if user types manually
+
+    if (val.length < 1) {
+        dropdown.style.display = 'none';
+        return;
+    }
+
+    const filtered = _employees.filter(e => e.name.toLowerCase().includes(val) || e.nip.includes(val));
+    
+    if (filtered.length === 0) {
+        dropdown.innerHTML = '<li class="p-3 text-slate-400 text-xs text-center">Employee not found</li>';
+    } else {
+        dropdown.innerHTML = filtered.map(e => `
+            <li onclick="selectEmployee('${e.name}', '${e.nip}', '${inputId}', '${hiddenId}', '${dropdownId}')">
+                <p class="font-bold text-sm">${e.name}</p>
+                <p class="text-xs text-slate-400">${e.nip} • ${e.position}</p>
+            </li>
+        `).join('');
+    }
+    dropdown.style.display = 'block';
+}
+
+function selectEmployee(name, nip, inputId, hiddenId, dropdownId) {
+    document.getElementById(inputId).value = name;
+    document.getElementById(hiddenId).value = nip;
+    document.getElementById(dropdownId).style.display = 'none';
+}
+
 /* ========== MODAL FUNCTIONS ========== */
 
 function openAddAttModal() {
@@ -140,15 +188,15 @@ function openAddAttModal() {
 }
 
 function saveAtt() {
-    const nameEl = document.getElementById('aaName');
-    const dateEl = document.getElementById('aaDate');
-    if (!nameEl || !dateEl) return;
+    const nip = document.getElementById('aaEmpId')?.value;
+    const date = document.getElementById('aaDate')?.value;
+    const status = document.getElementById('aaStatus')?.value;
+    const check_in = document.getElementById('aaCheckIn')?.value;
+    const check_out = document.getElementById('aaCheckOut')?.value;
+    const note = document.getElementById('aaNote')?.value;
     
-    const name = nameEl.value.trim();
-    const date = dateEl.value;
-    
-    if (!name) {
-        setErr('aaName', 'eaaName', 'Nama wajib diisi');
+    if (!nip) {
+        setErr('aaName', 'eaaName', 'Pilih karyawan dari dropdown');
         return;
     }
     if (!date) {
@@ -156,9 +204,33 @@ function saveAtt() {
         return;
     }
     
-    showToast('✅', 'Data absensi berhasil ditambahkan', 3000);
-    closeModal('modalAddAtt');
-    loadAttendanceData();
+    const formData = {
+        nip, date, status, check_in, check_out, note
+    };
+
+    fetch(ATTENDANCE_STORE_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('✅', data.message, 3000);
+            closeModal('modalAddAtt');
+            loadAttendanceData();
+            updateStats();
+        } else {
+            showToast('❌', data.message || 'Gagal menyimpan data', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('❌', 'Terjadi kesalahan sistem', 3000);
+    });
 }
 
 function editAtt(id) {
@@ -178,12 +250,42 @@ function editAtt(id) {
 }
 
 function updateAtt() {
-    const idEl = document.getElementById('eaId');
-    if (!idEl) return;
+    const id = document.getElementById('eaId')?.value;
+    const date = document.getElementById('eaDate')?.value;
+    const status = document.getElementById('eaStatus')?.value;
+    const check_in = document.getElementById('eaCheckIn')?.value;
+    const check_out = document.getElementById('eaCheckOut')?.value;
+    const note = document.getElementById('eaNote')?.value;
     
-    showToast('✅', 'Data absensi berhasil diperbarui', 3000);
-    closeModal('modalEditAtt');
-    loadAttendanceData();
+    if (!id || !date) return;
+    
+    const formData = {
+        date, status, check_in, check_out, note
+    };
+
+    fetch(`${ATTENDANCE_UPDATE_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('✅', data.message, 3000);
+            closeModal('modalEditAtt');
+            loadAttendanceData();
+            updateStats();
+        } else {
+            showToast('❌', data.message || 'Gagal memperbarui data', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('❌', 'Terjadi kesalahan sistem', 3000);
+    });
 }
 
 function openDeleteModal(id) {
@@ -197,9 +299,30 @@ function openDeleteModal(id) {
 }
 
 function execDelAtt() {
-    showToast('✅', 'Data absensi berhasil dihapus', 3000);
-    closeModal('modalDelAtt');
-    loadAttendanceData();
+    const id = document.getElementById('eaId')?.value;
+    if (!id) return;
+
+    fetch(`${ATTENDANCE_DELETE_URL}/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('✅', data.message, 3000);
+            closeModal('modalDelAtt');
+            loadAttendanceData();
+            updateStats();
+        } else {
+            showToast('❌', data.message || 'Gagal menghapus data', 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('❌', 'Terjadi kesalahan sistem', 3000);
+    });
 }
 
 function exportAtt() {
@@ -212,6 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof setDate === 'function') setDate();
     loadAttendanceData();
     updateStats();
+    loadEmployees();
     
     const filterDate = document.getElementById('filterDate');
     const filterStatus = document.getElementById('filterAttStatus');
@@ -228,5 +352,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterDiv) filterDiv.addEventListener('change', filterAtt);
     if (searchAtt) searchAtt.addEventListener('input', filterAtt);
     
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.emp-dropdown') && !e.target.closest('.form-input')) {
+            document.querySelectorAll('.emp-dropdown').forEach(d => d.style.display = 'none');
+        }
+    });
+
     setInterval(() => { updateStats(); }, 15000);
 });

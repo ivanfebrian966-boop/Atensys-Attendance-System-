@@ -92,15 +92,29 @@
 
 <!-- ===== RECENT ATTENDANCE HISTORY ===== -->
 <div class="panel fade-up d6">
-    <div class="panel-header">
+    <div class="panel-header flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
-            <h3 class="panel-title">Recent Attendance</h3>
+            <h3 class="panel-title">Recent Attendances</h3>
             <p class="panel-subtitle">Last 7 days</p>
         </div>
-        <a href="{{ route('employee.history') }}" class="text-indigo-600 text-sm hover:underline">View All →</a>
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <div class="relative flex-grow md:flex-grow-0">
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" id="attendanceSearch" placeholder="Search date..." class="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors">
+            </div>
+            <select id="attendanceFilter" class="px-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors bg-white">
+                <option value="">All Status</option>
+                <option value="Present">Present</option>
+                <option value="Late">Late</option>
+                <option value="Absent">Absent</option>
+            </select>
+            <a href="{{ route('employee.history') }}" class="text-indigo-600 text-sm hover:underline ml-auto md:ml-0 whitespace-nowrap">View All →</a>
+        </div>
     </div>
     <div class="overflow-x-auto">
-        <table class="data-table">
+        <table class="data-table" id="recentAttendanceTable">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -111,21 +125,24 @@
             </thead>
             <tbody>
                 @forelse($recentAttendances as $att)
-                <tr class="table-row">
-                    <td>{{ \Carbon\Carbon::parse($att->check_in)->translatedFormat('d M Y') }}</td>
+                <tr class="table-row attendance-row">
+                    <td class="date-cell">{{ \Carbon\Carbon::parse($att->created_at)->translatedFormat('d M Y') }}</td>
                     <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '-' }}</td>
-                    <td>
-                        <span class="status-badge status-{{ strtolower($att->status) }}">
+                    <td class="status-cell">
+                        <span class="status-badge status-{{ strtolower($att->status) }}" data-status="{{ $att->status }}">
                             ● {{ $att->status }}
                         </span>
                     </td>
                 </tr>
                 @empty
-                <tr>
+                <tr id="emptyRow">
                     <td colspan="4" class="text-center text-slate-400 py-6">No attendance records yet</td>
                 </tr>
                 @endforelse
+                <tr id="noResultsRow" class="hidden">
+                    <td colspan="4" class="text-center text-slate-400 py-6">No matching records found</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -145,4 +162,48 @@
         <p class="text-center text-sm text-slate-500 mt-4">Position QR code in front of camera</p>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('attendanceSearch');
+        const filterSelect = document.getElementById('attendanceFilter');
+        const rows = document.querySelectorAll('.attendance-row');
+        const noResultsRow = document.getElementById('noResultsRow');
+
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filterStatus = filterSelect.value.toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const dateText = row.querySelector('.date-cell').textContent.toLowerCase();
+                const statusElement = row.querySelector('.status-badge');
+                const statusText = statusElement ? statusElement.getAttribute('data-status').toLowerCase() : '';
+
+                const matchesSearch = dateText.includes(searchTerm);
+                const matchesFilter = filterStatus === '' || statusText === filterStatus;
+
+                if (matchesSearch && matchesFilter) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (noResultsRow) {
+                if (visibleCount === 0 && rows.length > 0) {
+                    noResultsRow.classList.remove('hidden');
+                } else {
+                    noResultsRow.classList.add('hidden');
+                }
+            }
+        }
+
+        if (searchInput) searchInput.addEventListener('input', filterTable);
+        if (filterSelect) filterSelect.addEventListener('change', filterTable);
+    });
+</script>
 @endsection

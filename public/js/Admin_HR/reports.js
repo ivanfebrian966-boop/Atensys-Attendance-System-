@@ -1,35 +1,50 @@
-/* ---- Raw data (shared with attendance demo) ---- */
-const RAW = [
-    { name: 'Andi Rahman', div: 'Engineering', date: '2026-04-07', status: 'Present', ci: '08:02' },
-    { name: 'Siti Wulandari', div: 'HR', date: '2026-04-07', status: 'Present', ci: '07:55' },
-    { name: 'Budi Pratama', div: 'Finance', date: '2026-04-07', status: 'Late', ci: '09:15' },
-    { name: 'Rini Handayani', div: 'Marketing', date: '2026-04-07', status: 'Absent', ci: '-' },
-    { name: 'Fajar Nugroho', div: 'IT', date: '2026-04-07', status: 'Sick', ci: '-' },
-    { name: 'Dewi Susanti', div: 'Engineering', date: '2026-04-07', status: 'Permission', ci: '-' },
-    { name: 'Hendra Putra', div: 'Operasional', date: '2026-04-07', status: 'Present', ci: '07:48' },
-    { name: 'Yuni Setiawati', div: 'HR', date: '2026-04-07', status: 'Present', ci: '08:00' },
-    { name: 'Andi Rahman', div: 'Engineering', date: '2026-04-06', status: 'Present', ci: '08:01' },
-    { name: 'Siti Wulandari', div: 'HR', date: '2026-04-06', status: 'Late', ci: '09:10' },
-    { name: 'Budi Pratama', div: 'Finance', date: '2026-04-06', status: 'Present', ci: '08:05' },
-    { name: 'Fajar Nugroho', div: 'IT', date: '2026-04-06', status: 'Present', ci: '07:50' },
-    { name: 'Hendra Putra', div: 'Operasional', date: '2026-04-06', status: 'Present', ci: '07:45' },
-    { name: 'Yuni Setiawati', div: 'HR', date: '2026-04-06', status: 'Absent', ci: '-' },
-    { name: 'Andi Rahman', div: 'Engineering', date: '2026-04-05', status: 'Present', ci: '08:00' },
-    { name: 'Fajar Nugroho', div: 'IT', date: '2026-04-05', status: 'Late', ci: '09:05' },
-    { name: 'Dewi Susanti', div: 'Engineering', date: '2026-04-05', status: 'Present', ci: '07:58' },
-    { name: 'Rini Handayani', div: 'Marketing', date: '2026-04-05', status: 'Sick', ci: '-' },
-];
-
 /* ---- State ---- */
 let period = 'week';
-let filteredData = [...RAW];
+let RAW = [];
+let filteredData = [];
+
+/* ---- API FETCH ---- */
+async function loadReportsData() {
+    try {
+        const response = await fetch(REPORTS_DATA_URL);
+        const data = await response.json();
+        RAW = data;
+        renderReports();
+    } catch (error) {
+        console.error('Error loading reports:', error);
+    }
+}
 
 /* ---- Period ---- */
 function setPeriod(p, btn) {
     period = p;
     document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+
+    // Reset date inputs to allow period to take effect
+    const dateFromEl = document.getElementById('dateFrom');
+    const dateToEl = document.getElementById('dateTo');
+    
+    // Temporarily clear inputs so getDateRange uses the period logic
+    const oldFrom = dateFromEl.value;
+    const oldTo = dateToEl.value;
+    dateFromEl.value = '';
+    dateToEl.value = '';
+
+    const range = getDateRange();
+    
+    // Set the inputs to the new range
+    dateFromEl.value = range.from;
+    dateToEl.value = range.to;
+
     renderReports();
+}
+
+function toLocalISO(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 function getDateRange() {
@@ -46,26 +61,41 @@ function getDateRange() {
     else if (period === 'year') { f = new Date(now.getFullYear(), 0, 1); }
 
     return {
-        from: f.toISOString().slice(0, 10),
-        to: now.toISOString().slice(0, 10),
+        from: toLocalISO(f),
+        to: toLocalISO(now),
     };
 }
 
 /* ---- Main render ---- */
 function renderReports() {
+    if (!RAW || RAW.length === 0) {
+        updateSummaryCardsEmpty();
+        return;
+    }
+
     const { from, to } = getDateRange();
     const divFilt = document.getElementById('reportDiv')?.value || '';
 
     filteredData = RAW.filter(r => r.date >= from && r.date <= to && (!divFilt || r.div === divFilt));
 
-    document.getElementById('chartSubtitle').textContent =
-        `${fmtDate(from)} — ${fmtDate(to)}`;
+    const chartSubtitle = document.getElementById('chartSubtitle');
+    if (chartSubtitle) {
+        chartSubtitle.textContent = `${fmtDate(from)} — ${fmtDate(to)}`;
+    }
 
     renderSummaryCards();
     renderBarChart();
     renderDonut();
     renderDivisionTable();
     renderDetailTable(filteredData);
+}
+
+function updateSummaryCardsEmpty() {
+    const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rSick', 'rPerm', 'rPresentPct', 'rAbsentPct', 'rLatePct', 'rSickPct', 'rPermPct'];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = id.includes('Pct') ? '—' : '0';
+    });
 }
 
 /* ---- Summary ---- */
@@ -112,9 +142,9 @@ function renderBarChart() {
         return `
             <div class="bar-group-wrap">
                 <div class="bar-group" style="height:100px">
-                    <div class="bar-seg" style="background:#10b981;height:${h(pres)};width:33%" title="Hadir: ${pres}"></div>
-                    <div class="bar-seg" style="background:#ef4444;height:${h(abs)};width:33%" title="Absen: ${abs}"></div>
-                    <div class="bar-seg" style="background:#f59e0b;height:${h(late)};width:33%" title="Telat: ${late}"></div>
+                    <div class="bar-seg" style="background:#10b981;height:${h(pres)};width:33%" title="Present: ${pres}"></div>
+                    <div class="bar-seg" style="background:#ef4444;height:${h(abs)};width:33%" title="Absent: ${abs}"></div>
+                    <div class="bar-seg" style="background:#f59e0b;height:${h(late)};width:33%" title="Late: ${late}"></div>
                 </div>
                 <p class="bar-label">${lbl}</p>
             </div>`;
@@ -134,11 +164,11 @@ function renderDonut() {
     document.getElementById('donutPct').textContent = pct + '%';
 
     const data = [
-        { label: 'Hadir', val: present, color: '#10b981' },
-        { label: 'Absen', val: absent, color: '#ef4444' },
-        { label: 'Telat', val: late, color: '#f59e0b' },
-        { label: 'Sakit', val: sick, color: '#3b82f6' },
-        { label: 'Izin', val: perm, color: '#8b5cf6' },
+        { label: 'Present', val: present, color: '#10b981' },
+        { label: 'Absent', val: absent, color: '#ef4444' },
+        { label: 'Late', val: late, color: '#f59e0b' },
+        { label: 'Sick', val: sick, color: '#3b82f6' },
+        { label: 'Permission', val: perm, color: '#8b5cf6' },
     ].filter(d => d.val > 0);
 
     const svg = document.getElementById('donutSvg');
@@ -169,6 +199,7 @@ function renderDonut() {
 function renderDivisionTable() {
     const divs = [...new Set(RAW.map(r => r.div))];
     const body = document.getElementById('divisionReportBody');
+    if (!body) return;
 
     body.innerHTML = divs.map(div => {
         const rows = filteredData.filter(r => r.div === div);
@@ -238,34 +269,41 @@ function filterReport() {
     const empty = document.getElementById('reportEmpty');
     const info = document.getElementById('reportInfo');
 
-    if (!list.length) { body.innerHTML = ''; empty.classList.remove('hidden'); info.textContent = '0 data'; return; }
-    empty.classList.add('hidden');
-    info.textContent = `${list.length} karyawan`;
+    if (!list.length) { 
+        if (body) body.innerHTML = ''; 
+        if (empty) empty.classList.remove('hidden'); 
+        if (info) info.textContent = '0 data'; 
+        return; 
+    }
+    if (empty) empty.classList.add('hidden');
+    if (info) info.textContent = `${list.length} karyawan`;
 
-    body.innerHTML = list.map(r => {
-        const rCls = r.rate >= 85 ? 'text-emerald-600' : r.rate >= 70 ? 'text-amber-500' : 'text-red-500';
-        return `<tr class="table-row">
-            <td>
-                <div class="flex items-center gap-3">
-                    <div class="avatar-sm" style="background:${divColor(r.div)}">${initials(r.name)}</div>
-                    <span class="font-semibold text-slate-800 text-sm sora">${r.name}</span>
-                </div>
-            </td>
-            <td class="hidden sm:table-cell"><span class="text-slate-500 text-sm">${r.div}</span></td>
-            <td><span class="font-semibold text-emerald-600 sora">${r.present}</span></td>
-            <td class="hidden sm:table-cell"><span class="font-semibold text-red-500 sora">${r.absent}</span></td>
-            <td class="hidden md:table-cell"><span class="font-semibold text-amber-500 sora">${r.late}</span></td>
-            <td class="hidden md:table-cell"><span class="font-semibold text-blue-500 sora">${r.sick}</span></td>
-            <td class="hidden md:table-cell"><span class="font-semibold text-purple-500 sora">${r.perm}</span></td>
-            <td>
-                <div class="flex items-center gap-2">
-                    <div class="prog-wrap"><div class="prog-bar" style="background:${r.rate >= 85 ? '#10b981' : r.rate >= 70 ? '#f59e0b' : '#ef4444'};width:${r.rate}%"></div></div>
-                    <span class="font-bold sora ${rCls}" style="font-size:.78rem">${r.rate}%</span>
-                </div>
-            </td>
-            <td class="hidden lg:table-cell"><span class="text-slate-400 text-xs">${r.avgCi}</span></td>
-        </tr>`;
-    }).join('');
+    if (body) {
+        body.innerHTML = list.map(r => {
+            const rCls = r.rate >= 85 ? 'text-emerald-600' : r.rate >= 70 ? 'text-amber-500' : 'text-red-500';
+            return `<tr class="table-row">
+                <td>
+                    <div class="flex items-center gap-3">
+                        <div class="avatar-sm" style="background:${divColor(r.div)}">${initials(r.name)}</div>
+                        <span class="font-semibold text-slate-800 text-sm sora">${r.name}</span>
+                    </div>
+                </td>
+                <td class="hidden sm:table-cell"><span class="text-slate-500 text-sm">${r.div}</span></td>
+                <td><span class="font-semibold text-emerald-600 sora">${r.present}</span></td>
+                <td class="hidden sm:table-cell"><span class="font-semibold text-red-500 sora">${r.absent}</span></td>
+                <td class="hidden md:table-cell"><span class="font-semibold text-amber-500 sora">${r.late}</span></td>
+                <td class="hidden md:table-cell"><span class="font-semibold text-blue-500 sora">${r.sick}</span></td>
+                <td class="hidden md:table-cell"><span class="font-semibold text-purple-500 sora">${r.perm}</span></td>
+                <td>
+                    <div class="flex items-center gap-2">
+                        <div class="prog-wrap"><div class="prog-bar" style="background:${r.rate >= 85 ? '#10b981' : r.rate >= 70 ? '#f59e0b' : '#ef4444'};width:${r.rate}%"></div></div>
+                        <span class="font-bold sora ${rCls}" style="font-size:.78rem">${r.rate}%</span>
+                    </div>
+                </td>
+                <td class="hidden lg:table-cell"><span class="text-slate-400 text-xs">${r.avgCi}</span></td>
+            </tr>`;
+        }).join('');
+    }
 }
 
 /* ---- Export ---- */
@@ -280,9 +318,21 @@ function exportDetailCSV() { exportAllReport(); }
 document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     const from = new Date(now); from.setDate(now.getDate() - 6);
-    document.getElementById('dateFrom').value = from.toISOString().slice(0, 10);
-    document.getElementById('dateTo').value = now.toISOString().slice(0, 10);
-    renderReports();
+    const dateFromEl = document.getElementById('dateFrom');
+    const dateToEl = document.getElementById('dateTo');
+    if (dateFromEl) dateFromEl.value = toLocalISO(from);
+    if (dateToEl) dateToEl.value = toLocalISO(now);
+    
+    loadReportsData();
+
+    if (dateFromEl) dateFromEl.addEventListener('change', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        renderReports();
+    });
+    if (dateToEl) dateToEl.addEventListener('change', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        renderReports();
+    });
 });
 
 /**
@@ -395,4 +445,3 @@ function downloadCSV(filename, rows) {
     link.click();
     document.body.removeChild(link);
 }
-

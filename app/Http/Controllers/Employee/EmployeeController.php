@@ -21,13 +21,13 @@ class EmployeeController extends Controller
             ->first();
         
         $monthStats = [
-            'present' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Hadir')->count(),
-            'late' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Terlambat')->count(),
-            'absent' => Attendance::where('nip', $user->nip)->whereMonth('check_in', Carbon::now()->month)->where('status', 'Alpa')->count(),
+            'present' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Present')->count(),
+            'late' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Late')->count(),
+            'absent' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Absent')->count(),
             'sick_permission' => Permission::where('nip', $user->nip)->whereMonth('start_date', Carbon::now()->month)->count(),
         ];
         
-        $recentAttendances = Attendance::where('nip', $user->nip)->orderBy('check_in', 'desc')->limit(7)->get();
+        $recentAttendances = Attendance::where('nip', $user->nip)->orderBy('created_at', 'desc')->limit(7)->get();
         
         $qrCodeBaseData = 'ATTENSYS:EMP:' . $user->nip;
         $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
@@ -73,13 +73,13 @@ class EmployeeController extends Controller
         if (!$user) return redirect()->route('login');
 
         $attendances = Attendance::where('nip', $user->nip)
-            ->orderBy('check_in', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         $counts = [
-            'present' => $attendances->where('status', 'Hadir')->count(),
-            'late' => $attendances->where('status', 'Terlambat')->count(),
-            'absent' => $attendances->where('status', 'Alpa')->count(),
+            'present' => Attendance::where('nip', $user->nip)->where('status', 'Present')->count(),
+            'late' => Attendance::where('nip', $user->nip)->where('status', 'Late')->count(),
+            'absent' => Attendance::where('nip', $user->nip)->where('status', 'Absent')->count(),
         ];
 
         return view('Employee.pages.history', compact('attendances', 'counts', 'user'));
@@ -103,7 +103,7 @@ class EmployeeController extends Controller
             ->first();
 
         $recentAttendances = Attendance::where('nip', $user->nip)
-            ->orderBy('check_in', 'desc')
+            ->orderBy('created_at', 'desc')
             ->limit(7)
             ->get();
 

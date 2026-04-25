@@ -108,7 +108,7 @@ class AttendanceController extends Controller
     private function determineStatus($checkInTime)
     {
         $limit = Carbon::today()->setHour(8)->setMinute(0);
-        return $checkInTime->greaterThan($limit) ? 'Terlambat' : 'Hadir';
+        return $checkInTime->greaterThan($limit) ? 'Late' : 'Present';
     }
     
     public function getAttendanceData(Request $request)
@@ -117,18 +117,18 @@ class AttendanceController extends Controller
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();
             
-            $attendances = Attendance::whereDate('check_in', $parsedDate)
-                ->with('employee')
-                ->orderBy('check_in', 'desc')
+            $attendances = Attendance::whereDate('created_at', $parsedDate)
+                ->with('employee.division')
+                ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($attendance) {
                     return [
                         'id' => $attendance->attendance_id,
                         'name' => $attendance->employee?->name ?? 'Unknown',
                         'division' => $attendance->employee?->division->division_name ?? '—',
-                        'date' => Carbon::parse($attendance->check_in)->format('Y-m-d'),
+                        'date' => Carbon::parse($attendance->created_at)->format('Y-m-d'),
                         'status' => $attendance->status,
-                        'check_in' => Carbon::parse($attendance->check_in)->format('H:i:s'),
+                        'check_in' => $attendance->check_in ? Carbon::parse($attendance->check_in)->format('H:i:s') : '—',
                         'check_out' => $attendance->check_out ? Carbon::parse($attendance->check_out)->format('H:i:s') : '—',
                         'duration' => $this->calculateDuration($attendance->check_in, $attendance->check_out),
                         'notes' => ''
@@ -146,6 +146,80 @@ class AttendanceController extends Controller
             ], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'nip' => 'required|exists:employees,nip',
+                'date' => 'required|date',
+                'status' => 'required|string',
+                'check_in' => 'nullable',
+                'check_out' => 'nullable',
+            ]);
+
+            $date = Carbon::parse($validated['date']);
+            
+            $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
+            $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
+
+            Attendance::create([
+                'nip' => $validated['nip'],
+                'status' => $validated['status'],
+                'check_in' => $check_in,
+                'check_out' => $check_out,
+                'qr_code' => 'MANUAL',
+                'created_at' => $date->setTime(7,0,0),
+                'updated_at' => $date,
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Data absensi berhasil ditambahkan']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $attendance = Attendance::findOrFail($id);
+            
+            $validated = $request->validate([
+                'date' => 'required|date',
+                'status' => 'required|string',
+                'check_in' => 'nullable',
+                'check_out' => 'nullable',
+            ]);
+
+            $date = Carbon::parse($validated['date']);
+            
+            $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
+            $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
+
+            $attendance->update([
+                'status' => $validated['status'],
+                'check_in' => $check_in,
+                'check_out' => $check_out,
+                'created_at' => $date->setTime(7,0,0),
+                'updated_at' => Carbon::now(),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Data absensi berhasil diperbarui']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $attendance = Attendance::findOrFail($id);
+            $attendance->delete();
+            return response()->json(['success' => true, 'message' => 'Data absensi berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
     
     public function getStats(Request $request)
     {
@@ -153,13 +227,13 @@ class AttendanceController extends Controller
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();
             
-            $stats = Attendance::whereDate('check_in', $parsedDate)
+            $stats = Attendance::whereDate('created_at', $parsedDate)
                 ->selectRaw('COUNT(*) as total, 
-                            SUM(CASE WHEN status = "Hadir" THEN 1 ELSE 0 END) as present,
-                            SUM(CASE WHEN status = "Alpa" THEN 1 ELSE 0 END) as absent,
-                            SUM(CASE WHEN status = "Terlambat" THEN 1 ELSE 0 END) as late,
-                            SUM(CASE WHEN status = "Sakit" THEN 1 ELSE 0 END) as sick,
-                            SUM(CASE WHEN status = "Izin" THEN 1 ELSE 0 END) as permission')
+                            SUM(CASE WHEN status = "Present" THEN 1 ELSE 0 END) as present,
+                            SUM(CASE WHEN status = "Absent" THEN 1 ELSE 0 END) as absent,
+                            SUM(CASE WHEN status = "Late" THEN 1 ELSE 0 END) as late,
+                            SUM(CASE WHEN status = "Sick" THEN 1 ELSE 0 END) as sick,
+                            SUM(CASE WHEN status = "Permission" THEN 1 ELSE 0 END) as permission')
                 ->first();
             
             return response()->json([
@@ -201,18 +275,19 @@ class AttendanceController extends Controller
             $permission->update(['status' => 'Approved']);
 
             $start = Carbon::parse($permission->start_date);
-            $end = Carbon::parse($permission->completion_date);
+            $end = Carbon::parse($permission->end_date);
 
             for ($date = $start; $date->lte($end); $date->addDay()) {
                 $exists = Attendance::where('nip', $permission->nip)
-                    ->whereDate('check_in', $date->toDateString())
+                    ->whereDate('created_at', $date->toDateString())
                     ->exists();
 
                 if (!$exists) {
                     Attendance::create([
                         'nip' => $permission->nip,
                         'check_in' => $date->setHour(8)->setMinute(0),
-                        'status' => $permission->type === 'Sakit' ? 'Sakit' : 'Izin',
+                        'status' => $permission->type === 'Sakit' ? 'Sick' : 'Permission',
+                        'qr_code' => 'SYSTEM',
                     ]);
                 }
             }

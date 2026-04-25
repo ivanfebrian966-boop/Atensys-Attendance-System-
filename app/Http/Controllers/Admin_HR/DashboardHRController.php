@@ -26,14 +26,12 @@ class DashboardHRController extends Controller
 
         $today = Carbon::today();
         
-        $present = Attendance::whereDate('check_in', $today)->where('status', 'Hadir')->count();
-        $late = Attendance::whereDate('check_in', $today)->where('status', 'Terlambat')->count();
-        $absent = Attendance::whereDate('check_in', $today)->where('status', 'Alpa')->count();
+        $present = Attendance::whereDate('created_at', $today)->where('status', 'Present')->count();
+        $late = Attendance::whereDate('created_at', $today)->where('status', 'Late')->count();
+        $absent = Attendance::whereDate('created_at', $today)->where('status', 'Absent')->count();
         
-        // Note: For simplicity, assume Sick/Permission might be statuses in attendance or separate table
-        // But based on my migration, status is a string in attendances table.
-        $sick = Attendance::whereDate('check_in', $today)->where('status', 'Sakit')->count();
-        $permission = Attendance::whereDate('check_in', $today)->where('status', 'Izin')->count();
+        $sick = Attendance::whereDate('created_at', $today)->where('status', 'Sick')->count();
+        $permission = Attendance::whereDate('created_at', $today)->where('status', 'Permission')->count();
 
         $recorded = $present + $late + $sick + $permission + $absent;
 
@@ -52,8 +50,8 @@ class DashboardHRController extends Controller
         
         for ($i = 0; $i < 6; $i++) {
             $date = $startOfWeek->copy()->addDays($i);
-            $count = Attendance::whereDate('check_in', $date)
-                ->whereIn('status', ['Hadir', 'Terlambat'])
+            $count = Attendance::whereDate('created_at', $date)
+                ->whereIn('status', ['Present', 'Late'])
                 ->count();
             
             $pct = $totalEmployees > 0 ? round(($count / $totalEmployees) * 100) : 0;
@@ -68,8 +66,8 @@ class DashboardHRController extends Controller
         $avgAttendance = $totalDays > 0 ? round($totalAttendanceThisWeek / $totalDays, 1) : 0;
 
         $recentAttendances = Attendance::with('employee')
-            ->whereDate('check_in', Carbon::today())
-            ->orderBy('check_in', 'desc')
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
 

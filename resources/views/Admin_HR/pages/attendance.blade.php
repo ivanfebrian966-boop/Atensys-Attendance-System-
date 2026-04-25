@@ -39,9 +39,9 @@
         <!-- STAT CARDS -->
         <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             <div class="stat-card indigo fade-up d1">
-                <div class="stat-icon" style="background:#eef2ff">👥</div>
+                <div class="stat-icon" style="background:#eef2ff"></div>
                 <p class="stat-value text-slate-900" id="sTotal">0</p>
-                <p class="stat-label">Total</p>
+                <p class="stat-label">Total Attendances</p>
             </div>
             <div class="stat-card green fade-up d2">
                 <div class="stat-icon" style="background:#ecfdf5">✅</div>
@@ -207,7 +207,6 @@
                             <th class="hidden md:table-cell">Check In</th>
                             <th class="hidden md:table-cell">Check Out</th>
                             <th class="hidden lg:table-cell">Duration</th>
-                            <th class="hidden lg:table-cell">Notes</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -362,6 +361,9 @@
 <script>
     const ATTENDANCE_DATA_URL = "{{ route('admin-hr.attendance.data') }}";
     const ATTENDANCE_STATS_URL = "{{ route('admin-hr.attendance.stats') }}";
+    const ATTENDANCE_STORE_URL = "{{ route('admin-hr.attendance.store') }}";
+    const ATTENDANCE_UPDATE_URL = "{{ url('admin-hr/attendance/update') }}"; // We'll append ID in JS
+    const ATTENDANCE_DELETE_URL = "{{ url('admin-hr/attendance/delete') }}"; // We'll append ID in JS
 </script>
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
 <script src="{{ asset('js/Admin_HR/attendance_qr.js') }}"></script>

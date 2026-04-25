@@ -193,5 +193,8 @@
 @endsection
 
 @section('scripts')
+<script>
+    const REPORTS_DATA_URL = "{{ route('admin-hr.reports.data') }}";
+</script>
 <script src="{{ asset('js/Admin_HR/reports.js') }}"></script>
 @endsection

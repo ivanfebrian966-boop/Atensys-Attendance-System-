@@ -48,6 +48,9 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['rol
     Route::get('/reports/data', [ReportsController::class, 'getData'])->name('reports.data');
 
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::post('/attendance/store', [AttendanceController::class, 'store'])->name('attendance.store');
+    Route::put('/attendance/update/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::delete('/attendance/delete/{id}', [AttendanceController::class, 'destroy'])->name('attendance.delete');
     Route::post('/attendance/process-qr', [AttendanceController::class, 'processQr'])->name('attendance.process-qr');
     Route::get('/attendance/data', [AttendanceController::class, 'getAttendanceData'])->name('attendance.data');
     Route::get('/attendance/stats', [AttendanceController::class, 'getStats'])->name('attendance.stats');
