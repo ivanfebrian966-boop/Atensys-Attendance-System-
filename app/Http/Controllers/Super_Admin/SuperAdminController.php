@@ -11,13 +11,23 @@ use App\Models\Division;
 
 class SuperAdminController extends Controller
 {
+    private function getCommonData()
+    {
+        return [
+            'employees_count' => Employee::where('role', 'karyawan')->count(),
+            'hr_admins_count' => Employee::where('role', 'admin_hr')->count(),
+            'divisions_count' => Division::count(),
+            'divisions' => Division::all(),
+        ];
+    }
+
     public function index()
     {
         $user = Auth::user();
+        $commonData = $this->getCommonData();
         
         $employees = Employee::with('division')->where('role', 'karyawan')->get();
         $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
-        $divisions = Division::all();
         $recent_users = Employee::with('division')
             ->whereIn('role', ['karyawan', 'admin_hr'])
             ->orderBy('created_at', 'desc')
@@ -30,7 +40,33 @@ class SuperAdminController extends Controller
             'nonaktif' => Employee::where('status', 'Nonaktif')->count(),
         ];
 
-        return view('Super_Admin.super_admin', compact('user', 'employees', 'hr_admins', 'divisions', 'recent_users', 'status_counts'));
+        return view('Super_Admin.dashboard', array_merge($commonData, compact('user', 'employees', 'hr_admins', 'recent_users', 'status_counts')));
+    }
+
+    public function employees()
+    {
+        $user = Auth::user();
+        $commonData = $this->getCommonData();
+        $employees = Employee::with('division')->where('role', 'karyawan')->get();
+
+        return view('Super_Admin.employees', array_merge($commonData, compact('user', 'employees')));
+    }
+
+    public function admins()
+    {
+        $user = Auth::user();
+        $commonData = $this->getCommonData();
+        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
+
+        return view('Super_Admin.admins', array_merge($commonData, compact('user', 'hr_admins')));
+    }
+
+    public function divisions()
+    {
+        $user = Auth::user();
+        $commonData = $this->getCommonData();
+
+        return view('Super_Admin.divisions', array_merge($commonData, compact('user')));
     }
 
     public function storeEmployee(Request $request)
@@ -223,23 +259,9 @@ class SuperAdminController extends Controller
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
 
-        // Reuse index logic but with active tab profile
-        $employees = Employee::with('division')->where('role', 'karyawan')->get();
-        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
-        $divisions = Division::all();
-        $recent_users = Employee::with('division')
-            ->whereIn('role', ['karyawan', 'admin_hr'])
-            ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
+        $commonData = $this->getCommonData();
 
-        $status_counts = [
-            'aktif' => Employee::where('status', 'Aktif')->count(),
-            'pending' => Employee::where('status', 'Pending')->count(),
-            'nonaktif' => Employee::where('status', 'Nonaktif')->count(),
-        ];
-
-        return view('Super_Admin.super_admin', compact('user', 'employees', 'hr_admins', 'divisions', 'recent_users', 'status_counts'))->with('active_tab', 'profile');
+        return view('Super_Admin.profile', array_merge($commonData, compact('user')));
     }
 
     public function updateProfile(Request $request)

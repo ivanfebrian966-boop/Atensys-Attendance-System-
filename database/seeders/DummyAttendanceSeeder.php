@@ -23,25 +23,47 @@ class DummyAttendanceSeeder extends Seeder
         }
 
         foreach ($employees as $employee) {
-            // Siapkan array dengan komposisi acak (3 Present, 3 Late, 3 Absent, 3 Sick, 3 Permission)
+            // Siapkan array dengan komposisi acak (5 Present, 5 Late, 5 Absent)
             $statuses = [
-                'Present', 'Present', 'Present',
-                'Late', 'Late', 'Late',
-                'Absent', 'Absent', 'Absent',
-                'Sick', 'Sick', 'Sick',
-                'Permission', 'Permission', 'Permission'
+                'Present', 'Present', 'Present', 'Present', 'Present',
+                'Late', 'Late', 'Late', 'Late', 'Late',
+                'Absent', 'Absent', 'Absent', 'Absent', 'Absent'
             ];
             shuffle($statuses);
 
-            // Mulai dari 15 hari yang lalu
-            $startDate = Carbon::today()->subDays(14); 
+            // Mulai dari 20 hari yang lalu sampai hari ini (21 hari total)
+            $startDate = Carbon::today()->subDays(20); 
 
             // Hapus absensi dummy yang mungkin sudah ada agar tidak menumpuk
             Attendance::where('nip', $employee->nip)->delete();
 
-            foreach ($statuses as $index => $status) {
-                $date = $startDate->copy()->addDays($index);
+            for ($i = 0; $i <= 20; $i++) {
+                $date = $startDate->copy()->addDays($i)->setTime(7, 0, 0);
+                
+                // Cek apakah ada perizinan di tabel permissions untuk tanggal ini
+                $perm = \App\Models\Permission::where('nip', $employee->nip)
+                    ->whereDate('start_date', '<=', $date)
+                    ->whereDate('completion_date', '>=', $date)
+                    ->first();
 
+                if ($perm) {
+                    // Jika izin disetujui, buat record di attendance
+                    if ($perm->status === 'Accepted') {
+                        Attendance::create([
+                            'nip' => $employee->nip,
+                            'check_in' => $date,
+                            'status' => $perm->type,
+                            'qr_code' => 'SYSTEM',
+                            'created_at' => $date,
+                            'updated_at' => $date,
+                        ]);
+                    }
+                    // Jika Pending/Rejected, jangan buat absensi (sesuai aturan 1 aksi)
+                    continue;
+                }
+
+                // Jika tidak ada izin, buat data absensi acak (Present/Late/Absent)
+                $status = $statuses[array_rand($statuses)];
                 $checkIn = null;
                 $checkOut = null;
                 $qrCode = 'SYSTEM';
@@ -55,8 +77,6 @@ class DummyAttendanceSeeder extends Seeder
                     $checkOut = $date->copy()->setTime(17, rand(0, 30), rand(0, 59));
                     $qrCode = 'MANUAL';
                 } 
-                // Untuk Absent, Sick, Permission, checkIn dan checkOut tetap null
-                // Dan qrCode tetap 'SYSTEM' (sebagai penanda dibuat otomatis)
 
                 Attendance::create([
                     'nip' => $employee->nip,
@@ -64,8 +84,8 @@ class DummyAttendanceSeeder extends Seeder
                     'check_out' => $checkOut,
                     'status' => $status,
                     'qr_code' => $qrCode,
-                    'created_at' => $date->copy()->setTime(7, 0, 0),
-                    'updated_at' => $date->copy()->setTime(7, 0, 0),
+                    'created_at' => $date,
+                    'updated_at' => $date,
                 ]);
             }
         }

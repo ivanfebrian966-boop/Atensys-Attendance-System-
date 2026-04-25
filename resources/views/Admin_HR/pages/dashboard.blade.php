@@ -63,11 +63,16 @@
                 <p class="stat-label">Sick</p>
 
             </div>
-            <div class="stat-card purple fade-up d6">
+            <div class="stat-card purple fade-up d6" style="position:relative">
+                @if(($pendingPermissionsCount ?? 0) > 0)
+                    <span class="absolute -top-1 -right-1 flex h-5 w-5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-600 text-[10px] text-white items-center justify-center font-bold">{{ $pendingPermissionsCount }}</span>
+                    </span>
+                @endif
                 <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📋</div>
                 <p class="stat-value text-purple-500">{{ $permission ?? 7 }}</p>
                 <p class="stat-label">Permission</p>
-
             </div>
         </div>
 

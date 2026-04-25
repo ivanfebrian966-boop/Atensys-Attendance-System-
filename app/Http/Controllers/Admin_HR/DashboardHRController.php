@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin_HR;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\Permission;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +13,7 @@ class DashboardHRController extends Controller
 {
     public function index()
     {
+        $pendingPermissionsCount = Permission::where('status', 'Pending')->count();
         $features = [
             "QR Code Attendance" => "Quick attendance using QR scanning",
             "Attendance History" => "Complete attendance records",
@@ -86,7 +88,8 @@ class DashboardHRController extends Controller
             'permissionPct' => $permissionPct,
             'chartData' => $chartData,
             'avgAttendance' => $avgAttendance,
-            'recentAttendances' => $recentAttendances
+            'recentAttendances' => $recentAttendances,
+            'pendingPermissionsCount' => $pendingPermissionsCount
         ]);
     }
 }

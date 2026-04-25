@@ -6,7 +6,7 @@
 
 @section('content')
 
-<div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
     <div class="stat-card fade-up d1">
         <div class="stat-icon-sm" style="background:#eef2ff;color:#6366f1">👥</div>
         <p class="stat-value text-slate-900">{{ $attendances->total() }}</p>
@@ -27,9 +27,19 @@
         <p class="stat-value text-red-500">{{ $counts['absent'] }}</p>
         <p class="stat-label">Absent</p>
     </div>
+    <div class="stat-card fade-up d6">
+        <div class="stat-icon-sm" style="background:#fdf4ff;color:#a855f7">🤒</div>
+        <p class="stat-value text-purple-600">{{ $counts['sick'] }}</p>
+        <p class="stat-label">Sick</p>
+    </div>
+    <div class="stat-card fade-up d5">
+        <div class="stat-icon-sm" style="background:#f0f9ff;color:#0ea5e9">📝</div>
+        <p class="stat-value text-sky-600">{{ $counts['permission'] }}</p>
+        <p class="stat-label">Permission</p>
+    </div>
 </div>
 
-<div class="panel fade-up d5">
+<div class="panel fade-up d7">
     <div class="panel-header flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         <div>
             <h3 class="panel-title">Detailed History</h3>
@@ -47,6 +57,8 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
+                <option value="Sick">Sick</option>
+                <option value="Permission">Permission</option>
             </select>
             <a href="{{ route('employee.attendance') }}" class="btn-secondary inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -106,6 +106,7 @@ function renderAttendanceTable(data) {
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_in || '—'}</td>
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_out || '—'}</td>
             <td class="hidden lg:table-cell text-slate-600 text-sm">${r.duration || '—'}</td>
+            <td class="text-slate-600 text-sm">${r.information || '—'}</td>
             <td class="text-right">
                 <button class="action-btn action-btn-edit" onclick="editAtt(${r.id})" title="Edit">✏️</button>
                 <button class="action-btn action-btn-delete" onclick="openDeleteModal(${r.id})" title="Hapus">🗑️</button>
@@ -182,7 +183,7 @@ function openAddAttModal() {
     if (document.getElementById('aaStatus')) document.getElementById('aaStatus').value = 'Present';
     if (document.getElementById('aaCheckIn')) document.getElementById('aaCheckIn').value = '';
     if (document.getElementById('aaCheckOut')) document.getElementById('aaCheckOut').value = '';
-    if (document.getElementById('aaNote')) document.getElementById('aaNote').value = '';
+    if (document.getElementById('aaInfo')) document.getElementById('aaInfo').value = '';
     clearAllErrors();
     openModal('modalAddAtt');
 }
@@ -193,7 +194,7 @@ function saveAtt() {
     const status = document.getElementById('aaStatus')?.value;
     const check_in = document.getElementById('aaCheckIn')?.value;
     const check_out = document.getElementById('aaCheckOut')?.value;
-    const note = document.getElementById('aaNote')?.value;
+    const information = document.getElementById('aaInfo')?.value;
     
     if (!nip) {
         setErr('aaName', 'eaaName', 'Pilih karyawan dari dropdown');
@@ -205,7 +206,7 @@ function saveAtt() {
     }
     
     const formData = {
-        nip, date, status, check_in, check_out, note
+        nip, date, status, check_in, check_out
     };
 
     fetch(ATTENDANCE_STORE_URL, {
@@ -243,7 +244,9 @@ function editAtt(id) {
     if (document.getElementById('eaStatus')) document.getElementById('eaStatus').value = r.status || 'Present';
     if (document.getElementById('eaCheckIn')) document.getElementById('eaCheckIn').value = r.check_in || '';
     if (document.getElementById('eaCheckOut')) document.getElementById('eaCheckOut').value = r.check_out || '';
-    if (document.getElementById('eaNote')) document.getElementById('eaNote').value = r.notes || '';
+    if (document.getElementById('eaInformation')) document.getElementById('eaInformation').value = r.information === '—' ? '' : (r.information || '');
+    
+    toggleInfoWrap('ea', r.status);
     
     clearAllErrors();
     openModal('modalEditAtt');
@@ -255,12 +258,12 @@ function updateAtt() {
     const status = document.getElementById('eaStatus')?.value;
     const check_in = document.getElementById('eaCheckIn')?.value;
     const check_out = document.getElementById('eaCheckOut')?.value;
-    const note = document.getElementById('eaNote')?.value;
+    const information = document.getElementById('eaInformation')?.value;
     
     if (!id || !date) return;
     
     const formData = {
-        date, status, check_in, check_out, note
+        date, status, check_in, check_out, information
     };
 
     fetch(`${ATTENDANCE_UPDATE_URL}/${id}`, {
@@ -360,4 +363,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     setInterval(() => { updateStats(); }, 15000);
+
+    const eaStatus = document.getElementById('eaStatus');
+    if (eaStatus) {
+        eaStatus.addEventListener('change', (e) => toggleInfoWrap('ea', e.target.value));
+    }
+});
+
+function toggleInfoWrap(prefix, status) {
+    const wrap = document.getElementById(`${prefix}InfoWrap`);
+    if (wrap) {
+        if (status === 'Sick' || status === 'Permission') {
+            wrap.style.display = 'block';
+        } else {
+            wrap.style.display = 'none';
+        }
+    }
+}
+
+
+// Add listeners for status change
+document.addEventListener('DOMContentLoaded', () => {
+    const aaStatus = document.getElementById('aaStatus');
+    const eaStatus = document.getElementById('eaStatus');
+    
+    if (aaStatus) aaStatus.addEventListener('change', (e) => toggleInfoWrap('aa', e.target.value));
+    if (eaStatus) eaStatus.addEventListener('change', (e) => toggleInfoWrap('ea', e.target.value));
 });

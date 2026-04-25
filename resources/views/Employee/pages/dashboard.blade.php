@@ -69,7 +69,7 @@
                 <p class="panel-subtitle">This month</p>
             </div>
         </div>
-        <div class="p-5 grid grid-cols-2 gap-4">
+        <div class="p-5 grid grid-cols-3 gap-4">
             <div class="text-center">
                 <p class="text-2xl font-bold text-indigo-600">{{ $monthStats['present'] ?? 0 }}</p>
                 <p class="text-xs text-slate-500">Present</p>
@@ -83,8 +83,12 @@
                 <p class="text-xs text-slate-500">Absent</p>
             </div>
             <div class="text-center">
-                <p class="text-2xl font-bold text-blue-500">{{ $monthStats['sick_permission'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Sick/Permission</p>
+                <p class="text-2xl font-bold text-sky-500">{{ $monthStats['permission'] ?? 0 }}</p>
+                <p class="text-xs text-slate-500">Permission</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-bold text-purple-500">{{ $monthStats['sick'] ?? 0 }}</p>
+                <p class="text-xs text-slate-500">Sick</p>
             </div>
         </div>
     </div>
@@ -109,6 +113,8 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
+                <option value="Sick">Sick</option>
+                <option value="Permission">Permission</option>
             </select>
             <a href="{{ route('employee.history') }}" class="text-indigo-600 text-sm hover:underline ml-auto md:ml-0 whitespace-nowrap">View All →</a>
         </div>

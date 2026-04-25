@@ -33,11 +33,11 @@
                                 Check In
                             </button>
                         </form>
-                        <button onclick="window.openLeaveModal()" class="btn-secondary w-full justify-center flex">
+                        <button onclick="window.openLeaveModal()" class="btn-secondary w-full justify-center items-center flex">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            Request Leave / Sick
+                            Request Permission / Sick
                         </button>
                     </div>
                 </div>
@@ -112,6 +112,8 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
+                <option value="Sick">Sick</option>
+                <option value="Permission">Permission</option>
             </select>
         </div>
     </div>
@@ -179,19 +181,19 @@
                 @forelse($permissions as $perm)
                 <tr class="table-row border-b border-slate-50 last:border-0 hover:bg-slate-50">
                     <td class="py-3 px-4">
-                        <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
-                            ● {{ $perm->type === 'Sakit' ? 'Sick' : 'Permission' }}
+                        <span class="status-badge {{ $perm->type === 'Sick' ? 'status-sick' : 'status-permission' }}">
+                            ● {{ $perm->type }}
                         </span>
                     </td>
                     <td class="py-3 px-4 text-sm">
                         {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} —
-                        {{ \Carbon\Carbon::parse($perm->completion_date ?? $perm->end_date ?? $perm->start_date)->format('d M Y') }}
+                        {{ \Carbon\Carbon::parse($perm->completion_date)->format('d M Y') }}
                     </td>
                     <td class="py-3 px-4">
                         @php
                             $sc = match($perm->status) {
                                 'Pending'  => 'bg-amber-100 text-amber-600',
-                                'Approved' => 'bg-emerald-100 text-emerald-600',
+                                'Accepted' => 'bg-emerald-100 text-emerald-600',
                                 'Rejected' => 'bg-red-100 text-red-600',
                                 default    => 'bg-slate-100 text-slate-600'
                             };

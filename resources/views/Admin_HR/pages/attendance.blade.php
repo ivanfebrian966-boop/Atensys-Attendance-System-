@@ -39,7 +39,7 @@
         <!-- STAT CARDS -->
         <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             <div class="stat-card indigo fade-up d1">
-                <div class="stat-icon" style="background:#eef2ff"></div>
+                <div class="stat-icon" style="background:#eef2ff">💼</div>
                 <p class="stat-value text-slate-900" id="sTotal">0</p>
                 <p class="stat-label">Total Attendances</p>
             </div>
@@ -91,32 +91,33 @@
                             <th>Type</th>
                             <th>Date Range</th>
                             <th>Information</th>
+                            <th>File</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($pendingPermissions as $perm)
+                        @forelse($pendingPermissions ?? [] as $perm)
                         <tr class="table-row">
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="avatar-sm" style="background:linear-gradient(135deg,#6366f1,#818cf8)">
-                                        {{ substr($perm->employee->user->name, 0, 2) }}
+                                        {{ substr($perm->employee->name ?? '?', 0, 2) }}
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-slate-800 text-sm">{{ $perm->employee->user->name }}</p>
-                                        <p class="text-xs text-slate-400">{{ $perm->employee->user->division }}</p>
+                                        <p class="font-semibold text-slate-800 text-sm">{{ $perm->employee->name ?? 'Unknown' }}</p>
+                                        <p class="text-xs text-slate-400">{{ $perm->employee->division->division_name ?? '—' }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <span class="status-badge {{ $perm->type === 'Sakit' ? 'status-sick' : 'status-permission' }}">
+                                <span class="status-badge {{ $perm->type === 'Sick' ? 'status-sick' : 'status-permission' }}">
                                     ● {{ $perm->type }}
                                 </span>
                             </td>
                             <td>
                                 <div class="text-sm">
                                     {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} — 
-                                    {{ \Carbon\Carbon::parse($perm->end_date)->format('d M Y') }}
+                                    {{ \Carbon\Carbon::parse($perm->completion_date)->format('d M Y') }}
                                 </div>
                             </td>
                             <td>
@@ -124,16 +125,23 @@
                                     {{ $perm->information }}
                                 </p>
                             </td>
+                            <td>
+                                @if($perm->file)
+                                    <a href="{{ asset('storage/' . $perm->file) }}" target="_blank" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold inline-flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                        PDF
+                                    </a>
+                                @else
+                                    <span class="text-slate-300">—</span>
+                                @endif
+                            </td>
                             <td class="text-right">
                                 <div class="flex justify-end gap-2">
-                                    @if($perm->attachment)
-                                        <a href="{{ asset('storage/' . $perm->attachment) }}" target="_blank" class="btn-secondary" style="padding: 4px 8px; font-size: 11px;">View PDF</a>
-                                    @endif
-                                    <form action="{{ route('admin-hr.attendance.permission.approve', $perm->id) }}" method="POST">
+                                    <form action="{{ route('admin-hr.attendance.permission.approve', $perm->permission_id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn-approve">ACC</button>
                                     </form>
-                                    <form action="{{ route('admin-hr.attendance.permission.reject', $perm->id) }}" method="POST">
+                                    <form action="{{ route('admin-hr.attendance.permission.reject', $perm->permission_id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="btn-reject">Reject</button>
                                     </form>
@@ -142,7 +150,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center text-slate-400 py-6">No pending leave requests</td>
+                            <td colspan="6" class="text-center text-slate-400 py-6">No pending requests to review</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -207,6 +215,7 @@
                             <th class="hidden md:table-cell">Check In</th>
                             <th class="hidden md:table-cell">Check Out</th>
                             <th class="hidden lg:table-cell">Duration</th>
+                            <th>Information</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -324,9 +333,9 @@
                     <label class="form-label">Check Out</label>
                     <input type="time" id="eaCheckOut" class="form-input">
                 </div>
-                <div class="form-field col-2">
-                    <label class=\"form-label\">Notes</label>
-                    <textarea id="eaNote" class="form-input" rows="2"></textarea>
+                <div class="form-field col-2" id="eaInfoWrap">
+                    <label class="form-label">Information</label>
+                    <textarea id="eaInformation" class="form-input" rows="2"></textarea>
                 </div>
             </div>
         </div>

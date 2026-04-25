@@ -1,0 +1,141 @@
+@extends('Super_Admin.layouts.app')
+
+@section('title', 'Profile Settings')
+@section('page_title', 'My Profile')
+
+@section('content')
+<div class="space-y-6">
+    {{-- HERO BANNER --}}
+    <div class="relative overflow-hidden rounded-3xl shadow-2xl fade-up d1" 
+         style="background: linear-gradient(135deg, #031a40ff 0%, #04378aff 50%, #1c3f7cff 100%)"> 
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center md:items-end gap-8 p-8 md:p-10">
+            <!-- Avatar -->
+            <div class="flex-shrink-0 group">
+                <div class="relative">
+                    <div class="relative w-28 h-28 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/50
+                                flex items-center justify-center text-4xl font-bold text-white" style="font-family:'Sora',sans-serif">
+                        {{ strtoupper(substr($user->name, 0, 2)) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="text-center md:text-left flex-1">
+                <p class="text-white/70 text-xs font-medium uppercase tracking-widest mb-1">System Administrator</p>
+                <h1 class="text-3xl font-bold text-white leading-tight" style="font-family:'Sora',sans-serif">
+                    {{ $user->name }}
+                </h1>
+                <p class="text-white/70 text-sm mt-1">{{ $user->email }}</p>
+                <div class="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">{{ $user->position }}</span>
+                    <span class="px-3 py-1 bg-slate-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">{{ $user->division->division_name }}</span>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- GRID: Info + Settings --}}
+    <div class="grid lg:grid-cols-2 gap-6 fade-up d3">
+
+        {{-- Personal Info Card --}}
+        <div class="panel p-6">
+            <div class="mb-5 pb-4 border-b border-slate-100 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Personal Info</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Account details</p>
+                </div>
+                <span class="px-3 py-1 bg-emerald-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">● Active</span>
+            </div>
+
+            <div class="space-y-4">
+                @php
+                    $infoItems = [
+                        ['label'=>'Full Name',  'value'=>$user->name,          'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
+                        ['label'=>'Email',      'value'=>$user->email,          'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+                        ['label'=>'Phone',      'value'=>$user->no_hp ?? 'Not set', 'icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2'],
+                        ['label'=>'Address',    'value'=>$user->alamat ?? 'Not set', 'icon'=>'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
+                    ];
+                @endphp
+                @foreach($infoItems as $item)
+                <div class="flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ $item['label'] }}</p>
+                        <p class="text-sm text-slate-800 font-semibold truncate">{{ $item['value'] }}</p>
+                    </div>
+                </div>
+                @endforeach
+
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-3 border border-emerald-200">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <p class="text-xs font-bold text-emerald-800">Active Account</p>
+                        </div>
+                        <p class="text-[11px] text-emerald-600">Registered since {{ $user->created_at ? $user->created_at->format('d F Y') : '-' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Settings Form --}}
+        <div class="panel p-6">
+            <div class="mb-5 pb-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Profile Settings</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Update your account information and password</p>
+            </div>
+
+            <form action="{{ route('super_admin.update_profile') }}" method="POST">
+                @csrf
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+                    <div class="form-field">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-input" value="{{ old('name', $user->name) }}" required>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" name="email" class="form-input" value="{{ old('email', $user->email) }}" required>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" name="phone" class="form-input" value="{{ old('no_hp', $user->no_hp) }}" placeholder="08xxxx">
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="address" class="form-input" value="{{ old('alamat', $user->alamat) }}" placeholder="Full address">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-5">
+                    <h4 class="text-sm font-bold text-slate-900 mb-3">Change Password <span class="text-xs font-normal text-slate-400">(optional)</span></h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-field">
+                            <label class="form-label">New Password</label>
+                            <input type="password" name="password" class="form-input" placeholder="Min 8 characters">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-label">Confirm New Password</label>
+                            <input type="password" name="password_confirmation" class="form-input" placeholder="Repeat password">
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 italic">Leave blank if you don't want to change the password.</p>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button type="submit" class="btn-primary px-8">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection

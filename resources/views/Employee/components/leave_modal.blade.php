@@ -137,20 +137,20 @@
                 <!-- Type Selector -->
                 <p class="sec-label">Request Type</p>
                 <div class="type-pills">
-                    <label class="type-pill active" id="pill-izin">
-                        <input type="radio" name="type" value="Izin" checked onchange="setPill('izin')">
+                    <label class="type-pill active" id="pill-permission">
+                        <input type="radio" name="type" value="Permission" checked onchange="setPill('permission')">
                         <div class="pill-icon">🏖️</div>
                         <div>
                             <div class="pill-label">Permission</div>
                             <div class="pill-desc">Personal leave</div>
                         </div>
                     </label>
-                    <label class="type-pill" id="pill-sakit">
-                        <input type="radio" name="type" value="Sakit" onchange="setPill('sakit')">
+                    <label class="type-pill" id="pill-sick">
+                        <input type="radio" name="type" value="Sick" onchange="setPill('sick')">
                         <div class="pill-icon">🏥</div>
                         <div>
                             <div class="pill-label">Sick</div>
-                            <div class="pill-desc">Medical leave</div>
+                            <div class="pill-desc">Medical</div>
                         </div>
                     </label>
                 </div>
@@ -165,7 +165,7 @@
                     <div class="date-dash"> </div>
                     <div class="field">
                         <label>End Date</label>
-                        <input type="date" name="end_date" class="form-input" required min="{{ date('Y-m-d') }}">
+                        <input type="date" name="completion_date" class="form-input" required min="{{ date('Y-m-d') }}">
                     </div>
                 </div>
 
@@ -227,10 +227,10 @@
             if (e.target === document.getElementById('leaveModal')) closeLeaveModal();
         };
         window.setPill = function(type) {
-            const pillIzin = document.getElementById('pill-izin');
-            const pillSakit = document.getElementById('pill-sakit');
-            if(pillIzin) pillIzin.classList.toggle('active', type === 'izin');
-            if(pillSakit) pillSakit.classList.toggle('active', type === 'sakit');
+            const pillPerm = document.getElementById('pill-permission');
+            const pillSick = document.getElementById('pill-sick');
+            if(pillPerm) pillPerm.classList.toggle('active', type === 'permission');
+            if(pillSick) pillSick.classList.toggle('active', type === 'sick');
         };
         window.updateFileName = function(input) {
             const el = document.getElementById('uploadText');

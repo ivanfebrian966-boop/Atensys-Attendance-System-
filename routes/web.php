@@ -22,8 +22,13 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 // Super Admin
 Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => ['role:super_admin']], function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
+    Route::get('/employees', [SuperAdminController::class, 'employees'])->name('employees');
+    Route::get('/admins', [SuperAdminController::class, 'admins'])->name('admins');
+    Route::get('/divisions', [SuperAdminController::class, 'divisions'])->name('divisions');
     Route::get('/profile', [SuperAdminController::class, 'profile'])->name('profile');
+    
     Route::post('/profile', [SuperAdminController::class, 'updateProfile'])->name('update_profile');
+    
     Route::post('/employee', [SuperAdminController::class, 'storeEmployee'])->name('store_employee');
     Route::post('/employee/{id}', [SuperAdminController::class, 'updateEmployee'])->name('update_employee');
     Route::delete('/employee/{id}', [SuperAdminController::class, 'deleteEmployee'])->name('delete_employee');

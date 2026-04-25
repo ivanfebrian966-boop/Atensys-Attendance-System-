@@ -121,7 +121,7 @@ class AttendanceController extends Controller
                 ->with('employee.division')
                 ->orderBy('created_at', 'desc')
                 ->get()
-                ->map(function ($attendance) {
+                ->map(function ($attendance) use ($parsedDate) {
                     return [
                         'id' => $attendance->attendance_id,
                         'name' => $attendance->employee?->name ?? 'Unknown',
@@ -131,7 +131,7 @@ class AttendanceController extends Controller
                         'check_in' => $attendance->check_in ? Carbon::parse($attendance->check_in)->format('H:i:s') : '—',
                         'check_out' => $attendance->check_out ? Carbon::parse($attendance->check_out)->format('H:i:s') : '—',
                         'duration' => $this->calculateDuration($attendance->check_in, $attendance->check_out),
-                        'notes' => ''
+                        'information' => $this->getPermissionInfo($attendance->nip, $attendance->status, $parsedDate)
                     ];
                 });
             
@@ -189,6 +189,7 @@ class AttendanceController extends Controller
                 'status' => 'required|string',
                 'check_in' => 'nullable',
                 'check_out' => 'nullable',
+                'information' => 'nullable|string',
             ]);
 
             $date = Carbon::parse($validated['date']);
@@ -203,6 +204,22 @@ class AttendanceController extends Controller
                 'created_at' => $date->setTime(7,0,0),
                 'updated_at' => Carbon::now(),
             ]);
+
+            // Jika status adalah Sick atau Permission, update keterangan di tabel permissions
+            if (in_array($validated['status'], ['Sick', 'Permission'])) {
+                Permission::updateOrCreate(
+                    [
+                        'nip' => $attendance->nip,
+                        'start_date' => $date->toDateString(),
+                    ],
+                    [
+                        'completion_date' => $date->toDateString(),
+                        'type' => $validated['status'],
+                        'status' => 'Accepted',
+                        'information' => $validated['information'],
+                    ]
+                );
+            }
 
             return response()->json(['success' => true, 'message' => 'Data absensi berhasil diperbarui']);
         } catch (\Exception $e) {
@@ -255,6 +272,19 @@ class AttendanceController extends Controller
         return sprintf('%02d:%02d', $duration->h, $duration->i);
     }
 
+    private function getPermissionInfo($nip, $status, $date)
+    {
+        if (!in_array($status, ['Sick', 'Permission'])) return '—';
+
+        $perm = Permission::where('nip', $nip)
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('completion_date', '>=', $date)
+            ->where('status', 'Accepted')
+            ->first();
+
+        return $perm ? $perm->information : '—';
+    }
+
     public function getEmployees()
     {
         $employees = Employee::where('role', 'karyawan')
@@ -272,10 +302,10 @@ class AttendanceController extends Controller
         try {
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
-            $permission->update(['status' => 'Approved']);
+            $permission->update(['status' => 'Accepted']);
 
             $start = Carbon::parse($permission->start_date);
-            $end = Carbon::parse($permission->end_date);
+            $end = Carbon::parse($permission->completion_date);
 
             for ($date = $start; $date->lte($end); $date->addDay()) {
                 $exists = Attendance::where('nip', $permission->nip)
@@ -283,11 +313,14 @@ class AttendanceController extends Controller
                     ->exists();
 
                 if (!$exists) {
+                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     Attendance::create([
                         'nip' => $permission->nip,
-                        'check_in' => $date->setHour(8)->setMinute(0),
-                        'status' => $permission->type === 'Sakit' ? 'Sick' : 'Permission',
+                        'check_in' => $attendanceDate,
+                        'status' => $permission->type,
                         'qr_code' => 'SYSTEM',
+                        'created_at' => $attendanceDate,
+                        'updated_at' => $attendanceDate,
                     ]);
                 }
             }
