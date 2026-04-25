@@ -21,7 +21,7 @@
     </script>
 </head>
 <body>
-
+<x-loader></x-loader>
 <!-- ===== SIDEBAR ===== -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-blob-1"></div>
@@ -241,7 +241,7 @@
                             <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Recent Accounts</h3>
                             <p class="text-xs text-slate-400 mt-0.5">Newly added accounts</p>
                         </div>
-                        <button class="btn-primary text-xs" onclick="showTab('employees',document.querySelector('.nav-item:nth-child(5)'))">
+                        <button class="btn-primary text-xs" onclick="showTab('employees', document.querySelectorAll('.nav-item')[1])">
                             View All
                         </button>
                     </div>
@@ -581,8 +581,8 @@
                             </h1>
                             <p class="text-white/70 text-sm mt-1">{{ $user->email }}</p>
                             <div class="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
-                                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">Super Admin</span>
-                                <span class="px-3 py-1 bg-slate-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">Department</span>  
+                                <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm text-white font-medium">{{ $user->position }}</span>
+                                <span class="px-3 py-1 bg-slate-500/80 backdrop-blur-sm rounded-full text-sm text-white font-medium">{{ $user->division->division_name }}</span>  
                             </div>
                         </div>
                     </div>

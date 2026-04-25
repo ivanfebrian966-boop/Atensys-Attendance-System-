@@ -12,7 +12,8 @@
     @yield('styles')
 </head>
 <body class="@yield('body_class', 'bg-slate-50')">
-
+    <x-loader></x-loader>
+    
     <!-- Konten Utama akan Di-yield di sini -->
     @yield('main_structure')
 

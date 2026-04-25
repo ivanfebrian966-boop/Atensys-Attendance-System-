@@ -21,7 +21,7 @@ class SuperAdminController extends Controller
         $recent_users = Employee::with('division')
             ->whereIn('role', ['karyawan', 'admin_hr'])
             ->orderBy('created_at', 'desc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         $status_counts = [
@@ -230,7 +230,7 @@ class SuperAdminController extends Controller
         $recent_users = Employee::with('division')
             ->whereIn('role', ['karyawan', 'admin_hr'])
             ->orderBy('created_at', 'desc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         $status_counts = [

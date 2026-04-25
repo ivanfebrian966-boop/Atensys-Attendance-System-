@@ -20,7 +20,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Super Admin
-Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.'], function () {
+Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => ['role:super_admin']], function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
     Route::get('/profile', [SuperAdminController::class, 'profile'])->name('profile');
     Route::post('/profile', [SuperAdminController::class, 'updateProfile'])->name('update_profile');
@@ -38,7 +38,7 @@ Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.'], function () {
 });
 
 // Admin HR
-Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.'], function () {
+Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['role:admin_hr']], function () {
     Route::get('/dashboard', [DashboardHRController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileHRController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileHRController::class, 'updateProfile'])->name('profile.update');
@@ -61,9 +61,9 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.'], function () {
 });
 
 // Employee Routes
-Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard');
+Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard')->middleware('role:karyawan');
 
-Route::prefix('employee')->group(function () {
+Route::prefix('employee')->middleware('role:karyawan')->group(function () {
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
     Route::get('/leave', [EmployeeController::class, 'leave'])->name('employee.leave');
@@ -74,4 +74,4 @@ Route::prefix('employee')->group(function () {
 });
 
 // Legacy employee route
-Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee');
+Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee')->middleware('role:karyawan');

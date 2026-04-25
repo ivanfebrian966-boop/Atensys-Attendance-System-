@@ -13,6 +13,7 @@
     @yield('styles')
 </head>
 <body class="@yield('body_class', 'bg-slate-50')">
+    <x-loader></x-loader>
 
     <!-- ===== SIDEBAR ===== -->
     @include('Employee.components.sidebar')

@@ -2,12 +2,23 @@
    ATTENSYS — Employee Dashboard JS
    ============================================================ */
 
+// ===== Loader =====
+        window.addEventListener('load', function() {
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+            loader.style.transition = 'opacity 0.5s ease';
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500);
+        }
+    });
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     updateCurrentDate();
     generateQRCode();
     setupEventListeners();
-    updateNavigationItems();
 });
 
 // Update current date and time
@@ -129,20 +140,6 @@ function closeSidebar() {
     if (overlay) overlay.classList.remove('open');
 }
 
-// Update active navigation item
-function updateNavigationItems() {
-    const currentPath = window.location.pathname;
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-        const href = item.getAttribute('href');
-        if (href && currentPath.includes(href.replace('/', ''))) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
-    });
-}
 
 // Show loading state for buttons
 function showLoadingState() {

@@ -1,3 +1,17 @@
+// ===== Loader =====
+
+    window.addEventListener('load', function() {
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+            // Memberikan efek fade out
+            loader.style.transition = 'opacity 0.5s ease';
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 500); // Sesuaikan dengan durasi transition
+        }
+    });
+
 // ===== Tab switching =====
 function showTab(tab, el) {
     event && event.preventDefault();
@@ -57,21 +71,43 @@ document.addEventListener('click', function(e) {
 // ===== Search filter =====
 function filterTable(input, tableId) {
     const val = input.value.toLowerCase();
+    const table = document.getElementById(tableId);
     const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
     rows.forEach(row => {
         const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(val) ? '' : 'none';
+        if (text.includes(val)) {
+            row.classList.remove('filtered-out');
+        } else {
+            row.classList.add('filtered-out');
+        }
     });
+    if (table.updatePagination) table.updatePagination();
+    else {
+        rows.forEach(row => row.style.display = row.classList.contains('filtered-out') ? 'none' : '');
+    }
 }
 
 function filterByStatus(select, tableId) {
     const val = select.value;
+    const table = document.getElementById(tableId);
     const rows = document.querySelectorAll('#' + tableId + ' tbody tr');
     rows.forEach(row => {
-        if (!val) { row.style.display = ''; return; }
-        const status = row.dataset.status || '';
-        row.style.display = status === val ? '' : 'none';
+        if (!val) { 
+            row.classList.remove('filtered-out-status');
+        } else {
+            const status = row.dataset.status || '';
+            if (status === val) row.classList.remove('filtered-out-status');
+            else row.classList.add('filtered-out-status');
+        }
+        
+        // combine filters
+        if (row.classList.contains('filtered-out-status') || row.classList.contains('filtered-out')) {
+            row.style.display = 'none';
+        } else {
+            row.style.display = '';
+        }
     });
+    if (table.updatePagination) table.updatePagination();
 }
 
 // ===== Edit handlers =====
@@ -181,7 +217,78 @@ function updateRealtimeDate() {
 document.addEventListener('DOMContentLoaded', () => {
     updateRealtimeDate();
     setInterval(updateRealtimeDate, 1000);
+    
+    // Initialize Pagination for > 10 items
+    initPagination('employee-table', 10);
+    initPagination('division-table', 10);
 });
+
+function initPagination(tableId, limit) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    
+    const tbody = table.querySelector('tbody');
+    const allRows = Array.from(tbody.querySelectorAll('tr'));
+    
+    if (allRows.length <= limit) return;
+    
+    let currentPage = 1;
+    
+    const paginationWrapper = document.createElement('div');
+    paginationWrapper.className = 'flex items-center justify-end gap-1 px-6 py-3';
+    paginationWrapper.id = tableId + '-pagination';
+    table.parentElement.appendChild(paginationWrapper);
+
+    function update() {
+        const activeRows = allRows.filter(r => 
+            !r.classList.contains('filtered-out') && !r.classList.contains('filtered-out-status')
+        );
+        const totalPages = Math.ceil(activeRows.length / limit) || 1;
+        
+        if (currentPage > totalPages) currentPage = totalPages;
+        
+        allRows.forEach(r => r.style.display = 'none');
+        
+        const start = (currentPage - 1) * limit;
+        const end = start + limit;
+        
+        activeRows.slice(start, end).forEach(r => r.style.display = '');
+        
+        renderLinks(totalPages);
+    }
+    
+    function renderLinks(totalPages) {
+        paginationWrapper.innerHTML = '';
+        if (totalPages <= 1) return;
+        
+        const prev = document.createElement('button');
+        prev.innerHTML = '«';
+        prev.className = `px-2 py-1 rounded text-sm ${currentPage === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100'}`;
+        prev.onclick = () => { if(currentPage > 1) { currentPage--; update(); } };
+        paginationWrapper.appendChild(prev);
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = `px-3 py-1 rounded text-sm ${i === currentPage ? 'bg-indigo-500 text-white font-semibold' : 'text-slate-600 hover:bg-slate-100'}`;
+            btn.onclick = () => { currentPage = i; update(); };
+            paginationWrapper.appendChild(btn);
+        }
+        
+        const next = document.createElement('button');
+        next.innerHTML = '»';
+        next.className = `px-2 py-1 rounded text-sm ${currentPage === totalPages ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-slate-100'}`;
+        next.onclick = () => { if(currentPage < totalPages) { currentPage++; update(); } };
+        paginationWrapper.appendChild(next);
+    }
+    
+    table.updatePagination = () => {
+        currentPage = 1;
+        update();
+    };
+    
+    update();
+}
 
 function showToast(icon, msg) {
     const toast = document.getElementById('toast');

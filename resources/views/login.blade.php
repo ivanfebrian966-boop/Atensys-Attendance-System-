@@ -22,95 +22,10 @@
         }
     </script>
 
-    <style>
-        body { font-family: 'DM Sans', sans-serif; }
-
-        .left-panel {
-            background: linear-gradient(160deg, #1e1b4b 0%, #312e81 40%, #0e4a6b 100%);
-        }
-        .blob {
-            border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        .animate-float-slow {
-            animation: float 9s ease-in-out infinite reverse;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-        }
-        .animate-fade-up {
-            opacity: 0;
-            transform: translateY(24px);
-            animation: fadeUp 0.7s ease forwards;
-        }
-        @keyframes fadeUp {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-
-        .card-floating {
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            backdrop-filter: blur(12px);
-        }
-        .stat-pill {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-        }
-        .input-field {
-            width: 100%;
-            padding: 0.78rem 1rem 0.78rem 2.8rem;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-            color: #1e293b;
-            background: #f8fafc;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-            outline: none;
-            font-family: 'DM Sans', sans-serif;
-        }
-        .input-field:focus {
-            border-color: #6366f1;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
-        }
-        .input-field::placeholder { color: #94a3b8; }
-        .input-field.error { border-color: #f87171; }
-
-        .btn-login {
-            width: 100%;
-            padding: 0.9rem;
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
-            color: white;
-            font-family: 'Sora', sans-serif;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.15s;
-            box-shadow: 0 8px 24px rgba(99,102,241,0.3);
-        }
-        .btn-login:hover { opacity: 0.92; transform: translateY(-1px); }
-        .btn-login:active { transform: translateY(0); opacity: 1; }
-
-        /* Override browser autofill yellow background */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus, 
-        input:-webkit-autofill:active{
-            -webkit-box-shadow: 0 0 0 30px #eef2ff inset !important;
-            -webkit-text-fill-color: #1e293b !important;
-            transition: background-color 5000s ease-in-out 0s;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 <body class="min-h-screen flex overflow-hidden bg-slate-50">
+    <x-loader></x-loader>
 
     <!-- ===== PANEL KIRI ===== -->
     <div class="hidden lg:flex lg:w-1/2 left-panel relative flex-col justify-between p-12 overflow-hidden">
@@ -165,22 +80,6 @@
                     </div>
                     <div class="ml-auto w-2 h-2 bg-cyan-400 rounded-full"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Stats -->
-        <div class="relative flex gap-4" style="z-index:1">
-            <div class="stat-pill rounded-xl px-4 py-3 text-center flex-1">
-                <p class="font-bold text-white text-lg" style="font-family:'Sora',sans-serif">99%</p>
-                <p class="text-slate-400 text-xs mt-0.5">Accuracy</p>
-            </div>
-            <div class="stat-pill rounded-xl px-4 py-3 text-center flex-1">
-                <p class="font-bold text-white text-lg" style="font-family:'Sora',sans-serif">24/7</p>
-                <p class="text-slate-400 text-xs mt-0.5">Uptime</p>
-            </div>
-            <div class="stat-pill rounded-xl px-4 py-3 text-center flex-1">
-                <p class="font-bold text-white text-lg" style="font-family:'Sora',sans-serif">100+</p>
-                <p class="text-slate-400 text-xs mt-0.5">Perusahaan</p>
             </div>
         </div>
     </div>
@@ -323,32 +222,6 @@
         </div>
     </div>
 
-    <script>
-        function togglePwd() {
-            const input = document.getElementById('pwd');
-            const show = document.getElementById('eye-show');
-            const hide = document.getElementById('eye-hide');
-            if (input.type === 'password') {
-                input.type = 'text';
-                show.classList.add('hidden');
-                hide.classList.remove('hidden');
-            } else {
-                input.type = 'password';
-                show.classList.remove('hidden');
-                hide.classList.add('hidden');
-            }
-        }
-
-        @if(session('toast_error'))
-        document.addEventListener('DOMContentLoaded', function() {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 4000);
-        });
-        @endif
-    </script>
+    <script src="{{ asset('js/login.js') }}"></script>
 </body>
 </html>
