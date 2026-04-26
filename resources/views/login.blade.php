@@ -34,12 +34,9 @@
         <div class="absolute top-1/2 left-1/3 w-48 h-48 bg-purple-800 blob opacity-20 animate-float-slow"></div>
 
         <!-- Logo -->
-        <div class="relative flex items-center gap-3" style="z-index:1">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#818cf8,#67e8f9)">
-                <span class="text-white font-bold" style="font-family:'Sora',sans-serif">A</span>
-            </div>
-            <span class="font-bold text-white text-xl tracking-tight" style="font-family:'Sora',sans-serif">ATTENSYS</span>
-        </div>
+        <a href="{{ url('/') }}" class="z-50">
+            <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-14 w-auto object-contain">
+        </a>
 
         <!-- Konten tengah -->
         <div class="relative flex-1 flex flex-col justify-center py-12" style="z-index:1">
@@ -87,11 +84,10 @@
     <!-- ===== PANEL KANAN (Form) ===== -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative bg-slate-50">
         <!-- Logo mobile -->
-        <div class="absolute top-6 left-6 flex items-center gap-1 lg:hidden">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
-                <span class="text-white font-bold text-xs">A</span>
+        <div class="absolute top-6 left-6 lg:hidden">
+            <div class="">
+                <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-10 w-auto object-contain" style="filter: brightness(0)">
             </div>
-            <span class="font-bold text-slate-800 text-sm" style="font-family:'Sora',sans-serif">ATTENSYS</span>
         </div>
 
         <div class="w-full max-w-[520px] animate-fade-up bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 sm:p-12 relative z-10">

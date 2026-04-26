@@ -4,14 +4,9 @@
     <div class="sidebar-blob-2"></div>
 
     <!-- Logo -->
-    <div class="px-6 pt-6 pb-4 flex items-center gap-3 relative" style="z-index:1">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
-            <span class="text-white font-bold text-sm" style="font-family:'Sora',sans-serif">A</span>
-        </div>
-        <div>
-            <p class="font-bold text-white text-base leading-tight" style="font-family:'Sora',sans-serif">ATTENSYS</p>
-            <p class="text-xs text-slate-400" style="font-family:'Sora',sans-serif">Super Admin</p>
-        </div>
+    <div class="px-6 pt-6 pb-4 flex flex-col gap-1 relative" style="z-index:1">
+        <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-14 w-auto object-contain self-start">
+        <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase" style="font-family:'Sora',sans-serif">Super Admin</p>
     </div>
 
     <!-- Divider -->

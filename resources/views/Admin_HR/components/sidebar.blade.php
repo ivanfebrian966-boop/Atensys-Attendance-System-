@@ -10,12 +10,9 @@
     <div class="sidebar-blob-1"></div>
     <div class="sidebar-blob-2"></div>
 
-    <div class="px-6 pt-6 pb-4 flex items-center gap-3 relative" style="z-index:1">
-        <div class="sidebar-logo-icon"><span>A</span></div>
-        <div>
-            <p class="font-bold text-white text-base leading-tight sora">ATTENSYS</p>
-            <p class="text-xs text-slate-400 sora">Admin HR</p>
-        </div>
+    <div class="px-6 pt-6 pb-4 flex flex-col gap-1 relative" style="z-index:1">
+        <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-14 w-auto object-contain self-start">
+        <p class="text-[10px] text-slate-400 font-medium tracking-widest uppercase sora">Admin HR</p>
     </div>
 
     <div class="mx-6 h-px bg-white/10 mb-2"></div>

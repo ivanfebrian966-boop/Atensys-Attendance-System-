@@ -188,8 +188,8 @@
     <!-- ===== NAVBAR ===== -->
     <header id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent opacity-0 animate-fade-in delay-200">
         <div class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-            <a href="{{ url('/') }}" class="flex items-center gap-3 z-50">
-                <span id="logo-text" class="font-bold text-xl text-white tracking-tight" style="font-family:'Sora',sans-serif">ATTENSYS</span>
+            <a href="{{ url('/') }}" class="z-50">
+                <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-16 w-auto object-contain">
             </a>
             
             <nav class="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">

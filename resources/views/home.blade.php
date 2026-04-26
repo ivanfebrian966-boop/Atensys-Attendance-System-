@@ -28,11 +28,8 @@
     <!-- ===== NAVBAR ===== -->
     <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent border-b border-transparent">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg,#6366f1,#06b6d4)">
-                    <span class="text-white font-bold text-sm" style="font-family:'Sora',sans-serif">A</span>
-                </div>
-                <span id="logo-text" class="font-bold text-xl text-white tracking-tight transition-colors duration-300" style="font-family:'Sora',sans-serif">ATTENSYS</span>
+            <div class="">
+                <img id="main-logo" src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-14 w-auto object-contain transition-all duration-300">
             </div>
             <nav class="hidden md:flex items-center gap-8">
                 <a href="#features" class="nav-link border border-white/20 text-white font-semibold px-4 py-2 rounded-full hover:bg-white/20 backdrop-blur-sm transition text-center">Features</a>
@@ -211,11 +208,8 @@
     <!-- ===== FOOTER ===== -->
     <footer class="bg-slate-400 py-10">
         <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#6366f1,#06b6d4)">
-                    <span class="text-white font-bold text-xs">A</span>
-                </div>
-                <span class="font-bold text-white text-sm" style="font-family:'Sora',sans-serif">ATTENSYS</span>
+            <div class="">
+                <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-10 w-auto object-contain">
             </div>
             <p class="text-black-500 text-sm sentence-hover">© 2026 ATTENSYS — Integrated Employee Attendance System</p>
             <div class="flex gap-5 text-black-500 text-sm">

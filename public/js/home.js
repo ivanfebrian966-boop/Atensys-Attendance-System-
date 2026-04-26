@@ -16,6 +16,7 @@
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
             const logoText = document.getElementById('logo-text');
+            const mainLogo = document.getElementById('main-logo');
             const mobileBtn = document.getElementById('mobile-menu-btn');
             const navLinks = document.querySelectorAll('.nav-link');
             
@@ -28,6 +29,11 @@
                 if (logoText) {
                     logoText.classList.remove('text-white');
                     logoText.classList.add('text-slate-900');
+                }
+                if (mainLogo) {
+                    mainLogo.style.filter = 'brightness(0) invert(0)'; // Makes it black/dark if original is light
+                    // Or if original is white and we want black:
+                    mainLogo.style.filter = 'brightness(0)'; 
                 }
                 if (mobileBtn) {
                     mobileBtn.classList.remove('text-white');
@@ -46,6 +52,9 @@
                 if (logoText) {
                     logoText.classList.remove('text-slate-900');
                     logoText.classList.add('text-white');
+                }
+                if (mainLogo) {
+                    mainLogo.style.filter = 'none';
                 }
                 if (mobileBtn) {
                     mobileBtn.classList.remove('text-slate-700');
