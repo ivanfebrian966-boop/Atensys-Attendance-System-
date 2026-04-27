@@ -6,7 +6,7 @@
 :root {
     --indigo: #6366f1;
     --cyan: #06b6d4;
-    --gradient: linear-gradient(135deg, #6366f1, #06b6d4);
+    --gradient: linear-gradient(135deg, #0c1e49, #22348c);
     --sidebar-w: 260px;
     --topbar-h: 64px;
     --font-display: 'Sora', sans-serif;

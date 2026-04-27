@@ -120,7 +120,7 @@
     {{-- RIGHT: Status Card --}}
     <div class="panel p-6 sticky top-24">
         <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl
+            <div class="w-16 h-16 bg-gradient-to-br from-indigo-800 to-blue-500 rounded-2xl
                         flex items-center justify-center mx-auto mb-3 shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>

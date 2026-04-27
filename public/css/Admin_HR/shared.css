@@ -4,9 +4,9 @@
    ============================================================ */
 
 :root {
-    --indigo:   #6366f1;
+    --indigo:   #0c1e49;
     --cyan:     #06b6d4;
-    --gradient: linear-gradient(135deg,#6366f1,#06b6d4);
+    --gradient: linear-gradient(135deg, #0c1e49, #22348c);
     --sidebar-w: 260px;
     --topbar-h:  64px;
     --bg:        #f1f5f9;
@@ -454,9 +454,9 @@ textarea.form-input { resize:vertical; }
    UTILITIES
    ============================================================ */
 .welcome-banner-gradient {
-    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+    background: linear-gradient(135deg, #0c1e49 0%, #283ca3 100%) !important;
     color: white !important;
-    padding: 2rem !important;
+    padding: 2rem !important;   
     border: none !important;
     box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4) !important;
 }
