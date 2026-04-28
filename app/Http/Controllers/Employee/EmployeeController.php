@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Attendance;
 use App\Models\Permission;
 use Carbon\Carbon;
@@ -182,7 +183,8 @@ class EmployeeController extends Controller
 
         // Check if has attendance for these dates
         $hasAttendance = Attendance::where('nip', $user->nip)
-            ->whereBetween(DB::raw('DATE(created_at)'), [$request->start_date, $request->completion_date])
+            ->whereDate('check_in', '>=', $request->start_date)
+            ->whereDate('check_in', '<=', $request->completion_date)
             ->whereIn('status', ['Present', 'Late'])
             ->exists();
 

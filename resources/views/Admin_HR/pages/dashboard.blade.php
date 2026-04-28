@@ -87,7 +87,7 @@
 
                         <p class="panel-subtitle">Mon – Sat</p>
                     </div>
-                    <span class="badge-rate">{{ collect($chartData ?? [])->avg() ? round(collect($chartData)->avg(), 1) : 0 }}%</span>
+                    <span class="badge-rate">{{ $avgAttendance ?? 0 }}%</span>
                 </div>
                 <div class="p-5">
                     <div class="chart-bar-wrap mb-3">
@@ -119,7 +119,7 @@
                     <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
                         <span class="text-xs text-slate-500">Average attendance</span>
 
-                        <span class="text-sm font-bold gradient-text" style="font-family:'Sora',sans-serif">{{ collect($chartData ?? [])->avg() ? round(collect($chartData)->avg(), 1) : 0 }}%</span>
+                        <span class="text-sm font-bold gradient-text" style="font-family:'Sora',sans-serif">{{ $avgAttendance ?? 0 }}%</span>
                     </div>
                 </div>
             </div>
