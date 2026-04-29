@@ -32,6 +32,18 @@
             </svg>
             Attendance
         </a>
+
+        @php $pendingLeaveCount = \App\Models\Permission::where('status','Pending')->count(); @endphp
+        <a href="{{ route('admin-hr.leaves') }}" class="nav-item {{ request()->routeIs('admin-hr.leaves') ? 'active' : '' }}" style="position:relative">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Leave Management
+            @if($pendingLeaveCount > 0)
+                <span style="margin-left:auto;background:#ef4444;color:white;font-size:10px;font-weight:700;border-radius:999px;padding:1px 6px;min-width:18px;text-align:center;line-height:16px;">{{ $pendingLeaveCount }}</span>
+            @endif
+        </a>
+
         <a href="{{ route('admin-hr.reports') }}" class="nav-item {{ request()->routeIs('admin-hr.reports') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>

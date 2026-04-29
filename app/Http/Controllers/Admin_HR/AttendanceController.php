@@ -14,7 +14,7 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $pendingPermissions = Permission::with('employee')
+        $pendingPermissions = Permission::with('employee.division')
             ->where('status', 'Pending')
             ->orderBy('created_at', 'desc')
             ->get();

@@ -5,6 +5,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/DashboardHR.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 @endsection
 
 @section('main_structure')
@@ -79,46 +80,20 @@
         <!-- ===== MAIN GRID ===== -->
         <div class="grid lg:grid-cols-3 gap-4 mb-4">
 
-            <!-- Attendance Chart Panel -->
             <div class="panel fade-up d2 h-full flex flex-col">
                 <div class="panel-header">
                     <div>
                     <h3 class="panel-title">Attendance This Week</h3>
-
                         <p class="panel-subtitle">Mon – Sat</p>
                     </div>
                     <span class="badge-rate">{{ $avgAttendance ?? 0 }}%</span>
                 </div>
-                <div class="p-5">
-                    <div class="chart-bar-wrap mb-3">
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Mon'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Mon'] ?? 0 }}%"></div>
-                            <span class="chart-label">Mon</span>
-                        </div>
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Tue'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Tue'] ?? 0 }}%"></div>
-                            <span class="chart-label">Tue</span>
-                        </div>
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Wed'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Wed'] ?? 0 }}%"></div>
-                            <span class="chart-label">Wed</span>
-                        </div>
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Thu'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Thu'] ?? 0 }}%"></div>
-                            <span class="chart-label">Thu</span>
-                        </div>
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Fri'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Fri'] ?? 0 }}%"></div>
-                            <span class="chart-label">Fri</span>
-                        </div>
-                        <div class="chart-bar-item">
-                            <div class="chart-bar" style="height:{{ $chartData['Sat'] ?? 0 }}%" title="Kehadiran: {{ $chartData['Sat'] ?? 0 }}%"></div>
-                            <span class="chart-label">Sat</span>
-                        </div>
+                <div class="p-5 flex-1">
+                    <div style="position:relative;height:160px">
+                        <canvas id="weeklyChart"></canvas>
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
                         <span class="text-xs text-slate-500">Average attendance</span>
-
                         <span class="text-sm font-bold gradient-text" style="font-family:'Sora',sans-serif">{{ $avgAttendance ?? 0 }}%</span>
                     </div>
                 </div>
@@ -214,9 +189,17 @@
                         <span class="text-2xl">📷</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Scan QR</span>
                     </a>
+                    <a href="{{ route('admin-hr.leaves') }}" class="quick-action-card flex-grow" style="--qa-color:#8b5cf6;--qa-bg:#faf5ff">
+                        <span class="text-2xl">📋</span>
+                        <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Leaves</span>
+                    </a>
                     <a href="{{ route('admin-hr.reports') }}" class="quick-action-card flex-grow" style="--qa-color:#06b6d4;--qa-bg:#ecfeff">
                         <span class="text-2xl">📊</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Reports</span>
+                    </a>
+                    <a href="{{ route('admin-hr.employees') }}" class="quick-action-card flex-grow" style="--qa-color:#10b981;--qa-bg:#ecfdf5">
+                        <span class="text-2xl">👥</span>
+                        <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Employees</span>
                     </a>
                 </div>
             </div>
@@ -290,4 +273,58 @@
 
 @section('scripts')
 <script src="{{ asset('js/Admin_HR/DashboardHR.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('weeklyChart');
+    if (!ctx) return;
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const data   = [
+        {{ $chartData['Mon'] ?? 0 }},
+        {{ $chartData['Tue'] ?? 0 }},
+        {{ $chartData['Wed'] ?? 0 }},
+        {{ $chartData['Thu'] ?? 0 }},
+        {{ $chartData['Fri'] ?? 0 }},
+        {{ $chartData['Sat'] ?? 0 }}
+    ];
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Attendance %',
+                data,
+                backgroundColor: data.map(v =>
+                    v >= 80 ? 'rgba(99,102,241,0.85)' :
+                    v >= 50 ? 'rgba(99,102,241,0.55)' :
+                              'rgba(99,102,241,0.3)'
+                ),
+                borderRadius: 8,
+                borderSkipped: false,
+                hoverBackgroundColor: 'rgba(99,102,241,1)',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ` ${ctx.parsed.y}% present`
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { family: 'DM Sans', size: 11 } } },
+                y: {
+                    min: 0, max: 100,
+                    ticks: { callback: v => v + '%', font: { family: 'DM Sans', size: 11 } },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                }
+            },
+            animation: { duration: 800, easing: 'easeOutQuart' }
+        }
+    });
+});
+</script>
 @endsection

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin_HR\ProfileHRController;
 use App\Http\Controllers\Admin_HR\EmployeesController;
 use App\Http\Controllers\Admin_HR\ReportsController;
 use App\Http\Controllers\Admin_HR\AttendanceController;
+use App\Http\Controllers\Admin_HR\LeaveController;
 use App\Http\Controllers\Admin_HR\SidebarController;
 use App\Http\Controllers\Employee\EmployeeController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,14 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['rol
 
     Route::get('/sidebar', [SidebarController::class, 'index'])->name('sidebar');
     Route::get('/employees', [EmployeesController::class, 'index'])->name('employees');
+
+    Route::get('/leaves', [LeaveController::class, 'index'])->name('leaves');
+    Route::get('/leaves/data', [LeaveController::class, 'getData'])->name('leaves.data');
+    Route::post('/leaves/{id}/approve', [LeaveController::class, 'approve'])->name('leaves.approve');
+    Route::post('/leaves/{id}/reject', [LeaveController::class, 'reject'])->name('leaves.reject');
+    Route::put('/leaves/{id}', [LeaveController::class, 'update'])->name('leaves.update');
+    Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
+    Route::post('/leaves/mark-absent', [LeaveController::class, 'markAbsent'])->name('leaves.mark-absent');
 });
 
 // Employee Routes

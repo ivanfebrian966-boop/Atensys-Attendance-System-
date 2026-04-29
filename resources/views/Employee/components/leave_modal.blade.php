@@ -222,18 +222,29 @@
                     </div>
                 </div>
 
-                <!-- Reason (full width like SA textarea) -->
+                <!-- Leave Category -->
                 <div class="leave-form-field">
-                    <label class="leave-form-label">Reason / Information</label>
-                    <textarea name="information" class="leave-form-textarea" rows="3" required
-                              placeholder="Explain your reason for this leave request"></textarea>
+                    <label class="leave-form-label">Leave Category</label>
+                    <select id="leave_category" class="leave-form-select" onchange="updateInformation()">
+                        <!-- Options populated via JS -->
+                    </select>
                 </div>
+
+                <!-- Reason (Additional details) -->
+                <div class="leave-form-field">
+                    <label class="leave-form-label">Additional Details (Optional)</label>
+                    <textarea id="leave_detail" class="leave-form-textarea" rows="2"
+                              placeholder="Explain further details..." oninput="updateInformation()"></textarea>
+                </div>
+
+                <!-- Hidden Input for Controller -->
+                <input type="hidden" name="information" id="real_information" required>
 
                 <!-- File Upload -->
                 <div class="leave-form-field">
-                    <label class="leave-form-label">Attachment</label>
+                    <label class="leave-form-label" id="attachment_label">Attachment</label>
                     <div class="upload-zone" id="uploadZone">
-                        <input type="file" name="file" accept="application/pdf" required onchange="updateFileName(this)">
+                        <input type="file" name="file" id="file_upload" accept="application/pdf" onchange="updateFileName(this)">
                         <div class="upload-emoji">📎</div>
                         <div class="upload-text" id="uploadText">Click or drag to upload your document</div>
                         <div class="upload-hint">PDF files only (max 2MB)</div>
@@ -285,12 +296,89 @@
         window.closeLeaveModalOutside = function(e) {
             if (e.target === document.getElementById('leaveModal')) closeLeaveModal();
         };
+        const permissionOptions = [
+            { text: "Marriage Leave", requireUpload: true },
+            { text: "Maternity Leave", requireUpload: true },
+            { text: "Annual Leave", requireUpload: false },
+            { text: "Bereavement Leave", requireUpload: false },
+            { text: "Personal Leave", requireUpload: false },
+            { text: "Family Event", requireUpload: false },
+            { text: "Others", requireUpload: false }
+        ];
+        
+        const sickOptions = [
+            { text: "Sick Leave with Medical Certificate", requireUpload: true },
+            { text: "Hospitalization", requireUpload: true },
+            { text: "Accident", requireUpload: true },
+            { text: "Mild Illness (Flu / Fever)", requireUpload: false },
+            { text: "Outpatient Care", requireUpload: false },
+            { text: "Medical Checkup", requireUpload: false },
+            { text: "Others", requireUpload: false }
+        ];
+
         window.setPill = function(type) {
             const pillPerm = document.getElementById('pill-permission');
             const pillSick = document.getElementById('pill-sick');
             if(pillPerm) pillPerm.classList.toggle('active', type === 'permission');
             if(pillSick) pillSick.classList.toggle('active', type === 'sick');
+
+            const catSelect = document.getElementById('leave_category');
+            if(catSelect) {
+                catSelect.innerHTML = '';
+                const opts = type === 'permission' ? permissionOptions : sickOptions;
+                opts.forEach(o => {
+                    const opt = document.createElement('option');
+                    opt.value = o.text;
+                    opt.textContent = o.text;
+                    opt.dataset.requireUpload = o.requireUpload;
+                    catSelect.appendChild(opt);
+                });
+                updateInformation();
+            }
         };
+
+        window.updateInformation = function() {
+            const cat = document.getElementById('leave_category').value;
+            const det = document.getElementById('leave_detail').value;
+            const hiddenInfo = document.getElementById('real_information');
+            if(hiddenInfo) {
+                hiddenInfo.value = det.trim() !== '' ? cat + ' — ' + det : cat;
+            }
+            updateUploadRequirement();
+        };
+
+        window.updateUploadRequirement = function() {
+            const catSelect = document.getElementById('leave_category');
+            if (!catSelect || catSelect.selectedIndex === -1) return;
+            
+            const selectedOption = catSelect.options[catSelect.selectedIndex];
+            const isRequired = selectedOption.dataset.requireUpload === 'true';
+            
+            const fileInput = document.getElementById('file_upload');
+            const labelEl = document.getElementById('attachment_label');
+            
+            if (fileInput) {
+                fileInput.required = isRequired;
+            }
+            
+            if (labelEl) {
+                if (isRequired) {
+                    labelEl.innerHTML = 'Attachment <span style="color:#ef4444; font-weight:bold;">* (Required)</span>';
+                } else {
+                    labelEl.innerHTML = 'Attachment <span style="color:#94a3b8; font-weight:normal;">(Optional)</span>';
+                }
+            }
+        };
+
+        // Initialize default options
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeRadio = document.querySelector('input[name="type"]:checked');
+            if(activeRadio) {
+                setPill(activeRadio.value.toLowerCase());
+            } else {
+                setPill('permission'); // fallback
+            }
+        });
         window.updateFileName = function(input) {
             const el = document.getElementById('uploadText');
             if (input.files.length && el) {
