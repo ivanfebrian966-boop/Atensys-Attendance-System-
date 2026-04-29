@@ -60,11 +60,13 @@
         </a>
     </nav>
 
-    <div class="sidebar-user">
+    <div class="mx-4 mb-4 p-3 rounded-2xl relative" style="z-index:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1)">
         <div class="flex items-center gap-3">
-            <div class="sidebar-avatar">{{ strtoupper(substr($user->name ?? 'HR', 0, 2)) }}</div>
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white flex-shrink-0" style="background:linear-gradient(135deg,#6366f1,#06b6d4);font-family:'Sora',sans-serif">
+                {{ strtoupper(substr($user->name ?? 'HR', 0, 2)) }}
+            </div>
             <div class="flex-1 min-w-0">
-                <p class="text-white text-xs font-semibold truncate sora">{{ $user->name ?? 'Admin HR' }}</p>
+                <p class="text-white text-xs font-semibold truncate" style="font-family:'Sora',sans-serif">{{ $user->name ?? 'Admin HR' }}</p>
                 <p class="text-slate-400 text-xs truncate">{{ $user->email ?? 'hr@attensys.id' }}</p>
             </div>
             <a href="{{ route('logout') }}" class="tooltip-wrap">
@@ -72,7 +74,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
                 <span class="tooltip-text">Logout</span>
-
             </a>
         </div>
     </div>

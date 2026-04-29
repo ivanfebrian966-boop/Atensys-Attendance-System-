@@ -42,37 +42,31 @@
             </div>
             <div class="stat-card green fade-up d2">
                 <div class="stat-icon-sm" style="background:#ecfdf5;color:#10b981">✅</div>
-                <p class="stat-value text-emerald-600">{{ $present ?? 98 }}</p>
+                <p class="stat-value text-emerald-600">{{ $stats['present'] ?? 0 }}</p>
                 <p class="stat-label">Present</p>
 
             </div>
             <div class="stat-card red fade-up d3">
                 <div class="stat-icon-sm" style="background:#fef2f2;color:#ef4444">❌</div>
-                <p class="stat-value text-red-500">{{ $absent ?? 10 }}</p>
+                <p class="stat-value text-red-500">{{ $stats['absent'] ?? 0 }}</p>
                 <p class="stat-label">Absent</p>
 
             </div>
             <div class="stat-card yellow fade-up d4">
                 <div class="stat-icon-sm" style="background:#fffbeb;color:#f59e0b">⏰</div>
-                <p class="stat-value text-amber-500">{{ $late ?? 12 }}</p>
+                <p class="stat-value text-amber-500">{{ $stats['late'] ?? 0 }}</p>
                 <p class="stat-label">Late</p>
 
             </div>
             <div class="stat-card blue fade-up d5">
                 <div class="stat-icon-sm" style="background:#eff6ff;color:#3b82f6">🏥</div>
-                <p class="stat-value text-blue-500">{{ $sick ?? 5 }}</p>
+                <p class="stat-value text-blue-500">{{ $stats['sick'] ?? 0 }}</p>
                 <p class="stat-label">Sick</p>
 
             </div>
-            <div class="stat-card purple fade-up d6" style="position:relative">
-                @if(($pendingPermissionsCount ?? 0) > 0)
-                    <span class="absolute -top-1 -right-1 flex h-5 w-5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-5 w-5 bg-purple-600 text-[10px] text-white items-center justify-center font-bold">{{ $pendingPermissionsCount }}</span>
-                    </span>
-                @endif
+            <div class="stat-card purple fade-up d6">
                 <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📋</div>
-                <p class="stat-value text-purple-500">{{ $permission ?? 7 }}</p>
+                <p class="stat-value text-purple-500">{{ $pendingPermissionsCount ?? 0 }}</p>
                 <p class="stat-label">Permission</p>
             </div>
         </div>
@@ -88,8 +82,8 @@
                     </div>
                     <span class="badge-rate">{{ $avgAttendance ?? 0 }}%</span>
                 </div>
-                <div class="p-5 flex-1">
-                    <div style="position:relative;height:160px">
+                <div class="p-5 flex-1 w-full">
+                    <div style="position:relative;height:160px;width:100%;">
                         <canvas id="weeklyChart"></canvas>
                     </div>
                     <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
@@ -184,7 +178,7 @@
                         <p class="panel-subtitle">Main menu shortcuts</p>
                     </div>
                 </div>
-                <div class="p-5 flex-grow grid grid-cols-2 gap-3 items-stretch">
+                <div class="p-5 flex-grow grid grid-cols-1 sm:grid-cols-3 gap-3 items-stretch">
                     <a href="{{ route('admin-hr.attendance') }}" class="quick-action-card flex-grow" style="--qa-color:#6366f1;--qa-bg:#eef2ff">
                         <span class="text-2xl">📷</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Scan QR</span>
@@ -196,10 +190,6 @@
                     <a href="{{ route('admin-hr.reports') }}" class="quick-action-card flex-grow" style="--qa-color:#06b6d4;--qa-bg:#ecfeff">
                         <span class="text-2xl">📊</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Reports</span>
-                    </a>
-                    <a href="{{ route('admin-hr.employees') }}" class="quick-action-card flex-grow" style="--qa-color:#10b981;--qa-bg:#ecfdf5">
-                        <span class="text-2xl">👥</span>
-                        <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Employees</span>
                     </a>
                 </div>
             </div>
@@ -265,6 +255,11 @@
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($recentAttendances, 'links'))
+            <div class="p-4 border-t border-slate-100">
+                {{ $recentAttendances->links() }}
+            </div>
+            @endif
         </div>
 
     </div><!-- end p-4 -->

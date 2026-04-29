@@ -183,8 +183,9 @@
             </div>
             <div id="reportEmpty" class="empty-state hidden">
             </div>
-            <div class="table-footer">
+            <div class="table-footer flex justify-between items-center w-full">
                 <p class="table-info" id="reportInfo">— data</p>
+                <div class="pagination flex gap-1" id="reportPagination"></div>
             </div>
         </div>
 

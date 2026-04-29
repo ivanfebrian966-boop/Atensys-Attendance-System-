@@ -70,7 +70,7 @@ class DashboardHRController extends Controller
         $recentAttendances = Attendance::with('employee')
             ->whereDate('created_at', Carbon::today())
             ->orderBy('created_at', 'desc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         return view('Admin_HR.pages.dashboard', [

@@ -2,6 +2,8 @@
 let period = 'week';
 let RAW = [];
 let filteredData = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
 
 /* ---- API FETCH ---- */
 async function loadReportsData() {
@@ -24,7 +26,7 @@ function setPeriod(p, btn) {
     // Reset date inputs to allow period to take effect
     const dateFromEl = document.getElementById('dateFrom');
     const dateToEl = document.getElementById('dateTo');
-    
+
     // Temporarily clear inputs so getDateRange uses the period logic
     const oldFrom = dateFromEl.value;
     const oldTo = dateToEl.value;
@@ -32,7 +34,7 @@ function setPeriod(p, btn) {
     dateToEl.value = '';
 
     const range = getDateRange();
-    
+
     // Set the inputs to the new range
     dateFromEl.value = range.from;
     dateToEl.value = range.to;
@@ -269,17 +271,22 @@ function filterReport() {
     const empty = document.getElementById('reportEmpty');
     const info = document.getElementById('reportInfo');
 
-    if (!list.length) { 
-        if (body) body.innerHTML = ''; 
-        if (empty) empty.classList.remove('hidden'); 
-        if (info) info.textContent = '0 data'; 
-        return; 
+    if (!list.length) {
+        if (body) body.innerHTML = '';
+        if (empty) empty.classList.remove('hidden');
+        if (info) info.textContent = '0 data';
+        renderReportPagination(0);
+        return;
     }
     if (empty) empty.classList.add('hidden');
-    if (info) info.textContent = `${list.length} karyawan`;
+    if (info) info.textContent = `${list.length} employees`;
+
+    const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    const paginatedList = list.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
     if (body) {
-        body.innerHTML = list.map(r => {
+        body.innerHTML = paginatedList.map(r => {
             const rCls = r.rate >= 85 ? 'text-emerald-600' : r.rate >= 70 ? 'text-amber-500' : 'text-red-500';
             return `<tr class="table-row">
                 <td>
@@ -304,6 +311,35 @@ function filterReport() {
             </tr>`;
         }).join('');
     }
+    renderReportPagination(totalPages);
+}
+
+function renderReportPagination(totalPages) {
+    const pag = document.getElementById('reportPagination');
+    if (!pag) return;
+    if (totalPages <= 1) {
+        pag.innerHTML = '';
+        return;
+    }
+
+    let html = '';
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeReportPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+            html += `<button class="px-3 py-1 border rounded text-xs ${i === currentPage ? 'bg-indigo-50 text-indigo-600 border-indigo-200 font-bold' : 'hover:bg-slate-50'}" onclick="changeReportPage(${i})">${i}</button>`;
+        } else if (i === currentPage - 2 || i === currentPage + 2) {
+            html += `<span class="px-2 py-1 text-slate-400">...</span>`;
+        }
+    }
+
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeReportPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+    pag.innerHTML = html;
+}
+
+function changeReportPage(page) {
+    currentPage = page;
+    filterReport();
 }
 
 /* ---- Export ---- */
@@ -322,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateToEl = document.getElementById('dateTo');
     if (dateFromEl) dateFromEl.value = toLocalISO(from);
     if (dateToEl) dateToEl.value = toLocalISO(now);
-    
+
     loadReportsData();
 
     if (dateFromEl) dateFromEl.addEventListener('change', () => {
@@ -369,7 +405,7 @@ function renderReportCards() {
         const percentage = r.rate + '%';
         const initialsStr = initials(r.name);
         const nameSub = r.name;
-        
+
         return `
             <div class="report-detail-card">
                 <div class="report-card-header">
@@ -430,7 +466,7 @@ function divColor(div) {
 }
 
 function fmtDate(d) {
-    return new Date(d).toLocaleDateString('id-ID', { day:'numeric', month:'short' });
+    return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
 }
 
 function downloadCSV(filename, rows) {

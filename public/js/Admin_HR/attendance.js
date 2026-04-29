@@ -5,6 +5,8 @@
 
 let _attFull = [];
 let _employees = [];
+let currentAttPage = 1;
+const ATT_PAGE_SIZE = 10;
 
 /* ========== API INTEGRATION ========== */
 
@@ -77,10 +79,67 @@ function filterAtt() {
     if (status) filtered = filtered.filter(r => r.status === status);
     if (div) filtered = filtered.filter(r => r.division === div);
     
+    currentAttPage = 1; // Reset to page 1 on filter
     renderAttendanceTable(filtered);
 }
 
-function renderAttendanceTable(data) {
+function changeAttPage(page) {
+    currentAttPage = page;
+    // Re-apply filter without resetting page
+    const search = (document.getElementById('searchAtt')?.value || '').toLowerCase();
+    const status = document.getElementById('filterAttStatus')?.value || '';
+    const div = document.getElementById('filterAttDiv')?.value || '';
+    
+    let filtered = _attFull || [];
+    if (search) {
+        filtered = filtered.filter(r => 
+            (r.name && r.name.toLowerCase().includes(search)) ||
+            (r.division && r.division.toLowerCase().includes(search))
+        );
+    }
+    if (status) filtered = filtered.filter(r => r.status === status);
+    if (div) filtered = filtered.filter(r => r.division === div);
+    
+    renderAttendanceTable(filtered, false);
+}
+
+function renderAttPagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / ATT_PAGE_SIZE) || 1;
+    let pag = document.getElementById('attPagination');
+    if (!pag) {
+        const info = document.getElementById('attInfo');
+        if(info && info.parentNode) {
+            pag = document.createElement('div');
+            pag.id = 'attPagination';
+            pag.className = 'pagination flex gap-1 items-center justify-end w-full';
+            info.parentNode.classList.add('flex', 'justify-between', 'items-center', 'w-full');
+            info.parentNode.appendChild(pag);
+        } else {
+            return;
+        }
+    }
+    
+    if (totalPages <= 1) {
+        pag.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentAttPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeAttPage(${currentAttPage - 1})" ${currentAttPage === 1 ? 'disabled' : ''}>Prev</button>`;
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentAttPage - 1 && i <= currentAttPage + 1)) {
+            html += `<button class="px-3 py-1 border rounded text-xs ${i === currentAttPage ? 'bg-indigo-50 text-indigo-600 border-indigo-200 font-bold' : 'hover:bg-slate-50'}" onclick="changeAttPage(${i})">${i}</button>`;
+        } else if (i === currentAttPage - 2 || i === currentAttPage + 2) {
+            html += `<span class="px-2 py-1 text-slate-400">...</span>`;
+        }
+    }
+    
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentAttPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeAttPage(${currentAttPage + 1})" ${currentAttPage === totalPages ? 'disabled' : ''}>Next</button>`;
+    pag.innerHTML = html;
+}
+
+function renderAttendanceTable(data, resetPage = true) {
     const body = document.getElementById('attBody');
     if (!body) return;
     
@@ -91,13 +150,20 @@ function renderAttendanceTable(data) {
         body.innerHTML = '';
         if (empty) empty.classList.remove('hidden');
         if (info) info.textContent = '0 data';
+        renderAttPagination(0);
         return;
     }
     
     if (empty) empty.classList.add('hidden');
     if (info) info.textContent = `${data.length} data`;
     
-    body.innerHTML = data.map(r => `
+    if (resetPage) currentAttPage = 1;
+    const totalPages = Math.ceil(data.length / ATT_PAGE_SIZE) || 1;
+    if (currentAttPage > totalPages) currentAttPage = totalPages;
+    const start = (currentAttPage - 1) * ATT_PAGE_SIZE;
+    const paginated = data.slice(start, start + ATT_PAGE_SIZE);
+    
+    body.innerHTML = paginated.map(r => `
         <tr class="table-row">
             <td><span class="font-semibold text-slate-800 text-sm">${r.name || '—'}</span></td>
             <td class="hidden sm:table-cell text-slate-600 text-sm">${r.division || '—'}</td>
@@ -113,6 +179,8 @@ function renderAttendanceTable(data) {
             </td>
         </tr>
     `).join('');
+    
+    renderAttPagination(data.length);
 }
 
 /* ========== UTILITY FUNCTIONS ========== */

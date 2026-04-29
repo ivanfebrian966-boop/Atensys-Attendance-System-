@@ -28,7 +28,7 @@ class LeaveController extends Controller
         $pendingPermissions = Permission::with('employee.division')
             ->where('status', 'Pending')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
 
         return view('Admin_HR.pages.leaves', compact('stats', 'pendingPermissions'));
     }

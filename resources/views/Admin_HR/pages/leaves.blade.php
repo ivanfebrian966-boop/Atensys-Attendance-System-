@@ -154,10 +154,6 @@
                 <div class="flex items-center gap-2">
                     <p class="stat-value text-amber-500" id="sc-pending">{{ $stats['pending'] }}</p>
                     @if($stats['pending'] > 0)
-                        <span class="flex h-2.5 w-2.5 relative">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-                        </span>
                     @endif
                 </div>
                 <p class="stat-label">Pending</p>
@@ -269,6 +265,11 @@
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($pendingPermissions, 'links'))
+            <div class="p-4 border-t border-slate-100">
+                {{ $pendingPermissions->links() }}
+            </div>
+            @endif
         </div>
 
         {{-- ===== ALL LEAVE TABLE ===== --}}
@@ -430,6 +431,48 @@ function showToast(msg, type = 'success') {
     t._timer = setTimeout(() => t.className = type, 3000);
 }
 
+// ─── Pagination ──────────────────────────────
+let currentLeavePage = 1;
+const LEAVE_PAGE_SIZE = 10;
+let _allLeaves = [];
+
+function changeLeavePage(page) {
+    currentLeavePage = page;
+    renderLeaves();
+}
+
+function renderLeavePagination(totalItems) {
+    const totalPages = Math.ceil(totalItems / LEAVE_PAGE_SIZE) || 1;
+    let pag = document.getElementById('leavePagination');
+    if (!pag) {
+        const info = document.getElementById('leaveInfo');
+        pag = document.createElement('div');
+        pag.id = 'leavePagination';
+        pag.className = 'pagination flex gap-1 items-center justify-end w-full';
+        info.parentNode.classList.add('flex', 'justify-between', 'items-center', 'w-full');
+        info.parentNode.appendChild(pag);
+    }
+    
+    if (totalPages <= 1) {
+        pag.innerHTML = '';
+        return;
+    }
+    
+    let html = '';
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentLeavePage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeLeavePage(${currentLeavePage - 1})" ${currentLeavePage === 1 ? 'disabled' : ''}>Prev</button>`;
+    
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= currentLeavePage - 1 && i <= currentLeavePage + 1)) {
+            html += `<button class="px-3 py-1 border rounded text-xs ${i === currentLeavePage ? 'bg-indigo-50 text-indigo-600 border-indigo-200 font-bold' : 'hover:bg-slate-50'}" onclick="changeLeavePage(${i})">${i}</button>`;
+        } else if (i === currentLeavePage - 2 || i === currentLeavePage + 2) {
+            html += `<span class="px-2 py-1 text-slate-400">...</span>`;
+        }
+    }
+    
+    html += `<button class="px-3 py-1 border rounded text-xs ${currentLeavePage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-50'}" onclick="changeLeavePage(${currentLeavePage + 1})" ${currentLeavePage === totalPages ? 'disabled' : ''}>Next</button>`;
+    pag.innerHTML = html;
+}
+
 // ─── Load Table ──────────────────────────────
 async function loadLeaves() {
     const type   = document.getElementById('filterType').value;
@@ -444,18 +487,40 @@ async function loadLeaves() {
     try {
         const res  = await fetch(`${LEAVE_DATA_URL}?${params}`);
         const json = await res.json();
-
-        if (!json.success || !json.data.length) {
-            tbody.innerHTML = '';
-            empty.classList.remove('hidden');
-            info.textContent = '0 records';
-            return;
-        }
-
+        
+        if (!json.success) throw new Error(json.message);
+        
+        _allLeaves = json.data;
+        currentLeavePage = 1; // reset page on new load
+        renderLeaves();
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-red-400 text-sm">Failed to load: ${e.message}</td></tr>`;
         empty.classList.add('hidden');
-        info.textContent = `${json.data.length} record(s)`;
+    }
+}
 
-        tbody.innerHTML = json.data.map(row => `
+function renderLeaves() {
+    const tbody = document.getElementById('leaveBody');
+    const empty = document.getElementById('leaveEmpty');
+    const info  = document.getElementById('leaveInfo');
+
+    if (!_allLeaves || !_allLeaves.length) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        info.textContent = '0 records';
+        renderLeavePagination(0);
+        return;
+    }
+
+    empty.classList.add('hidden');
+    info.textContent = `${_allLeaves.length} record(s)`;
+    
+    const totalPages = Math.ceil(_allLeaves.length / LEAVE_PAGE_SIZE) || 1;
+    if (currentLeavePage > totalPages) currentLeavePage = totalPages;
+    const start = (currentLeavePage - 1) * LEAVE_PAGE_SIZE;
+    const paginated = _allLeaves.slice(start, start + LEAVE_PAGE_SIZE);
+
+    tbody.innerHTML = paginated.map(row => `
             <tr class="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
                 <td class="py-3 px-4">
                     <div class="flex items-center gap-3">
@@ -496,15 +561,14 @@ async function loadLeaves() {
                 <td class="py-3 px-4">${statusBadge(row.status)}</td>
                 <td class="py-3 px-4">
                     <div class="flex justify-end items-center gap-2 flex-wrap">
-                        <button class="btn-approve" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe" onclick='openManageModal(${JSON.stringify(row).replace(/'/g, "&#39;")})' title="Manage">✎ Manage</button>
+                        <button class="btn-approve" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe; padding: 5px 8px;" onclick='openManageModal(${JSON.stringify(row).replace(/'/g, "&#39;")})' title="Manage">✎</button>
                         <button class="btn-delete" onclick="openDeleteModal(${row.id})" title="Delete">🗑</button>
                     </div>
                 </td>
             </tr>
         `).join('');
-    } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-red-400 text-sm">Failed to load: ${e.message}</td></tr>`;
-    }
+        
+        renderLeavePagination(_allLeaves.length);
 }
 
 function statusBadge(status) {
