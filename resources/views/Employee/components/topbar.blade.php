@@ -15,7 +15,7 @@
 
         {{-- LEFT: Hamburger + Page Title --}}
         <div class="flex items-center gap-3">
-            <button class="topbar-hamburger" onclick="openSidebar()" aria-label="Open Sidebar">
+            <button class="lg:hidden p-2 rounded-xl hover:bg-slate-100 transition" onclick="openSidebar()" aria-label="Open Sidebar">
                 <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>

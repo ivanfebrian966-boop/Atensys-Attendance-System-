@@ -561,8 +561,18 @@ function renderLeaves() {
                 <td class="py-3 px-4">${statusBadge(row.status)}</td>
                 <td class="py-3 px-4">
                     <div class="flex justify-end items-center gap-2 flex-wrap">
-                        <button class="btn-approve" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe; padding: 5px 8px;" onclick='openManageModal(${JSON.stringify(row).replace(/'/g, "&#39;")})' title="Manage">✎</button>
-                        <button class="btn-delete" onclick="openDeleteModal(${row.id})" title="Delete">🗑</button>
+                        <button class="btn-approve flex items-center justify-center rounded-lg hover:bg-indigo-100 transition" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe; padding: 6px; width:32px; height:32px;" onclick='openManageModal(${JSON.stringify(row).replace(/'/g, "&#39;")})' title="Manage">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn-delete flex items-center justify-center rounded-lg hover:bg-red-50 transition" style="padding: 6px; width:32px; height:32px;" onclick="openDeleteModal(${row.id})" title="Delete">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"></path>
+                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                            </svg>
+                        </button>
                     </div>
                 </td>
             </tr>

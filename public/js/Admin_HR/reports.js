@@ -124,33 +124,47 @@ function renderSummaryCards() {
 }
 
 /* ---- Bar chart ---- */
+let trendChart = null;
 function renderBarChart() {
-    const dates = [...new Set(filteredData.map(r => r.date))].sort();
-    const wrap = document.getElementById('barChart');
-    if (!wrap) return;
+    const dates = [...new Set(filteredData.map(r => r.date))].sort().slice(-14); // Last 14 days
+    const ctx = document.getElementById('barChartCanvas');
+    if (!ctx) return;
 
-    const maxVal = Math.max(...dates.map(d => {
-        const day = filteredData.filter(r => r.date === d);
-        return day.length;
-    }), 1);
+    const presentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Present').length);
+    const absentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Absent').length);
+    const lateData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Late').length);
+    const labels = dates.map(d => d.slice(5)); // MM-DD
 
-    wrap.innerHTML = dates.slice(-10).map(d => {
-        const day = filteredData.filter(r => r.date === d);
-        const pres = day.filter(r => r.status === 'Present').length;
-        const abs = day.filter(r => r.status === 'Absent').length;
-        const late = day.filter(r => r.status === 'Late').length;
-        const h = pct => `${Math.round(pct / maxVal * 100)}%`;
-        const lbl = d.slice(5); // MM-DD
-        return `
-            <div class="bar-group-wrap">
-                <div class="bar-group" style="height:100px">
-                    <div class="bar-seg" style="background:#10b981;height:${h(pres)};width:33%" title="Present: ${pres}"></div>
-                    <div class="bar-seg" style="background:#ef4444;height:${h(abs)};width:33%" title="Absent: ${abs}"></div>
-                    <div class="bar-seg" style="background:#f59e0b;height:${h(late)};width:33%" title="Late: ${late}"></div>
-                </div>
-                <p class="bar-label">${lbl}</p>
-            </div>`;
-    }).join('');
+    if (trendChart) {
+        trendChart.destroy();
+    }
+
+    trendChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Present', data: presentData, backgroundColor: '#10b981', borderRadius: 4 },
+                { label: 'Late', data: lateData, backgroundColor: '#f59e0b', borderRadius: 4 },
+                { label: 'Absent', data: absentData, backgroundColor: '#ef4444', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } }
+            }
+        }
+    });
 }
 
 /* ---- Donut ---- */

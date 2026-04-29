@@ -1,7 +1,4 @@
 {{-- resources/views/partials/sidebar.blade.php --}}
-<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()">
-    ☰
-</button>
 <aside class="sidebar" id="sidebar">
     @php
         use Illuminate\Support\Facades\Auth;

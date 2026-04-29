@@ -42,31 +42,31 @@
             </div>
             <div class="stat-card green fade-up d2">
                 <div class="stat-icon-sm" style="background:#ecfdf5;color:#10b981">✅</div>
-                <p class="stat-value text-emerald-600">{{ $stats['present'] ?? 0 }}</p>
+                <p class="stat-value text-emerald-600">{{ $present ?? 0 }}</p>
                 <p class="stat-label">Present</p>
 
             </div>
             <div class="stat-card red fade-up d3">
                 <div class="stat-icon-sm" style="background:#fef2f2;color:#ef4444">❌</div>
-                <p class="stat-value text-red-500">{{ $stats['absent'] ?? 0 }}</p>
+                <p class="stat-value text-red-500">{{ $absent ?? 0 }}</p>
                 <p class="stat-label">Absent</p>
 
             </div>
             <div class="stat-card yellow fade-up d4">
                 <div class="stat-icon-sm" style="background:#fffbeb;color:#f59e0b">⏰</div>
-                <p class="stat-value text-amber-500">{{ $stats['late'] ?? 0 }}</p>
+                <p class="stat-value text-amber-500">{{ $late ?? 0 }}</p>
                 <p class="stat-label">Late</p>
 
             </div>
             <div class="stat-card blue fade-up d5">
                 <div class="stat-icon-sm" style="background:#eff6ff;color:#3b82f6">🏥</div>
-                <p class="stat-value text-blue-500">{{ $stats['sick'] ?? 0 }}</p>
+                <p class="stat-value text-blue-500">{{ $sick ?? 0 }}</p>
                 <p class="stat-label">Sick</p>
 
             </div>
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📋</div>
-                <p class="stat-value text-purple-500">{{ $pendingPermissionsCount ?? 0 }}</p>
+                <p class="stat-value text-purple-500">{{ $permission ?? 0 }}</p>
                 <p class="stat-label">Permission</p>
             </div>
         </div>

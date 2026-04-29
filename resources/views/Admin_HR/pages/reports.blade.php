@@ -5,6 +5,7 @@
 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/reports.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 @endsection
 
 @section('main_structure')
@@ -98,8 +99,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="p-5">
-                    <div class="bar-chart-wrap" id="barChart"></div>
+                <div class="p-5" style="position:relative; height:250px; width:100%;">
+                    <canvas id="barChartCanvas"></canvas>
                 </div>
             </div>
 
