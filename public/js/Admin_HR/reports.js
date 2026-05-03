@@ -11,9 +11,28 @@ async function loadReportsData() {
         const response = await fetch(REPORTS_DATA_URL);
         const data = await response.json();
         RAW = data;
+        updateDivisionDropdown();
         renderReports();
     } catch (error) {
         console.error('Error loading reports:', error);
+    }
+}
+
+function updateDivisionDropdown() {
+    const { from, to } = getDateRange();
+    const periodData = RAW.filter(r => r.date >= from && r.date <= to);
+    const divs = [...new Set(periodData.map(r => r.div))].filter(Boolean).sort();
+    
+    const select = document.getElementById('reportDiv');
+    if (!select) return;
+    
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">All Divisions</option>' + divs.map(d => `<option value="${d}">${d}</option>`).join('');
+    
+    if (divs.includes(currentVal)) {
+        select.value = currentVal;
+    } else {
+        select.value = '';
     }
 }
 
@@ -39,6 +58,7 @@ function setPeriod(p, btn) {
     dateFromEl.value = range.from;
     dateToEl.value = range.to;
 
+    updateDivisionDropdown();
     renderReports();
 }
 
@@ -377,10 +397,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dateFromEl) dateFromEl.addEventListener('change', () => {
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        updateDivisionDropdown();
         renderReports();
     });
     if (dateToEl) dateToEl.addEventListener('change', () => {
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        updateDivisionDropdown();
         renderReports();
     });
 });

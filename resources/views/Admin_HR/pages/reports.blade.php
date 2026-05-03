@@ -36,8 +36,6 @@
                 <input type="date" id="dateTo" class="filter-select" style="padding-left:12px">
                 <select id="reportDiv" class="filter-select" onchange="renderReports()">
                     <option value="">All Divisions</option>
-                    <option>Engineering</option><option>HR</option><option>Finance</option>
-                    <option>Marketing</option><option>IT</option><option>Operasional</option>
                 </select>
             </div>
         </div>

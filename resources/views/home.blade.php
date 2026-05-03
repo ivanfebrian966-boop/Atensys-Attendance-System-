@@ -57,10 +57,10 @@
     <section class="relative min-h-screen flex items-center pt-24 overflow-hidden">
         <!-- Background Slider -->
         <div id="hero-slider" class="absolute inset-0 z-0">
-            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-100" style="background-image: url('{{ asset('images/office 2.jpg.jpeg') }}')"></div>
-            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 3.jpg.jpeg') }}')"></div>
-            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 4.jpg.jpeg') }}')"></div>
-            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 5.jpg.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-100" style="background-image: url('{{ asset('images/office 2.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 3.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 4.jpeg') }}')"></div>
+            <div class="slider-bg absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 opacity-0" style="background-image: url('{{ asset('images/office 5.jpeg') }}')"></div>
         </div>
         
         <!-- Dark Overlay for Text Readability -->
