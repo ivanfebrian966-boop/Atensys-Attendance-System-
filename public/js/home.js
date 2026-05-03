@@ -133,3 +133,68 @@
         if (slides.length > 0) {
             slideInterval = setInterval(nextSlide, 7000);
         }
+
+        // About Us Cards Click Interaction
+        window.activateAboutCard = function(selectedCard) {
+            // Get all cards
+            const cards = document.querySelectorAll('.about-card-simple');
+            
+            // Reset all cards to white
+            cards.forEach(card => {
+                card.classList.remove('bg-blue-600', 'shadow-xl', 'shadow-blue-500/30', 'scale-105');
+                card.classList.add('bg-white');
+                card.style.transform = '';
+                
+                const iconContainer = card.querySelector('.icon-container');
+                if (iconContainer) {
+                    iconContainer.classList.remove('bg-white/20', 'text-white');
+                    // We don't need to re-add specific colors because they have their own base classes (e.g. bg-indigo-50 text-indigo-500) that will take effect when the override classes are removed
+                }
+                
+                const title = card.querySelector('.title-text');
+                if (title) {
+                    title.classList.remove('text-white');
+                    title.classList.add('text-slate-900');
+                }
+                
+                const desc = card.querySelector('.desc-text');
+                if (desc) {
+                    desc.classList.remove('text-blue-50');
+                    desc.classList.add('text-slate-500');
+                }
+                
+                const contacts = card.querySelectorAll('.contact-text');
+                contacts.forEach(c => {
+                    c.classList.remove('text-blue-50');
+                    c.classList.add('text-slate-600');
+                });
+            });
+
+            // Set selected card to blue
+            selectedCard.classList.remove('bg-white');
+            selectedCard.classList.add('bg-blue-600', 'shadow-xl', 'shadow-blue-500/30', 'scale-105');
+            selectedCard.style.transform = 'translateY(-8px)';
+            
+            const iconContainer = selectedCard.querySelector('.icon-container');
+            if (iconContainer) {
+                iconContainer.classList.add('bg-white/20', 'text-white');
+            }
+            
+            const title = selectedCard.querySelector('.title-text');
+            if (title) {
+                title.classList.remove('text-slate-900');
+                title.classList.add('text-white');
+            }
+            
+            const desc = selectedCard.querySelector('.desc-text');
+            if (desc) {
+                desc.classList.remove('text-slate-500');
+                desc.classList.add('text-blue-50');
+            }
+            
+            const contacts = selectedCard.querySelectorAll('.contact-text');
+            contacts.forEach(c => {
+                c.classList.remove('text-slate-600');
+                c.classList.add('text-blue-50');
+            });
+        };

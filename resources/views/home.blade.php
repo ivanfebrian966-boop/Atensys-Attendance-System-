@@ -201,77 +201,57 @@
         </div>
     </section>
 
-    <!-- ===== ABOUT (Redesigned) ===== -->
-    <section id="about" class="py-28 about-bg relative overflow-hidden">
-        <!-- Animated background blobs -->
-        <div class="absolute top-[-80px] right-[-60px] w-[400px] h-[400px] rounded-full opacity-20 animate-float" style="background:radial-gradient(circle,rgba(99,102,241,0.4),transparent 70%)"></div>
-        <div class="absolute bottom-[-60px] left-[-40px] w-[350px] h-[350px] rounded-full opacity-15 animate-float-slow" style="background:radial-gradient(circle,rgba(6,182,212,0.4),transparent 70%)"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10" style="background:radial-gradient(circle,rgba(139,92,246,0.3),transparent 70%)"></div>
-
-        <div class="max-w-6xl mx-auto px-6 relative" style="z-index:1">
-            <div class="text-center mb-20">
-                <div class="inline-flex items-center gap-2 text-cyan-400 text-xs font-bold px-5 py-2 rounded-full mb-5 border border-cyan-400/30 bg-cyan-400/10 backdrop-blur-sm" style="font-family:'Sora',sans-serif">
-                    <span class="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></span>
-                    ABOUT US
-                </div>
-                <h2 class="text-4xl md:text-5xl font-extrabold text-white mt-3 mb-4" style="font-family:'Sora',sans-serif">
-                    About <span class="gradient-text-glow">ATTENSYS</span>
+    <!-- ===== ABOUT (Simple) ===== -->
+    <section id="about" class="py-24 about-bg">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-white text-sm font-semibold uppercase tracking-widest" style="font-family:'Sora',sans-serif">About Us</span>
+                <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mt-3 mb-4 flex items-center justify-center gap-4" style="font-family:'Sora',sans-serif">
+                    About <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS" class="h-20 md:h-30 lg:h-36 w-auto object-contain">
                 </h2>
-                <p class="text-slate-400 text-base max-w-lg mx-auto" style="font-family:'DM Sans',sans-serif">
-                    Discover the vision behind our smart attendance platform
-                </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
+            <div class="grid md:grid-cols-3 gap-6" id="about-cards-container">
                 <!-- Card 1: What is ATTENSYS -->
-                <div class="about-card group">
-                    <div class="about-card-inner">
-                        <div class="about-icon-wrap about-icon-indigo">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-white text-xl mb-3 group-hover:text-cyan-300 transition-colors" style="font-family:'Sora',sans-serif">What is ATTENSYS?</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors" style="font-family:'DM Sans',sans-serif">An integrated employee attendance system designed to simplify attendance management using modern digital technology.</p>
-                        <div class="about-card-line"></div>
+                <div class="bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 about-card-simple card-hover-carousel border border-slate-100" onclick="activateAboutCard(this)">
+                    <div class="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center bg-indigo-50 text-indigo-500 transition-colors duration-300 icon-container">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
                     </div>
+                    <h3 class="font-bold text-slate-900 text-xl mb-3 transition-colors duration-300 title-text" style="font-family:'Sora',sans-serif">What is ATTENSYS?</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed transition-colors duration-300 desc-text" style="font-family:'DM Sans',sans-serif">An integrated employee attendance system designed to simplify attendance management using modern digital technology.</p>
                 </div>
 
                 <!-- Card 2: Why ATTENSYS -->
-                <div class="about-card group">
-                    <div class="about-card-inner">
-                        <div class="about-icon-wrap about-icon-cyan">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
-                            </svg>
-                        </div>
-                        <h3 class="font-bold text-white text-xl mb-3 group-hover:text-cyan-300 transition-colors" style="font-family:'Sora',sans-serif">Why ATTENSYS?</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors" style="font-family:'DM Sans',sans-serif">Enhance attendance monitoring, reduce manual errors, and generate accurate reports all in one dashboard for HR.</p>
-                        <div class="about-card-line"></div>
+                <div class="bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 about-card-simple card-hover-carousel border border-slate-100" onclick="activateAboutCard(this)">
+                    <div class="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center bg-cyan-50 text-cyan-500 transition-colors duration-300 icon-container">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                        </svg>
                     </div>
+                    <h3 class="font-bold text-slate-900 text-xl mb-3 transition-colors duration-300 title-text" style="font-family:'Sora',sans-serif">Why ATTENSYS?</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed transition-colors duration-300 desc-text" style="font-family:'DM Sans',sans-serif">Enhance attendance monitoring, reduce manual errors, and generate accurate reports all in one dashboard for HR.</p>
                 </div>
 
                 <!-- Card 3: Support -->
-                <div class="about-card group">
-                    <div class="about-card-inner">
-                        <div class="about-icon-wrap about-icon-purple">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
-                            </svg>
+                <div class="bg-white rounded-3xl p-8 cursor-pointer transition-all duration-300 about-card-simple card-hover-carousel border border-slate-100" onclick="activateAboutCard(this)">
+                    <div class="w-14 h-14 rounded-2xl mb-5 flex items-center justify-center bg-purple-50 text-purple-500 transition-colors duration-300 icon-container">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-slate-900 text-xl mb-3 transition-colors duration-300 title-text" style="font-family:'Sora',sans-serif">Support</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed transition-colors duration-300 desc-text mb-4" style="font-family:'DM Sans',sans-serif">Experiencing issues? Our team is ready to help anytime.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-slate-600 contact-text transition-colors duration-300">
+                            <span>📧</span>
+                            <span style="font-family:'DM Sans',sans-serif">attensys@gmail.com</span>
                         </div>
-                        <h3 class="font-bold text-white text-xl mb-3 group-hover:text-cyan-300 transition-colors" style="font-family:'Sora',sans-serif">Support</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed mb-5 group-hover:text-slate-300 transition-colors" style="font-family:'DM Sans',sans-serif">Experiencing issues? Our team is ready to help anytime.</p>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3 text-sm text-slate-300 bg-white/5 rounded-xl px-4 py-2.5 border border-white/10">
-                                <span class="text-cyan-400">📧</span>
-                                <span style="font-family:'DM Sans',sans-serif">attensys@gmail.com</span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-slate-300 bg-white/5 rounded-xl px-4 py-2.5 border border-white/10">
-                                <span class="text-cyan-400">📱</span>
-                                <span style="font-family:'DM Sans',sans-serif">+62 8X XXX XXX</span>
-                            </div>
+                        <div class="flex items-center gap-3 text-sm text-slate-600 contact-text transition-colors duration-300">
+                            <span>📱</span>
+                            <span style="font-family:'DM Sans',sans-serif">+62 8X XXX XXX</span>
                         </div>
-                        <div class="about-card-line"></div>
                     </div>
                 </div>
             </div>
