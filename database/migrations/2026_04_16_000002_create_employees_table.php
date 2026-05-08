@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->string('nip')->primary();
-            $table->string('password');
-            $table->string('name');
-            $table->string('role');
-            $table->string('position');
-            $table->string('email')->unique();
+            $table->string('nip', 7)->primary();
+            $table->string('password', 255);
+            $table->string('name', 100);
+            $table->enum('role', ['Super Admin', 'Admin HR', 'Employee']);
+            $table->string('position', 100);
+            $table->string('email', 100)->unique();
             $table->unsignedBigInteger('division_id');
-            $table->string('no_hp');
+            $table->string('no_hp', 15);
             $table->text('alamat');
-            $table->string('status')->default('Aktif');
+            $table->enum('status', ['Aktif', 'Tidak Aktif',])->default('Aktif');
             $table->timestamps();
 
             $table->foreign('division_id')->references('division_id')->on('divisions')->onDelete('cascade');

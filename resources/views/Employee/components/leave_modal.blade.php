@@ -176,8 +176,8 @@
         <!-- Header (SA style: title + subtitle + close button) -->
         <div class="leave-modal-header">
             <div>
-                <h3>New Leave Request</h3>
-                <p>Fill in the details to submit a leave or sick request</p>
+                <h3 id="leaveModalTitle">New Leave Request</h3>
+                <p id="leaveModalSub">Fill in the details to submit a leave or sick request</p>
             </div>
             <button type="button" onclick="closeLeaveModal()" class="close-btn">✕</button>
         </div>
@@ -192,7 +192,7 @@
                     <label class="leave-form-label">Request Type</label>
                     <div class="type-pills">
                         <label class="type-pill active" id="pill-permission">
-                            <input type="radio" name="type" value="Permission" checked onchange="setPill('permission')">
+                            <input type="radio" name="type" value="Leave" checked onchange="setPill('leave')">
                             <div class="pill-icon">🏖️</div>
                             <div>
                                 <div class="pill-label">Permission</div>
@@ -225,7 +225,7 @@
                 <!-- Leave Category -->
                 <div class="leave-form-field">
                     <label class="leave-form-label">Leave Category</label>
-                    <select id="leave_category" class="leave-form-select" onchange="updateInformation()">
+                    <select id="leave_category" name="leave_category" class="leave-form-select" onchange="updateInformation()">
                         <!-- Options populated via JS -->
                     </select>
                 </div>
@@ -266,7 +266,7 @@
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
                 </svg>
-                Submit Request
+                <span id="leaveSubmitText">Submit Request</span>
             </button>
         </div>
 
@@ -275,14 +275,56 @@
 
 <script>
     if (typeof window.openLeaveModal !== 'function') {
-        window.openLeaveModal = function() {
+            window.openLeaveModal = function(isEdit = false) {
             const m = document.getElementById('leaveModal');
             if(m) {
+                if (!isEdit) {
+                    // Reset form for NEW request
+                    document.getElementById('leaveForm').reset();
+                    document.getElementById('leaveForm').action = "{{ route('employee.attendance.permission') }}";
+                    document.getElementById('leaveModalTitle').textContent = "New Leave Request";
+                    document.getElementById('leaveModalSub').textContent = "Fill in the details to submit a leave or sick request";
+                    document.getElementById('leaveSubmitText').textContent = "Submit Request";
+                    setPill('leave');
+                    updateInformation();
+                }
                 m.classList.remove('hidden');
                 m.classList.add('flex');
                 setTimeout(() => m.classList.add('open'), 10);
             }
         };
+
+        window.editLeave = function(data) {
+            const form = document.getElementById('leaveForm');
+            form.action = `{{ url('employee/attendance/permission') }}/${data.id}/update`;
+            
+            document.getElementById('leaveModalTitle').textContent = "Edit Leave Request";
+            document.getElementById('leaveModalSub').textContent = "Update your pending leave request details";
+            document.getElementById('leaveSubmitText').textContent = "Save Changes";
+
+            // Set type
+            const typeVal = data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
+            const radio = document.querySelector(`input[name="type"][value="${data.type}"]`);
+            if(radio) radio.checked = true;
+            setPill(typeVal);
+
+            // Set dates
+            form.querySelector('input[name="start_date"]').value = data.start_raw;
+            form.querySelector('input[name="completion_date"]').value = data.end_raw;
+
+            // Set category after a short delay for setPill to finish
+            setTimeout(() => {
+                const catSelect = document.getElementById('leave_category');
+                catSelect.value = data.category;
+                
+                // Set information/reason
+                document.getElementById('leave_detail').value = data.information === '-' ? '' : data.information;
+                updateInformation();
+            }, 50);
+
+            window.openLeaveModal(true);
+        };
+
         window.closeLeaveModal = function() {
             const m = document.getElementById('leaveModal');
             if(m) {
@@ -319,13 +361,14 @@
         window.setPill = function(type) {
             const pillPerm = document.getElementById('pill-permission');
             const pillSick = document.getElementById('pill-sick');
-            if(pillPerm) pillPerm.classList.toggle('active', type === 'permission');
+            if(pillPerm) pillPerm.classList.toggle('active', type === 'permission' || type === 'leave');
             if(pillSick) pillSick.classList.toggle('active', type === 'sick');
 
             const catSelect = document.getElementById('leave_category');
             if(catSelect) {
                 catSelect.innerHTML = '';
-                const opts = type === 'permission' ? permissionOptions : sickOptions;
+                catSelect.name = (type === 'permission' || type === 'leave') ? 'leave_category' : 'sick_category';
+                const opts = (type === 'permission' || type === 'leave') ? permissionOptions : sickOptions;
                 opts.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.text;
@@ -338,11 +381,10 @@
         };
 
         window.updateInformation = function() {
-            const cat = document.getElementById('leave_category').value;
             const det = document.getElementById('leave_detail').value;
             const hiddenInfo = document.getElementById('real_information');
             if(hiddenInfo) {
-                hiddenInfo.value = det.trim() !== '' ? cat + ' — ' + det : cat;
+                hiddenInfo.value = det.trim();
             }
             updateUploadRequirement();
         };
@@ -358,12 +400,12 @@
             const labelEl = document.getElementById('attachment_label');
             
             if (fileInput) {
-                fileInput.required = isRequired;
+                // fileInput.required = isRequired; // Don't require on edit if already uploaded
             }
             
             if (labelEl) {
                 if (isRequired) {
-                    labelEl.innerHTML = 'Attachment <span style="color:#ef4444; font-weight:bold;">* (Required)</span>';
+                    labelEl.innerHTML = 'Attachment <span style="color:#ef4444; font-weight:bold;">*</span>';
                 } else {
                     labelEl.innerHTML = 'Attachment <span style="color:#94a3b8; font-weight:normal;">(Optional)</span>';
                 }
@@ -374,10 +416,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const activeRadio = document.querySelector('input[name="type"]:checked');
             if(activeRadio) {
-                setPill(activeRadio.value.toLowerCase());
+                const val = activeRadio.value.toLowerCase();
+                setPill(val === 'leave' ? 'permission' : val);
             } else {
-                setPill('permission'); // fallback
+                setPill('permission'); 
             }
+            updateInformation();
         });
         window.updateFileName = function(input) {
             const el = document.getElementById('uploadText');

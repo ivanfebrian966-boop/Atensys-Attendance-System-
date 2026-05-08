@@ -16,18 +16,20 @@ class LoginController extends Controller
     {
         $request->validate(
             [
-                'email'    => 'required|email',
+                'login'    => 'required',
                 'password' => 'required',
             ],
             [
-                'email.required'    => 'Email address is required.',
-                'email.email'       => 'Please enter a valid email address.',
+                'login.required'    => 'Email address or NIP is required.',
                 'password.required' => 'Password is required.',
             ]
         );
 
+        $loginValue = $request->input('login');
+        $field = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'nip';
+
         $credentials = [
-            'email' => $request->email,
+            $field => $loginValue,
             'password' => $request->password,
         ];
 
@@ -35,16 +37,16 @@ class LoginController extends Controller
             $user = Auth::user();
             
             // Check account status
-            if ($user->role !== 'super_admin' && $user->status !== 'Aktif') {
+            if ($user->role !== 'Super Admin' && $user->status !== 'Aktif') {
                 Auth::logout();
                 return back()->with('toast_error', 'Your account is not active yet. Please contact the administrator.');
             }
 
             $request->session()->regenerate();
 
-            if ($user->role === 'super_admin') {
+            if ($user->role === 'Super Admin') {
                 return redirect()->route('super_admin.dashboard');
-            } elseif ($user->role === 'admin_hr') {
+            } elseif ($user->role === 'Admin HR') {
                 return redirect()->route('admin-hr.dashboard');
             }
 
@@ -52,7 +54,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Incorrect email or password.',
+            'login' => 'Incorrect email/NIP or password.',
         ]);
     }
 

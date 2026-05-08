@@ -79,17 +79,24 @@ function setErr(fid, eid, msg) {
     if (errEl) errEl.textContent = msg;
 }
 
-/* ---- Toast ---- */
-let _tt = null;
+/* ---- Toast notification using SweetAlert2 ---- */
+function showToast(msg, type = 'success', ms = 3200) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: ms,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
 
-function showToast(icon, msg, ms = 3200) {
-    const t = document.getElementById('toast');
-    if (!t) return;
-    document.getElementById('tIcon').textContent = icon;
-    document.getElementById('tMsg').textContent = msg;
-    t.classList.add('show');
-    clearTimeout(_tt);
-    _tt = setTimeout(() => t.classList.remove('show'), ms);
+    Toast.fire({
+        icon: type,
+        title: msg
+    });
 }
 
 /* ---- Realtime Date + Clock ---- */

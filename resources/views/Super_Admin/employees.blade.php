@@ -22,8 +22,7 @@
             <select class="search-input" style="padding-left:14px;width:140px" onchange="filterByStatus(this,'employee-table')">
                 <option value="">All Status</option>
                 <option value="Aktif">Active</option>
-                <option value="Nonaktif">Inactive</option>
-                <option value="Pending">Pending</option>
+                <option value="Tidak Aktif">Inactive</option>
             </select>
             <button class="btn-primary" onclick="openModal('modalAddEmployee')">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,8 +73,6 @@
                     <td>
                         @if($emp->status === 'Aktif')
                             <span class="badge badge-active">● Active</span>
-                        @elseif($emp->status === 'Pending')
-                            <span class="badge bg-amber-100 text-amber-600">● Pending</span>
                         @else
                             <span class="badge bg-red-100 text-red-600">● Inactive</span>
                         @endif

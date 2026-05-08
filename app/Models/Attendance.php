@@ -16,7 +16,7 @@ class Attendance extends Model
         'nip',
         'check_in',
         'check_out',
-        'status',
+        'attendance_status',
         'qr_code',
         'created_at',
         'updated_at',

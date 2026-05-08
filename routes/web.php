@@ -21,7 +21,7 @@ Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Super Admin
-Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => ['role:super_admin']], function () {
+Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' => ['role:Super Admin']], function () {
     Route::get('/dashboard', [SuperAdminController::class, 'index'])->name('dashboard');
     Route::get('/employees', [SuperAdminController::class, 'employees'])->name('employees');
     Route::get('/admins', [SuperAdminController::class, 'admins'])->name('admins');
@@ -44,7 +44,7 @@ Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' =>
 });
 
 // Admin HR
-Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['role:admin_hr']], function () {
+Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['role:Admin HR']], function () {
     Route::get('/dashboard', [DashboardHRController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileHRController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileHRController::class, 'updateProfile'])->name('profile.update');
@@ -78,9 +78,9 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['rol
 });
 
 // Employee Routes
-Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard')->middleware('role:karyawan');
+Route::get('/employee/dashboard', [EmployeeController::class, 'dashboard'])->name('employee.dashboard')->middleware('role:Employee');
 
-Route::prefix('employee')->middleware('role:karyawan')->group(function () {
+Route::prefix('employee')->middleware('role:Employee')->group(function () {
     Route::get('/attendance', [EmployeeController::class, 'attendance'])->name('employee.attendance');
     Route::get('/history', [EmployeeController::class, 'history'])->name('employee.history');
     Route::get('/leave', [EmployeeController::class, 'leave'])->name('employee.leave');
@@ -88,7 +88,9 @@ Route::prefix('employee')->middleware('role:karyawan')->group(function () {
     Route::post('/attendance/checkin', [EmployeeController::class, 'checkIn'])->name('employee.attendance.checkin');
     Route::post('/attendance/checkout', [EmployeeController::class, 'checkOut'])->name('employee.attendance.checkout');
     Route::post('/attendance/permission', [EmployeeController::class, 'storePermission'])->name('employee.attendance.permission');
+    Route::post('/attendance/permission/{id}/update', [EmployeeController::class, 'updatePermission'])->name('employee.attendance.permission.update');
+    Route::delete('/attendance/permission/{id}/delete', [EmployeeController::class, 'destroyPermission'])->name('employee.attendance.permission.delete');
 });
 
 // Legacy employee route
-Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee')->middleware('role:karyawan');
+Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee')->middleware('role:Employee');

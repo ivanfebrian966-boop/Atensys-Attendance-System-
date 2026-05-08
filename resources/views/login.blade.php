@@ -125,9 +125,9 @@
             <form method="POST" action="{{ route('login.post') }}" class="space-y-5">
                 @csrf
 
-                <!-- Email -->
+                <!-- NIP -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address or NIP</label>
                     <div class="relative">
                         <span class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,11 +135,11 @@
                                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
                         </span>
-                        <input type="email" name="email" value="{{ old('email') }}"
-                               class="input-field {{ $errors->has('email') ? 'error' : '' }}"
-                               placeholder="you@company.com" required autofocus>
+                        <input type="text" name="login" value="{{ old('login') }}"
+                               class="input-field {{ $errors->has('login') ? 'error' : '' }}"
+                               placeholder="you@company.com or NIP" required autofocus>
                     </div>
-                    @error('email')
+                    @error('login')
                     <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                     @enderror
                 </div>

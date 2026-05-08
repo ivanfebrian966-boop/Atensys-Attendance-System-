@@ -59,7 +59,7 @@ class AttendanceController extends Controller
                 $attendance = Attendance::create([
                     'nip' => $empId,
                     'check_in' => Carbon::now(),
-                    'status' => $this->determineStatus($currentTime),
+                    'attendance_status' => $this->determineStatus($currentTime),
                     'qr_code' => $qrData,
                 ]);
                 

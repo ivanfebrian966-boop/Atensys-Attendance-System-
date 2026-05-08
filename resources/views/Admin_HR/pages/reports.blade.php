@@ -41,7 +41,7 @@
         </div>
 
         <!-- SUMMARY CARDS -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
             <div class="stat-card indigo fade-up d1">
                 <div class="stat-icon" style="background:#eef2ff">📊</div>
                 <p class="stat-value gradient-text" id="rTotal">0</p>
@@ -65,12 +65,7 @@
                 <p class="stat-label">Late</p>
                 <p class="stat-trend text-amber-500" id="rLatePct">—</p>
             </div>
-            <div class="stat-card blue fade-up d5">
-                <div class="stat-icon" style="background:#eff6ff">🏥</div>
-                <p class="stat-value text-blue-500" id="rSick">0</p>
-                <p class="stat-label">Sick</p>
-                <p class="stat-trend text-blue-500" id="rSickPct">—</p>
-            </div>
+
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon" style="background:#faf5ff">📋</div>
                 <p class="stat-value text-purple-500" id="rPerm">0</p>
@@ -167,7 +162,7 @@
                             <th>Present</th>
                             <th class="hidden sm:table-cell">Absent</th>
                             <th class="hidden md:table-cell">Late</th>
-                            <th class="hidden md:table-cell">Sick</th>
+
                             <th class="hidden md:table-cell">Permission</th>
                             <th>% Present</th>
                             <th class="hidden lg:table-cell">Avg Check In</th>

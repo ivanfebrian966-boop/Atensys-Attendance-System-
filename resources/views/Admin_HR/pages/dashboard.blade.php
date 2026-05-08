@@ -56,14 +56,14 @@
                 <div class="stat-icon-sm" style="background:#fffbeb;color:#f59e0b">⏰</div>
                 <p class="stat-value text-amber-500">{{ $late ?? 0 }}</p>
                 <p class="stat-label">Late</p>
-
             </div>
-            <div class="stat-card blue fade-up d5">
-                <div class="stat-icon-sm" style="background:#eff6ff;color:#3b82f6">🏥</div>
-                <p class="stat-value text-blue-500">{{ $sick ?? 0 }}</p>
+
+            <div class="stat-card sky fade-up d5">
+                <div class="stat-icon-sm" style="background:#f0f9ff;color:#0ea5e9">🏥</div>
+                <p class="stat-value text-sky-500">{{ $sick ?? 0 }}</p>
                 <p class="stat-label">Sick</p>
-
             </div>
+
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📋</div>
                 <p class="stat-value text-purple-500">{{ $permission ?? 0 }}</p>
@@ -141,19 +141,7 @@
                             <span class="status-count">{{ $late ?? 0 }}</span>
                         </div>
                     </div>
-                    <div class="status-row">
-                        <div class="flex items-center gap-2">
-                            <span class="status-dot bg-blue-400"></span>
-                            <span class="text-sm text-slate-600">Sick</span>
 
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="status-bar-wrap">
-                                <div class="status-bar bg-blue-400" style="width:{{ $sickPct ?? 0 }}%"></div>
-                            </div>
-                            <span class="status-count">{{ $sick ?? 0 }}</span>
-                        </div>
-                    </div>
                     <div class="status-row">
                         <div class="flex items-center gap-2">
                             <span class="status-dot bg-purple-400"></span>
@@ -228,15 +216,14 @@
                             <td class="p-4 text-sm text-slate-600">{{ $att->employee->division->division_name ?? '-' }}</td>
                             <td class="p-4 text-sm text-slate-600 font-medium">{{ $att->check_in ? Carbon\Carbon::parse($att->check_in)->format('H:i') : '—' }}</td>
                             <td class="p-4 text-center">
-                                @if($att->status === 'Present')
+                                @if($att->attendance_status === 'Present')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-600">✅ Present</span>
-                                @elseif($att->status === 'Late')
+                                @elseif($att->attendance_status === 'Late')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Late</span>
-                                @elseif($att->status === 'Sick')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-600">🏥 Sick</span>
-                                @elseif($att->status === 'Permission')
+
+                                @elseif($att->attendance_status === 'Permission')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Permission</span>
-                                @elseif($att->status === 'Absent')
+                                @elseif($att->attendance_status === 'Absent')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-600">❌ Absent</span>
                                 @else
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">—</span>

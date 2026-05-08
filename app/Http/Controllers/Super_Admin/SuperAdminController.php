@@ -14,8 +14,8 @@ class SuperAdminController extends Controller
     private function getCommonData()
     {
         return [
-            'employees_count' => Employee::where('role', 'karyawan')->count(),
-            'hr_admins_count' => Employee::where('role', 'admin_hr')->count(),
+            'employees_count' => Employee::where('role', 'Employee')->count(),
+            'hr_admins_count' => Employee::where('role', 'Admin HR')->count(),
             'divisions_count' => Division::count(),
             'divisions' => Division::all(),
         ];
@@ -26,18 +26,17 @@ class SuperAdminController extends Controller
         $user = Auth::user();
         $commonData = $this->getCommonData();
         
-        $employees = Employee::with('division')->where('role', 'karyawan')->get();
-        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
+        $employees = Employee::with('division')->where('role', 'Employee')->get();
+        $hr_admins = Employee::with('division')->where('role', 'Admin HR')->get();
         $recent_users = Employee::with('division')
-            ->whereIn('role', ['karyawan', 'admin_hr'])
+            ->whereIn('role', ['Employee', 'Admin HR'])
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
 
         $status_counts = [
             'aktif' => Employee::where('status', 'Aktif')->count(),
-            'pending' => Employee::where('status', 'Pending')->count(),
-            'nonaktif' => Employee::where('status', 'Nonaktif')->count(),
+            'nonaktif' => Employee::where('status', 'Tidak Aktif')->count(),
         ];
 
         return view('Super_Admin.dashboard', array_merge($commonData, compact('user', 'employees', 'hr_admins', 'recent_users', 'status_counts')));
@@ -47,7 +46,7 @@ class SuperAdminController extends Controller
     {
         $user = Auth::user();
         $commonData = $this->getCommonData();
-        $employees = Employee::with('division')->where('role', 'karyawan')->get();
+        $employees = Employee::with('division')->where('role', 'Employee')->get();
 
         return view('Super_Admin.employees', array_merge($commonData, compact('user', 'employees')));
     }
@@ -56,7 +55,7 @@ class SuperAdminController extends Controller
     {
         $user = Auth::user();
         $commonData = $this->getCommonData();
-        $hr_admins = Employee::with('division')->where('role', 'admin_hr')->get();
+        $hr_admins = Employee::with('division')->where('role', 'Admin HR')->get();
 
         return view('Super_Admin.admins', array_merge($commonData, compact('user', 'hr_admins')));
     }
@@ -74,13 +73,13 @@ class SuperAdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:employees',
-            'nip' => 'required|string|max:50|unique:employees',
+            'nip' => 'required|string|size:7|unique:employees',
             'division_id' => 'required|exists:divisions,division_id',
-            'jabatan' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'jabatan' => 'required|string|max:100',
+            'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
             'password' => 'required|string|min:8',
-            'status' => 'required|in:Aktif,Pending,Nonaktif',
+            'status' => 'required|in:Aktif,Tidak Aktif',
         ]);
 
         Employee::create([
@@ -88,7 +87,7 @@ class SuperAdminController extends Controller
             'email' => $request->email,
             'nip' => $request->nip,
             'password' => Hash::make($request->password),
-            'role' => 'karyawan',
+            'role' => 'Employee',
             'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
             'position' => $request->jabatan,
@@ -104,12 +103,12 @@ class SuperAdminController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:255',
-                'nip' => 'required|string|max:50|unique:employees',
-                'email' => 'required|string|email|max:255|unique:employees',
+                'nip' => 'required|string|size:7|unique:employees',
+                'email' => 'required|string|email|max:100|unique:employees',
                 'password' => 'required|string|min:8',
-                'phone' => 'required|string|max:20',
+                'phone' => 'required|string|max:15',
                 'address' => 'required|string|max:500',
-                'status' => 'required|in:Aktif,Pending,Nonaktif',
+                'status' => 'required|in:Aktif,Tidak Aktif',
                 'division_id' => 'required|exists:divisions,division_id',
                 'position' => 'required|string',
             ]);
@@ -119,7 +118,7 @@ class SuperAdminController extends Controller
                 'email' => $request->email,
                 'nip' => $request->nip,
                 'password' => Hash::make($request->password),
-                'role' => 'admin_hr',
+                'role' => 'Admin HR',
                 'no_hp' => $request->phone,
                 'alamat' => $request->address,
                 'status' => $request->status,
@@ -143,10 +142,10 @@ class SuperAdminController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
             'division_id' => 'required|exists:divisions,division_id',
-            'jabatan' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'jabatan' => 'required|string|max:100',
+            'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
-            'status' => 'required|in:Aktif,Pending,Nonaktif',
+            'status' => 'required|in:Aktif,Tidak Aktif',
         ]);
 
         $data = [
@@ -182,9 +181,9 @@ class SuperAdminController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:15',
             'address' => 'required|string|max:500',
-            'status' => 'required|in:Aktif,Pending,Nonaktif',
+            'status' => 'required|in:Aktif,Tidak Aktif',
             'division_id' => 'required|exists:divisions,division_id',
             'position' => 'required|string',
         ]);

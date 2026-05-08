@@ -21,7 +21,7 @@ class ReportsController extends Controller
                     'name'   => $att->employee->name ?? 'Unknown',
                     'div'    => $att->employee->division->division_name ?? '—',
                     'date'   => \Carbon\Carbon::parse($att->created_at)->toDateString(),
-                    'status' => $att->status,
+                    'status' => $att->attendance_status,
                     'ci'     => $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-'
                 ];
             });

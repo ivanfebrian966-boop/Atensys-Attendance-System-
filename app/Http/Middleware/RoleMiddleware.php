@@ -25,11 +25,11 @@ class RoleMiddleware
             return $next($request);
         }
 
-        if ($user->role === 'super_admin') {
+        if ($user->role === 'Super Admin') {
             return redirect()->route('super_admin.dashboard');
-        } elseif ($user->role === 'admin_hr') {
+        } elseif ($user->role === 'Admin HR') {
             return redirect()->route('admin-hr.dashboard');
-        } elseif ($user->role === 'karyawan') {
+        } elseif ($user->role === 'Employee') {
             return redirect()->route('employee.dashboard');
         }
 

@@ -2,77 +2,70 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Employee;
 use App\Models\Permission;
 use App\Models\Attendance;
+use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
 class PermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Ambil hanya 5 karyawan secara acak untuk diberi data perizinan
-        $employees = Employee::where('role', 'karyawan')->inRandomOrder()->take(5)->get();
+        $employees = Employee::where('role', '!=', 'Super Admin')->get();
+        $startDate = Carbon::today()->subDays(10);
 
-        if ($employees->isEmpty()) {
-            $this->command->info('Tidak ada employee dengan role "karyawan". Silakan buat terlebih dahulu.');
-            return;
-        }
+        foreach ($employees as $emp) {
+            for ($i = 0; $i <= 10; $i++) {
+                $date = $startDate->copy()->addDays($i);
+                if ($date->dayOfWeek === Carbon::SUNDAY) continue;
 
-        foreach ($employees as $employee) {
-            // Hapus data lama agar tidak duplikat saat seeding ulang
-            Permission::where('nip', $employee->nip)->delete();
-
-            $types = ['Permission', 'Sick'];
-            $statuses = ['Approved', 'Pending', 'Rejected'];
-
-            $reasons = [
-                'Sick' => ['Demam dan flu tinggi', 'Sakit kepala migrain', 'Istirahat pasca kontrol dokter', 'Pemeriksaan laboratorium', 'Gejala tipes'],
-                'Permission' => ['Urusan keluarga mendesak', 'Acara pernikahan keluarga inti', 'Mengurus dokumen kependudukan', 'Keperluan perbankan', 'Takziah kerabat'],
-            ];
-
-            // Buat 5 data permission untuk 5 hari terakhir (termasuk hari ini)
-            for ($i = 0; $i < 5; $i++) {
-                $type = $types[array_rand($types)];
+                $rand = rand(1, 100);
                 
-                // Hari ini (index 0) dibuat Pending agar bisa di-test ACC oleh user
-                // Hari lainnya random
-                $status = ($i === 0) ? 'Pending' : $statuses[array_rand($statuses)];
-                
-                $reason = $reasons[$type][array_rand($reasons[$type])];
-                $date = Carbon::today()->subDays($i)->setTime(7, 0, 0);
+                if ($rand <= 5) {
+                    // Sick (5% chance)
+                    $sickCats = ['Accident', 'Mild Illness (Flu / Fever)', 'Medical Checkup'];
+                    Permission::create([
+                        'nip' => $emp->nip,
+                        'type' => 'Sick',
+                        'sick_category' => $sickCats[array_rand($sickCats)],
+                        'permission_status' => 'Approved',
+                        'information' => 'Sakit mendadak',
+                        'start_date' => $date->toDateString(),
+                        'completion_date' => $date->toDateString(),
+                        'created_at' => $date->copy()->setTime(7, 0, 0),
+                    ]);
 
-                Permission::create([
-                    'nip' => $employee->nip,
-                    'type' => $type,
-                    'status' => $status,
-                    'information' => $reason,
-                    'file' => null,
-                    'start_date' => $date,
-                    'completion_date' => $date,
-                    'created_at' => $date,
-                    'updated_at' => $date,
-                ]);
-
-                // HANYA jika status Approved, buat record di Attendance
-                // (Ini mensimulasikan data yang sudah disetujui admin di masa lalu)
-                if ($status === 'Approved') {
                     Attendance::create([
-                        'nip' => $employee->nip,
-                        'status' => $type,
-                        'check_in' => $date,
+                        'nip' => $emp->nip,
+                        'attendance_status' => 'Permission',
+                        'check_in' => null,
                         'qr_code' => 'SYSTEM',
-                        'created_at' => $date,
-                        'updated_at' => $date,
+                        'created_at' => $date->copy()->setTime(7, 0, 0),
+                    ]);
+                } elseif ($rand <= 10) {
+                    // Leave (5% chance)
+                    $leaveCats = ['Annual Leave', 'Personal Leave', 'Family Event'];
+                    Permission::create([
+                        'nip' => $emp->nip,
+                        'type' => 'Leave',
+                        'leave_category' => $leaveCats[array_rand($leaveCats)],
+                        'permission_status' => 'Approved',
+                        'information' => 'Ada urusan keluarga',
+                        'start_date' => $date->toDateString(),
+                        'completion_date' => $date->toDateString(),
+                        'created_at' => $date->copy()->setTime(7, 0, 0),
+                    ]);
+
+                    Attendance::create([
+                        'nip' => $emp->nip,
+                        'attendance_status' => 'Permission',
+                        'check_in' => null,
+                        'qr_code' => 'SYSTEM',
+                        'created_at' => $date->copy()->setTime(7, 0, 0),
                     ]);
                 }
             }
         }
-
-        $this->command->info("Berhasil membuat data dummy permission untuk " . $employees->count() . " karyawan!");
     }
 }

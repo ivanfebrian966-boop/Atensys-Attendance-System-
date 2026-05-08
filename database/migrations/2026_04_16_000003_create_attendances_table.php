@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id('attendance_id');
-            $table->string('nip');
+            $table->string('nip', 7);
             $table->datetime('check_in')->nullable();
             $table->datetime('check_out')->nullable();
-            $table->string('status');
+            $table->enum('attendance_status', ['Present', 'Late', 'Permission', 'Absent']);
             $table->text('qr_code');
             $table->timestamps();
 

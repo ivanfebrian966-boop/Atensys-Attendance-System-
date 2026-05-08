@@ -13,10 +13,29 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id('permission_id');
-            $table->string('nip');
-            $table->string('type');
-            $table->string('status');
-            $table->string('information');
+            $table->string('nip', 7);
+            $table->enum('type', ['Sick', 'Leave']);
+            $table->enum('leave_category', [
+                'Marriage Leave',
+                'Maternity Leave',
+                'Annual Leave',
+                'Bereavement Leave',
+                'Personal Leave',
+                'Family Event',
+                'Others',
+            ])->nullable();
+            $table->enum('sick_category', [
+                'Sick Leave with Medical Certificate',
+                'Hospitalization',
+                'Accident',
+                'Mild Illness (Flu / Fever)',
+                'Outpatient Care',
+                'Medical Checkup',
+                'Others',
+            ])->nullable();
+            $table->enum('permission_status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->text('reject_reason')->nullable();
+            $table->text('information');
             $table->string('file')->nullable();
             $table->date('start_date');
             $table->date('completion_date');

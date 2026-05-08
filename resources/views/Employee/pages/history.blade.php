@@ -27,15 +27,15 @@
         <p class="stat-value text-red-500">{{ $counts['absent'] }}</p>
         <p class="stat-label">Absent</p>
     </div>
-    <div class="stat-card fade-up d6">
-        <div class="stat-icon-sm" style="background:#fdf4ff;color:#a855f7">🤒</div>
-        <p class="stat-value text-purple-600">{{ $counts['sick'] }}</p>
+    <div class="stat-card fade-up d5">
+        <div class="stat-icon-sm" style="background:#f0f9ff;color:#0ea5e9">🏥</div>
+        <p class="stat-value text-sky-500">{{ $counts['sick'] }}</p>
         <p class="stat-label">Sick</p>
     </div>
-    <div class="stat-card fade-up d5">
-        <div class="stat-icon-sm" style="background:#f0f9ff;color:#0ea5e9">📝</div>
-        <p class="stat-value text-sky-600">{{ $counts['permission'] }}</p>
-        <p class="stat-label">Permission</p>
+    <div class="stat-card fade-up d6">
+        <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📝</div>
+        <p class="stat-value text-purple-500">{{ $counts['permission'] }}</p>
+        <p class="stat-label">Leave</p>
     </div>
 </div>
 
@@ -57,7 +57,6 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
-                <option value="Sick">Sick</option>
                 <option value="Permission">Permission</option>
             </select>
             <a href="{{ route('employee.attendance') }}" class="btn-secondary inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold whitespace-nowrap">
@@ -85,8 +84,8 @@
                     <td>{{ $attendance->check_in ? \Carbon\Carbon::parse($attendance->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $attendance->check_out ? \Carbon\Carbon::parse($attendance->check_out)->format('H:i') : '-' }}</td>
                     <td class="status-cell">
-                        <span class="status-badge status-{{ strtolower($attendance->status) }}" data-status="{{ $attendance->status }}">
-                            ● {{ $attendance->status }}
+                        <span class="status-badge status-{{ strtolower($attendance->attendance_status) }}" data-status="{{ $attendance->attendance_status }}">
+                            ● {{ $attendance->attendance_status }}
                         </span>
                     </td>
                 </tr>

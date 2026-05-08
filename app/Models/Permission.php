@@ -15,7 +15,9 @@ class Permission extends Model
     protected $fillable = [
         'nip',
         'type',
-        'status',
+        'leave_category',
+        'sick_category',
+        'permission_status',
         'reject_reason',
         'information',
         'file',

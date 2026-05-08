@@ -22,13 +22,13 @@ function updateDivisionDropdown() {
     const { from, to } = getDateRange();
     const periodData = RAW.filter(r => r.date >= from && r.date <= to);
     const divs = [...new Set(periodData.map(r => r.div))].filter(Boolean).sort();
-    
+
     const select = document.getElementById('reportDiv');
     if (!select) return;
-    
+
     const currentVal = select.value;
     select.innerHTML = '<option value="">All Divisions</option>' + divs.map(d => `<option value="${d}">${d}</option>`).join('');
-    
+
     if (divs.includes(currentVal)) {
         select.value = currentVal;
     } else {
@@ -113,7 +113,7 @@ function renderReports() {
 }
 
 function updateSummaryCardsEmpty() {
-    const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rSick', 'rPerm', 'rPresentPct', 'rAbsentPct', 'rLatePct', 'rSickPct', 'rPermPct'];
+    const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rPerm', 'rPresentPct', 'rAbsentPct', 'rLatePct', 'rPermPct'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = id.includes('Pct') ? '—' : '0';
@@ -126,21 +126,18 @@ function renderSummaryCards() {
     const present = filteredData.filter(r => r.status === 'Present').length;
     const absent = filteredData.filter(r => r.status === 'Absent').length;
     const late = filteredData.filter(r => r.status === 'Late').length;
-    const sick = filteredData.filter(r => r.status === 'Sick').length;
     const perm = filteredData.filter(r => r.status === 'Permission').length;
     const pct = v => total ? (v / total * 100).toFixed(1) + '%' : '—';
 
-    document.getElementById('rTotal').textContent = total;
-    document.getElementById('rPresent').textContent = present;
-    document.getElementById('rAbsent').textContent = absent;
-    document.getElementById('rLate').textContent = late;
-    document.getElementById('rSick').textContent = sick;
-    document.getElementById('rPerm').textContent = perm;
-    document.getElementById('rPresentPct').textContent = pct(present);
-    document.getElementById('rAbsentPct').textContent = pct(absent);
-    document.getElementById('rLatePct').textContent = pct(late);
-    document.getElementById('rSickPct').textContent = pct(sick);
-    document.getElementById('rPermPct').textContent = pct(perm);
+    if(document.getElementById('rTotal')) document.getElementById('rTotal').textContent = total;
+    if(document.getElementById('rPresent')) document.getElementById('rPresent').textContent = present;
+    if(document.getElementById('rAbsent')) document.getElementById('rAbsent').textContent = absent;
+    if(document.getElementById('rLate')) document.getElementById('rLate').textContent = late;
+    if(document.getElementById('rPerm')) document.getElementById('rPerm').textContent = perm;
+    if(document.getElementById('rPresentPct')) document.getElementById('rPresentPct').textContent = pct(present);
+    if(document.getElementById('rAbsentPct')) document.getElementById('rAbsentPct').textContent = pct(absent);
+    if(document.getElementById('rLatePct')) document.getElementById('rLatePct').textContent = pct(late);
+    if(document.getElementById('rPermPct')) document.getElementById('rPermPct').textContent = pct(perm);
 }
 
 /* ---- Bar chart ---- */
@@ -203,7 +200,6 @@ function renderDonut() {
         { label: 'Present', val: present, color: '#10b981' },
         { label: 'Absent', val: absent, color: '#ef4444' },
         { label: 'Late', val: late, color: '#f59e0b' },
-        { label: 'Sick', val: sick, color: '#3b82f6' },
         { label: 'Permission', val: perm, color: '#8b5cf6' },
     ].filter(d => d.val > 0);
 
@@ -244,7 +240,7 @@ function renderDivisionTable() {
         const present = rows.filter(r => r.status === 'Present').length;
         const absent = rows.filter(r => r.status === 'Absent').length;
         const late = rows.filter(r => r.status === 'Late').length;
-        const other = rows.filter(r => r.status === 'Sick' || r.status === 'Permission').length;
+        const other = rows.filter(r => r.status === 'Permission').length;
         const rate = Math.round(present / total * 100);
         const rCls = rate >= 85 ? 'rate-high' : rate >= 70 ? 'rate-mid' : 'rate-low';
 
@@ -281,7 +277,6 @@ function renderDetailTable(data) {
         const present = rows.filter(r => r.status === 'Present').length;
         const absent = rows.filter(r => r.status === 'Absent').length;
         const late = rows.filter(r => r.status === 'Late').length;
-        const sick = rows.filter(r => r.status === 'Sick').length;
         const perm = rows.filter(r => r.status === 'Permission').length;
         const rate = total ? Math.round(present / total * 100) : 0;
         const ciRows = rows.filter(r => r.ci && r.ci !== '-').map(r => r.ci);
@@ -292,7 +287,7 @@ function renderDetailTable(data) {
                 return `${String(Math.floor(avg / 60)).padStart(2, '0')}:${String(avg % 60).padStart(2, '0')}`;
             })()
             : '—';
-        return { name, div, total, present, absent, late, sick, perm, rate, avgCi };
+        return { name, div, total, present, absent, late, perm, rate, avgCi };
     }).sort((a, b) => b.rate - a.rate);
 
     filterReport();
@@ -333,7 +328,6 @@ function filterReport() {
                 <td><span class="font-semibold text-emerald-600 sora">${r.present}</span></td>
                 <td class="hidden sm:table-cell"><span class="font-semibold text-red-500 sora">${r.absent}</span></td>
                 <td class="hidden md:table-cell"><span class="font-semibold text-amber-500 sora">${r.late}</span></td>
-                <td class="hidden md:table-cell"><span class="font-semibold text-blue-500 sora">${r.sick}</span></td>
                 <td class="hidden md:table-cell"><span class="font-semibold text-purple-500 sora">${r.perm}</span></td>
                 <td>
                     <div class="flex items-center gap-2">
@@ -378,8 +372,8 @@ function changeReportPage(page) {
 
 /* ---- Export ---- */
 function exportAllReport() {
-    const rows = [['Nama', 'Divisi', 'Total', 'Hadir', 'Absen', 'Telat', 'Sakit', 'Izin', '% Hadir', 'Avg Check In']];
-    _detailFull.forEach(r => rows.push([r.name, r.div, r.total, r.present, r.absent, r.late, r.sick, r.perm, r.rate + '%', r.avgCi]));
+    const rows = [['Nama', 'Divisi', 'Total', 'Hadir', 'Absen', 'Telat', 'Izin', '% Hadir', 'Avg Check In']];
+    _detailFull.forEach(r => rows.push([r.name, r.div, r.total, r.present, r.absent, r.late, r.perm, r.rate + '%', r.avgCi]));
     downloadCSV(`laporan_${new Date().toISOString().slice(0, 10)}.csv`, rows);
     showToast('📥', 'Laporan diekspor ke CSV');
 }
@@ -463,10 +457,6 @@ function renderReportCards() {
                     <div class="report-stat-item">
                         <span class="report-stat-label">Late</span>
                         <span class="report-stat-value" style="color:#f59e0b">${r.late}</span>
-                    </div>
-                    <div class="report-stat-item">
-                        <span class="report-stat-label">Sick</span>
-                        <span class="report-stat-value" style="color:#3b82f6">${r.sick}</span>
                     </div>
                     <div class="report-stat-item">
                         <span class="report-stat-label">Permission</span>

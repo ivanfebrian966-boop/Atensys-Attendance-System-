@@ -72,26 +72,30 @@
                 <p class="panel-subtitle">This month</p>
             </div>
         </div>
-        <div class="p-5 grid grid-cols-3 gap-4">
+        <div class="p-5 grid grid-cols-3 gap-y-6 gap-x-4">
             <div class="text-center">
                 <p class="text-2xl font-bold text-indigo-600">{{ $monthStats['present'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Present</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Present</p>
             </div>
             <div class="text-center">
                 <p class="text-2xl font-bold text-amber-500">{{ $monthStats['late'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Late</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Late</p>
             </div>
             <div class="text-center">
                 <p class="text-2xl font-bold text-red-400">{{ $monthStats['absent'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Absent</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Absent</p>
+            </div>
+            <div class="text-center">
+                <p class="text-2xl font-bold text-emerald-500">{{ $monthStats['sick'] ?? 0 }}</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Sick</p>
             </div>
             <div class="text-center">
                 <p class="text-2xl font-bold text-sky-500">{{ $monthStats['permission'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Permission</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Leave</p>
             </div>
             <div class="text-center">
-                <p class="text-2xl font-bold text-purple-500">{{ $monthStats['sick'] ?? 0 }}</p>
-                <p class="text-xs text-slate-500">Sick</p>
+                <p class="text-2xl font-bold text-slate-700">{{ $monthStats['total'] ?? 0 }}</p>
+                <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400 mt-1">Total</p>
             </div>
         </div>
     </div>
@@ -116,7 +120,7 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
-                <option value="Sick">Sick</option>
+
                 <option value="Permission">Permission</option>
             </select>
             <a href="{{ route('employee.history') }}" class="text-indigo-600 text-sm hover:underline ml-auto md:ml-0 whitespace-nowrap">View All →</a>
@@ -139,8 +143,8 @@
                     <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '-' }}</td>
                     <td class="status-cell">
-                        <span class="status-badge status-{{ strtolower($att->status) }}" data-status="{{ $att->status }}">
-                            ● {{ $att->status }}
+                        <span class="status-badge status-{{ strtolower($att->attendance_status) }}" data-status="{{ $att->attendance_status }}">
+                            ● {{ $att->attendance_status }}
                         </span>
                     </td>
                 </tr>

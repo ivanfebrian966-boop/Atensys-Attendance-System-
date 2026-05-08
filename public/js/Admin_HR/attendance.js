@@ -58,11 +58,8 @@ function loadEmployees() {
 
 /* ========== FILTER & RENDER ========== */
 
-function filterAtt() {
-    if (!_attFull) {
-        renderAttendanceTable([]);
-        return;
-    }
+function filterAtt(resetPage = true) {
+    if (!_attFull) return;
 
     const search = (document.getElementById('searchAtt')?.value || '').toLowerCase();
     const status = document.getElementById('filterAttStatus')?.value || '';
@@ -76,31 +73,19 @@ function filterAtt() {
             (r.division && r.division.toLowerCase().includes(search))
         );
     }
-    if (status) filtered = filtered.filter(r => r.status === status);
-    if (div) filtered = filtered.filter(r => r.division === div);
+    if (status) {
+        filtered = filtered.filter(r => r.status === status);
+    }
+    if (div) {
+        filtered = filtered.filter(r => r.division === div);
+    }
     
-    currentAttPage = 1; // Reset to page 1 on filter
-    renderAttendanceTable(filtered);
+    renderAttendanceTable(filtered, resetPage);
 }
 
 function changeAttPage(page) {
     currentAttPage = page;
-    // Re-apply filter without resetting page
-    const search = (document.getElementById('searchAtt')?.value || '').toLowerCase();
-    const status = document.getElementById('filterAttStatus')?.value || '';
-    const div = document.getElementById('filterAttDiv')?.value || '';
-    
-    let filtered = _attFull || [];
-    if (search) {
-        filtered = filtered.filter(r => 
-            (r.name && r.name.toLowerCase().includes(search)) ||
-            (r.division && r.division.toLowerCase().includes(search))
-        );
-    }
-    if (status) filtered = filtered.filter(r => r.status === status);
-    if (div) filtered = filtered.filter(r => r.division === div);
-    
-    renderAttendanceTable(filtered, false);
+    filterAtt(false);
 }
 
 function renderAttPagination(totalItems) {
@@ -166,16 +151,27 @@ function renderAttendanceTable(data, resetPage = true) {
     body.innerHTML = paginated.map(r => `
         <tr class="table-row">
             <td><span class="font-semibold text-slate-800 text-sm">${r.name || '—'}</span></td>
-            <td class="hidden sm:table-cell text-slate-600 text-sm">${r.division || '—'}</td>
-            <td class="hidden md:table-cell text-slate-600 text-sm">${r.date || '—'}</td>
+            <td class="hidden sm:table-cell text-slate-600 text-sm">${r.date || '—'}</td>
+            <td class="hidden md:table-cell text-slate-600 text-sm">${r.division || '—'}</td>
             <td><span class="status-badge ${getStatusClass(r.status)}">${getStatusIcon(r.status)} ${r.status}</span></td>
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_in || '—'}</td>
             <td class="hidden md:table-cell text-slate-600 text-sm">${r.check_out || '—'}</td>
             <td class="hidden lg:table-cell text-slate-600 text-sm">${r.duration || '—'}</td>
-            <td class="text-slate-600 text-sm">${r.information || '—'}</td>
             <td class="text-right">
-                <button class="action-btn action-btn-edit" onclick="editAtt(${r.id})" title="Edit">✏️</button>
-                <button class="action-btn action-btn-delete" onclick="openDeleteModal(${r.id})" title="Hapus">🗑️</button>
+                <div class="flex justify-end items-center gap-2">
+                    <button class="flex items-center justify-center rounded-lg hover:bg-indigo-100 transition" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe; padding: 6px; width:32px; height:32px;" onclick="editAtt(${r.id})" title="Edit">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button class="flex items-center justify-center rounded-lg hover:bg-red-50 transition" style="padding: 6px; width:32px; height:32px;" onclick="openDeleteModal(${r.id})" title="Hapus">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
             </td>
         </tr>
     `).join('');
@@ -262,7 +258,6 @@ function saveAtt() {
     const status = document.getElementById('aaStatus')?.value;
     const check_in = document.getElementById('aaCheckIn')?.value;
     const check_out = document.getElementById('aaCheckOut')?.value;
-    const information = document.getElementById('aaInfo')?.value;
     
     if (!nip) {
         setErr('aaName', 'eaaName', 'Pilih karyawan dari dropdown');
@@ -312,9 +307,6 @@ function editAtt(id) {
     if (document.getElementById('eaStatus')) document.getElementById('eaStatus').value = r.status || 'Present';
     if (document.getElementById('eaCheckIn')) document.getElementById('eaCheckIn').value = r.check_in || '';
     if (document.getElementById('eaCheckOut')) document.getElementById('eaCheckOut').value = r.check_out || '';
-    if (document.getElementById('eaInformation')) document.getElementById('eaInformation').value = r.information === '—' ? '' : (r.information || '');
-    
-    toggleInfoWrap('ea', r.status);
     
     clearAllErrors();
     openModal('modalEditAtt');
@@ -326,12 +318,11 @@ function updateAtt() {
     const status = document.getElementById('eaStatus')?.value;
     const check_in = document.getElementById('eaCheckIn')?.value;
     const check_out = document.getElementById('eaCheckOut')?.value;
-    const information = document.getElementById('eaInformation')?.value;
     
     if (!id || !date) return;
     
     const formData = {
-        date, status, check_in, check_out, information
+        date, status, check_in, check_out
     };
 
     fetch(`${ATTENDANCE_UPDATE_URL}/${id}`, {
@@ -431,30 +422,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     setInterval(() => { updateStats(); }, 15000);
-
-    const eaStatus = document.getElementById('eaStatus');
-    if (eaStatus) {
-        eaStatus.addEventListener('change', (e) => toggleInfoWrap('ea', e.target.value));
-    }
-});
-
-function toggleInfoWrap(prefix, status) {
-    const wrap = document.getElementById(`${prefix}InfoWrap`);
-    if (wrap) {
-        if (status === 'Sick' || status === 'Permission') {
-            wrap.style.display = 'block';
-        } else {
-            wrap.style.display = 'none';
-        }
-    }
-}
-
-
-// Add listeners for status change
-document.addEventListener('DOMContentLoaded', () => {
-    const aaStatus = document.getElementById('aaStatus');
-    const eaStatus = document.getElementById('eaStatus');
-    
-    if (aaStatus) aaStatus.addEventListener('change', (e) => toggleInfoWrap('aa', e.target.value));
-    if (eaStatus) eaStatus.addEventListener('change', (e) => toggleInfoWrap('ea', e.target.value));
 });

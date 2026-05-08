@@ -152,21 +152,24 @@ function showLoadingState() {
     });
 }
 
-// Toast notification
+// Toast notification using SweetAlert2
 function showToast(message, type = 'success', duration = 3000) {
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toastMsg');
-    const toastIcon = document.getElementById('toastIcon');
-    
-    if (!toast) return;
-    
-    toastMsg.textContent = message;
-    toastIcon.textContent = type === 'success' ? '✅' : '❌';
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, duration);
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'bottom-end',
+        showConfirmButton: false,
+        timer: duration,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    Toast.fire({
+        icon: type,
+        title: message
+    });
 }
 
 // QR Modal functions

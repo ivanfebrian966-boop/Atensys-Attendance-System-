@@ -61,17 +61,17 @@
                 <p class="stat-label">Late</p>
 
             </div>
-            <div class="stat-card blue fade-up d5">
-                <div class="stat-icon" style="background:#eff6ff">🏥</div>
-                <p class="stat-value text-blue-500" id="sSick">0</p>
-                <p class="stat-label">Sick</p>
 
+            <div class="stat-card sky fade-up d5">
+                <div class="stat-icon" style="background:#f0f9ff">🏥</div>
+                <p class="stat-value text-sky-500" id="sSick">0</p>
+                <p class="stat-label">Sick</p>
             </div>
+
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon" style="background:#faf5ff">📋</div>
                 <p class="stat-value text-purple-500" id="sPerm">0</p>
-                <p class="stat-label">Permission</p>
-
+                <p class="stat-label">Leave</p>
             </div>
         </div>
         
@@ -97,14 +97,14 @@
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-                        <option value="Sick">Sick</option>
+
                         <option value="Permission">Permission</option>
                     </select>
                     <select id="filterAttDiv" class="filter-select" onchange="filterAtt()">
                         <option value="">All Divisions</option>
-
-                        <option>Engineering</option><option>HR</option><option>Finance</option>
-                        <option>Marketing</option><option>IT</option><option>Operasional</option>
+                        @foreach($divisions as $div)
+                        <option value="{{ $div->division_name }}">{{ $div->division_name }}</option>
+                        @endforeach
                     </select>
                     <button class="btn-secondary" onclick="exportAtt()">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +132,6 @@
                             <th class="hidden md:table-cell">Check In</th>
                             <th class="hidden md:table-cell">Check Out</th>
                             <th class="hidden lg:table-cell">Duration</th>
-                            <th>Information</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -184,7 +183,7 @@
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-                        <option value="Sick">Sick</option>
+
                         <option value="Permission">Permission</option>
                     </select>
                 </div>
@@ -196,20 +195,17 @@
                     <label class="form-label">Check Out</label>
                     <input type="time" id="aaCheckOut" class="form-input">
                 </div>
-                <div class="form-field col-2">
-                    <label class="form-label">Notes</label>
-                    <textarea id="aaNote" class="form-input" rows="2" placeholder="Additional notes..."></textarea>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-ghost" onclick="closeModal('modalAddAtt')">Cancel</button>
-            <button class="btn-primary" onclick="saveAtt()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Save
-            </button>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="closeModal('modalAddAtt')">Cancel</button>
+                <button class="btn-primary" onclick="saveAtt()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Save
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -238,7 +234,7 @@
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-                        <option value="Sick">Sick</option>
+
                         <option value="Permission">Permission</option>
                     </select>
                 </div>
@@ -250,20 +246,17 @@
                     <label class="form-label">Check Out</label>
                     <input type="time" id="eaCheckOut" class="form-input">
                 </div>
-                <div class="form-field col-2" id="eaInfoWrap">
-                    <label class="form-label">Information</label>
-                    <textarea id="eaInformation" class="form-input" rows="2"></textarea>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-ghost" onclick="closeModal('modalEditAtt')">Cancel</button>
-            <button class="btn-primary" onclick="updateAtt()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Save Changes
-            </button>
+            <div class="modal-footer">
+                <button class="btn-ghost" onclick="closeModal('modalEditAtt')">Cancel</button>
+                <button class="btn-primary" onclick="updateAtt()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Save Changes
+                </button>
+            </div>
         </div>
     </div>
 </div>

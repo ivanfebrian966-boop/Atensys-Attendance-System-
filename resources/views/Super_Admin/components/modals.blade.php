@@ -21,7 +21,7 @@
                 </div>
                 <div class="form-field">
                     <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 19900101xxxx" value="{{ old('nip') }}" required>
+                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000002" value="{{ old('nip') }}" required>
                 </div>
                 <div class="form-field">
                     <label class="form-label">Division</label>
@@ -48,8 +48,7 @@
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select" required>
                         <option value="Aktif">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Nonaktif">Inactive</option>
+                        <option value="Tidak Aktif">Inactive</option>
                     </select>
                 </div>
                 <div class="form-field">
@@ -84,7 +83,7 @@
                 </div>
                 <div class="form-field">
                     <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-input" placeholder="NIP Admin" required>
+                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000001" required>
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Email</label>
@@ -111,8 +110,7 @@
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select" required>
                         <option value="Aktif">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Nonaktif">Inactive</option>
+                        <option value="Tidak Aktif">Inactive</option>
                     </select>
                 </div>
                 <div class="form-field col-span-2">
@@ -236,8 +234,7 @@
                     <label class="form-label">Status</label>
                     <select name="status" id="edit_emp_status" class="form-select" required>
                         <option value="Aktif">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Nonaktif">Inactive</option>
+                        <option value="Tidak Aktif">Inactive</option>
                     </select>
                 </div>
                 <div class="form-field">
@@ -300,8 +297,7 @@
                     <label class="form-label">Status</label>
                     <select name="status" id="edit_admin_status" class="form-select" required>
                         <option value="Aktif">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Nonaktif">Inactive</option>
+                        <option value="Tidak Aktif">Inactive</option>
                     </select>
                 </div>
                 <div class="form-field col-span-2">

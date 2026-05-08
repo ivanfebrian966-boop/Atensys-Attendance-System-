@@ -66,8 +66,6 @@
                     <td>
                         @if($admin->status === 'Aktif')
                             <span class="badge badge-active">● Active</span>
-                        @elseif($admin->status === 'Pending')
-                            <span class="badge bg-amber-100 text-amber-600">● Pending</span>
                         @else
                             <span class="badge bg-red-100 text-red-600">● Inactive</span>
                         @endif

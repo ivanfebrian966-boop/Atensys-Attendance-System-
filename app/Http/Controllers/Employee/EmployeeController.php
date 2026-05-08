@@ -22,11 +22,12 @@ class EmployeeController extends Controller
             ->first();
         
         $monthStats = [
-            'present' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Present')->count(),
-            'late' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Late')->count(),
-            'absent' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('status', 'Absent')->count(),
-            'sick' => Permission::where('nip', $user->nip)->whereMonth('start_date', Carbon::now()->month)->where('type', 'Sick')->count(),
-            'permission' => Permission::where('nip', $user->nip)->whereMonth('start_date', Carbon::now()->month)->where('type', 'Permission')->count(),
+            'present' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('attendance_status', 'Present')->count(),
+            'late' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('attendance_status', 'Late')->count(),
+            'absent' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->where('attendance_status', 'Absent')->count(),
+            'sick' => Permission::where('nip', $user->nip)->where('permission_status', 'Approved')->where('type', 'Sick')->whereMonth('start_date', Carbon::now()->month)->count(),
+            'permission' => Permission::where('nip', $user->nip)->where('permission_status', 'Approved')->where('type', 'Leave')->whereMonth('start_date', Carbon::now()->month)->count(),
+            'total' => Attendance::where('nip', $user->nip)->whereMonth('created_at', Carbon::now()->month)->count(),
         ];
         
         $recentAttendances = Attendance::where('nip', $user->nip)->orderBy('created_at', 'desc')->limit(7)->get();
@@ -48,7 +49,7 @@ class EmployeeController extends Controller
         $hasPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
-            ->whereIn('status', ['Approved', 'Pending'])
+            ->whereIn('permission_status', ['Approved', 'Pending'])
             ->exists();
 
         if ($hasPermission) {
@@ -67,7 +68,7 @@ class EmployeeController extends Controller
         Attendance::create([
             'nip' => $user->nip,
             'check_in' => Carbon::now(),
-            'status' => Carbon::now()->format('H:i') > '08:00' ? 'Late' : 'Present', // Basic threshold logic
+            'attendance_status' => Carbon::now()->format('H:i') > '08:00' ? 'Late' : 'Present', // Basic threshold logic
             'qr_code' => $request->qr_code ?? 'MANUAL',
         ]);
         
@@ -84,7 +85,7 @@ class EmployeeController extends Controller
         $hasPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
-            ->where('status', 'Approved')
+            ->where('permission_status', 'Approved')
             ->exists();
 
         if ($hasPermission) {
@@ -118,11 +119,11 @@ class EmployeeController extends Controller
             ->paginate(10);
 
         $counts = [
-            'present' => Attendance::where('nip', $user->nip)->where('status', 'Present')->count(),
-            'late' => Attendance::where('nip', $user->nip)->where('status', 'Late')->count(),
-            'absent' => Attendance::where('nip', $user->nip)->where('status', 'Absent')->count(),
-            'permission' => Attendance::where('nip', $user->nip)->where('status', 'Permission')->count(),
-            'sick' => Attendance::where('nip', $user->nip)->where('status', 'Sick')->count(),
+            'present' => Attendance::where('nip', $user->nip)->where('attendance_status', 'Present')->count(),
+            'late' => Attendance::where('nip', $user->nip)->where('attendance_status', 'Late')->count(),
+            'absent' => Attendance::where('nip', $user->nip)->where('attendance_status', 'Absent')->count(),
+            'sick' => Permission::where('nip', $user->nip)->where('type', 'Sick')->count(),
+            'permission' => Permission::where('nip', $user->nip)->where('type', 'Leave')->count(),
         ];
 
         return view('Employee.pages.history', compact('attendances', 'counts', 'user'));
@@ -177,7 +178,7 @@ class EmployeeController extends Controller
             'type' => 'required',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
-            'information' => 'required|string|max:255',
+            'information' => 'nullable|string|max:255',
             'file' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB pdf
         ]);
 
@@ -185,7 +186,7 @@ class EmployeeController extends Controller
         $hasAttendance = Attendance::where('nip', $user->nip)
             ->whereDate('check_in', '>=', $request->start_date)
             ->whereDate('check_in', '<=', $request->completion_date)
-            ->whereIn('status', ['Present', 'Late'])
+            ->whereIn('attendance_status', ['Present', 'Late'])
             ->exists();
 
         if ($hasAttendance) {
@@ -201,13 +202,64 @@ class EmployeeController extends Controller
         Permission::create([
             'nip' => $user->nip,
             'type' => $request->type,
+            'leave_category' => $request->leave_category,
+            'sick_category' => $request->sick_category,
             'start_date' => $request->start_date,
             'completion_date' => $request->completion_date,
-            'information' => $request->information,
+            'information' => $request->information ?: '-',
             'file' => $filePath,
-            'status' => 'Pending',
+            'permission_status' => 'Pending',
         ]);
 
         return back()->with('success', 'Leave request submitted successfully!');
+    }
+
+    public function updatePermission(Request $request, $id)
+    {
+        $user = Auth::user();
+        $permission = Permission::where('nip', $user->nip)->findOrFail($id);
+
+        if ($permission->permission_status !== 'Pending') {
+            return back()->with('error', 'Gagal: Pengajuan yang sudah diproses tidak dapat diubah.');
+        }
+
+        $request->validate([
+            'type' => 'required',
+            'start_date' => 'required|date',
+            'completion_date' => 'required|date|after_or_equal:start_date',
+            'information' => 'nullable|string|max:255',
+            'file' => 'nullable|file|mimes:pdf|max:2048',
+        ]);
+
+        $filePath = $permission->file;
+        if ($request->hasFile('file')) {
+            $fileName = time() . '_' . $user->nip . '.pdf';
+            $filePath = $request->file('file')->storeAs('permissions', $fileName, 'public');
+        }
+
+        $permission->update([
+            'type' => $request->type,
+            'leave_category' => $request->leave_category,
+            'sick_category' => $request->sick_category,
+            'start_date' => $request->start_date,
+            'completion_date' => $request->completion_date,
+            'information' => $request->information ?: '-',
+            'file' => $filePath,
+        ]);
+
+        return back()->with('success', 'Leave request updated successfully!');
+    }
+
+    public function destroyPermission($id)
+    {
+        $user = Auth::user();
+        $permission = Permission::where('nip', $user->nip)->findOrFail($id);
+
+        if ($permission->permission_status !== 'Pending') {
+            return back()->with('error', 'Gagal: Pengajuan yang sudah diproses tidak dapat dihapus.');
+        }
+
+        $permission->delete();
+        return back()->with('success', 'Leave request deleted successfully!');
     }
 }

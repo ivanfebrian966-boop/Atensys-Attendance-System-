@@ -18,15 +18,15 @@ class LeaveController extends Controller
 
         $stats = [
             'total'      => Permission::count(),
-            'pending'    => Permission::where('status', 'Pending')->count(),
-            'approved'   => Permission::where('status', 'Approved')->count(),
-            'rejected'   => Permission::where('status', 'Rejected')->count(),
+            'pending'    => Permission::where('permission_status', 'Pending')->count(),
+            'approved'   => Permission::where('permission_status', 'Approved')->count(),
+            'rejected'   => Permission::where('permission_status', 'Rejected')->count(),
             'sick'       => Permission::where('type', 'Sick')->count(),
-            'permission' => Permission::where('type', 'Permission')->count(),
+            'leave'      => Permission::where('type', 'Leave')->count(),
         ];
 
         $pendingPermissions = Permission::with('employee.division')
-            ->where('status', 'Pending')
+            ->where('permission_status', 'Pending')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -42,7 +42,7 @@ class LeaveController extends Controller
                 $query->where('type', $request->type);
             }
             if ($request->filled('status') && $request->status !== 'all') {
-                $query->where('status', $request->status);
+                $query->where('permission_status', $request->status);
             }
             if ($request->filled('search')) {
                 $search = $request->search;
@@ -63,17 +63,19 @@ class LeaveController extends Controller
                     'nip'         => $perm->nip,
                     'division'    => $perm->employee->division->division_name ?? '—',
                     'type'        => $perm->type,
+                    'leave_category' => $perm->leave_category,
+                    'sick_category' => $perm->sick_category,
                     'information' => $perm->information,
                     'start_date'  => $start->format('d M Y'),
                     'end_date'    => $end->format('d M Y'),
                     'start_raw'   => $start->format('Y-m-d'),
                     'end_raw'     => $end->format('Y-m-d'),
                     'days'        => $days,
-                    'status'          => $perm->status,
+                    'status'          => $perm->permission_status,
                     'reject_reason'   => $perm->reject_reason,
                     'file'            => $perm->file ? asset('storage/' . $perm->file) : null,
                     'submitted'   => Carbon::parse($perm->created_at)->format('d M Y, H:i'),
-                    'overdue'     => $perm->status === 'Approved' && Carbon::parse($perm->completion_date)->isPast(),
+                    'overdue'     => $perm->permission_status === 'Approved' && Carbon::parse($perm->completion_date)->isPast(),
                 ];
             });
 
@@ -89,11 +91,11 @@ class LeaveController extends Controller
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
 
-            if ($permission->status !== 'Pending') {
+            if ($permission->permission_status !== 'Pending') {
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
 
-            $permission->update(['status' => 'Approved']);
+            $permission->update(['permission_status' => 'Approved']);
 
             // Create attendance records for each day of the approved leave
             $start = Carbon::parse($permission->start_date);
@@ -108,8 +110,8 @@ class LeaveController extends Controller
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     Attendance::create([
                         'nip'        => $permission->nip,
-                        'check_in'   => $attendanceDate,
-                        'status'     => $permission->type, // 'Sick' or 'Permission'
+                        'check_in'   => null,
+                        'attendance_status'     => 'Permission',
                         'qr_code'    => 'SYSTEM',
                         'created_at' => $attendanceDate,
                         'updated_at' => $attendanceDate,
@@ -130,12 +132,12 @@ class LeaveController extends Controller
         try {
             $permission = Permission::findOrFail($id);
 
-            if ($permission->status !== 'Pending') {
+            if ($permission->permission_status !== 'Pending') {
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
 
             $permission->update([
-                'status' => 'Rejected',
+                'permission_status' => 'Rejected',
                 'reject_reason' => $request->reject_reason
             ]);
 
@@ -153,7 +155,7 @@ class LeaveController extends Controller
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     Attendance::create([
                         'nip'        => $permission->nip,
-                        'status'     => 'Absent',
+                        'attendance_status'     => 'Absent',
                         'qr_code'    => 'SYSTEM',
                         'created_at' => $attendanceDate,
                         'updated_at' => $attendanceDate,
@@ -173,14 +175,14 @@ class LeaveController extends Controller
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
 
-            $oldStatus = $permission->status;
+            $oldStatus = $permission->permission_status;
             $oldStart  = $permission->start_date;
             $oldEnd    = $permission->completion_date;
 
             $permission->update([
                 'start_date'      => $request->start_date,
                 'completion_date' => $request->completion_date,
-                'status'          => $request->status,
+                'permission_status'          => $request->status,
                 'reject_reason'   => $request->status === 'Rejected' ? $request->reject_reason : null,
             ]);
 
@@ -207,7 +209,7 @@ class LeaveController extends Controller
                         Attendance::create([
                             'nip'        => $permission->nip,
                             'check_in'   => $attendanceDate,
-                            'status'     => $permission->type,
+                            'attendance_status'     => 'Permission',
                             'qr_code'    => 'SYSTEM',
                             'created_at' => $attendanceDate,
                             'updated_at' => $attendanceDate,
@@ -216,8 +218,8 @@ class LeaveController extends Controller
                         // Update to leave type if it was marked as Absent
                         Attendance::where('nip', $permission->nip)
                             ->whereDate('created_at', $date->toDateString())
-                            ->where('status', 'Absent')
-                            ->update(['status' => $permission->type, 'check_in' => $date->copy()->setTime(7, 0, 0)]);
+                            ->where('attendance_status', 'Absent')
+                            ->update(['attendance_status' => 'Permission', 'check_in' => $date->copy()->setTime(7, 0, 0)]);
                     }
                 }
             } elseif ($request->status === 'Rejected') {
@@ -235,7 +237,7 @@ class LeaveController extends Controller
                         $attendanceDate = $date->copy()->setTime(7, 0, 0);
                         Attendance::create([
                             'nip'        => $permission->nip,
-                            'status'     => 'Absent',
+                            'attendance_status'     => 'Absent',
                             'qr_code'    => 'SYSTEM',
                             'created_at' => $attendanceDate,
                             'updated_at' => $attendanceDate,
@@ -255,9 +257,26 @@ class LeaveController extends Controller
     public function destroy($id)
     {
         try {
+            DB::beginTransaction();
             $permission = Permission::findOrFail($id);
+
+            // If it was approved, clean up the attendance records for that period
+            if ($permission->permission_status === 'Approved') {
+                $start = Carbon::parse($permission->start_date);
+                $end   = Carbon::parse($permission->completion_date);
+
+                Attendance::where('nip', $permission->nip)
+                    ->whereBetween('created_at', [
+                        $start->startOfDay()->toDateTimeString(),
+                        $end->endOfDay()->toDateTimeString()
+                    ])
+                    ->where('attendance_status', 'Permission')
+                    ->delete();
+            }
+
             $permission->delete();
-            return response()->json(['success' => true, 'message' => 'Leave request deleted.']);
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Leave request and associated attendance records deleted.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -281,7 +300,7 @@ class LeaveController extends Controller
         $today  = Carbon::today();
 
         // Get all accepted permissions where the leave has fully ended
-        $finishedLeaves = Permission::where('status', 'Approved')
+        $finishedLeaves = Permission::where('permission_status', 'Approved')
             ->where('completion_date', '<', $today->toDateString())
             ->with('employee')
             ->get();
@@ -307,7 +326,7 @@ class LeaveController extends Controller
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     Attendance::create([
                         'nip'        => $perm->nip,
-                        'status'     => 'Absent',
+                        'attendance_status'     => 'Absent',
                         'qr_code'    => 'SYSTEM',
                         'created_at' => $attendanceDate,
                         'updated_at' => $attendanceDate,

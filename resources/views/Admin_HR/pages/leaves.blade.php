@@ -73,20 +73,6 @@
         /* ─── Days badge ─── */
         .days-badge { background: #f1f5f9; color: #475569; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
 
-        /* ─── Toast ─── */
-        #leaveToast {
-            position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-            padding: 12px 20px; border-radius: 14px; font-size: 0.875rem;
-            font-weight: 600; font-family: 'Sora', sans-serif;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            transform: translateY(80px); opacity: 0;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            pointer-events: none;
-        }
-        #leaveToast.show { transform: translateY(0); opacity: 1; }
-        #leaveToast.success { background: #ecfdf5; color: #059669; border: 1.5px solid #a7f3d0; }
-        #leaveToast.error   { background: #fef2f2; color: #ef4444;  border: 1.5px solid #fecaca; }
-
         /* ─── Loading skeleton ─── */
         .skeleton-cell { height: 14px; border-radius: 8px; background: linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
@@ -168,15 +154,15 @@
                 <p class="stat-value text-red-500" id="sc-rejected">{{ $stats['rejected'] }}</p>
                 <p class="stat-label">Rejected</p>
             </div>
-            <div class="stat-card blue fade-up d5">
-                <div class="stat-icon" style="background:#eff6ff">🏥</div>
-                <p class="stat-value text-blue-500" id="sc-sick">{{ $stats['sick'] }}</p>
+            <div class="stat-card sky fade-up d5">
+                <div class="stat-icon" style="background:#f0f9ff">🏥</div>
+                <p class="stat-value text-sky-500" id="sc-sick">{{ $stats['sick'] }}</p>
                 <p class="stat-label">Sick</p>
             </div>
             <div class="stat-card purple fade-up d6">
-                <div class="stat-icon" style="background:#faf5ff">🏖️</div>
-                <p class="stat-value text-purple-500" id="sc-permission">{{ $stats['permission'] }}</p>
-                <p class="stat-label">Permission</p>
+                <div class="stat-icon" style="background:#faf5ff">📝</div>
+                <p class="stat-value text-purple-500" id="sc-perm">{{ $stats['leave'] }}</p>
+                <p class="stat-label">Leave</p>
             </div>
         </div>
 
@@ -226,7 +212,7 @@
                             </td>
                             <td class="py-3 px-4">
                                 <span class="status-badge {{ $perm->type === 'Sick' ? 'type-sick' : 'type-permission' }}">
-                                    {{ $perm->type === 'Sick' ? '🏥' : '🏖️' }} {{ $perm->type }}
+                                    {{ $perm->type === 'Sick' ? '🏥 Sick' : '🏖️ Permission' }}
                                 </span>
                             </td>
                             <td class="py-3 px-4">
@@ -236,9 +222,14 @@
                                 </div>
                             </td>
                             <td class="py-3 px-4">
-                                <p class="text-xs text-slate-500 info-cell" title="{{ $perm->information }}">
+                                <p class="text-xs font-bold text-slate-700 mb-1">
+                                    {{ $perm->leave_category ?: $perm->sick_category ?: '-' }}
+                                </p>
+                                @if($perm->information && $perm->information !== '-')
+                                <p class="text-[10px] text-slate-500 info-cell" title="{{ $perm->information }}">
                                     {{ $perm->information }}
                                 </p>
+                                @endif
                             </td>
                             <td class="py-3 px-4">
                                 @if($perm->file)
@@ -254,6 +245,9 @@
                                 <div class="flex justify-end gap-2">
                                     <button class="btn-approve" onclick="doApprove({{ $perm->permission_id }})">✓ Approve</button>
                                     <button class="btn-reject" onclick="doReject({{ $perm->permission_id }})">✕ Reject</button>
+                                    <button class="bg-red-50 text-red-500 hover:bg-red-100 p-2 rounded-lg transition" onclick="openDeleteModal({{ $perm->permission_id }})" title="Delete">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -288,7 +282,7 @@
                     <select id="filterType" class="filter-select" onchange="loadLeaves()">
                         <option value="all">All Types</option>
                         <option value="Sick">🏥 Sick</option>
-                        <option value="Permission">🏖️ Permission</option>
+                        <option value="Leave">🏖️ Permission</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -320,6 +314,7 @@
                             <th>Attachment</th>
                             <th>Submitted</th>
                             <th>Status</th>
+                            <th>Reject Reason</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -335,6 +330,7 @@
                             <td class="py-3 px-4"><div class="skeleton-cell" style="width:40px"></div></td>
                             <td class="py-3 px-4"><div class="skeleton-cell" style="width:90px"></div></td>
                             <td class="py-3 px-4"><div class="skeleton-cell" style="width:70px"></div></td>
+                            <td class="py-3 px-4"><div class="skeleton-cell" style="width:100px"></div></td>
                             <td></td>
                         </tr>
                         @endfor
@@ -420,6 +416,19 @@
     </div>
 </div>
 
+{{-- APPROVE CONFIRM MODAL --}}
+<div id="approveConfirmModal" onclick="closeApproveModal()" style="position:fixed; inset:0; background:rgba(15,23,42,0.5); display:none; align-items:center; justify-content:center; z-index:9998; backdrop-filter:blur(4px);">
+    <div class="del-box" onclick="event.stopPropagation()">
+        <div class="del-icon-big" style="background:#ecfdf5;color:#10b981">✓</div>
+        <p class="del-title">Approve Leave Request?</p>
+        <p class="del-sub">This will approve the request and automatically create attendance records for the selected dates.</p>
+        <div class="del-actions">
+            <button class="btn-ghost" onclick="closeApproveModal()">Cancel</button>
+            <button class="btn-primary" id="confirmApproveBtn" onclick="execApprove()" style="background:linear-gradient(135deg,#10b981,#059669); border:none; color:white; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Yes, Approve</button>
+        </div>
+    </div>
+</div>
+
 {{-- DELETE CONFIRM MODAL --}}
 <div id="deleteConfirmModal" onclick="closeDeleteModal()">
     <div class="del-box" onclick="event.stopPropagation()">
@@ -434,7 +443,7 @@
 </div>
 
 {{-- TOAST --}}
-<div id="leaveToast"></div>
+
 
 @endsection
 
@@ -449,14 +458,7 @@ const CSRF             = "{{ csrf_token() }}";
 
 let deleteTargetId = null;
 
-// ─── Toast ───────────────────────────────────
-function showToast(msg, type = 'success') {
-    const t = document.getElementById('leaveToast');
-    t.textContent = (type === 'success' ? '✅ ' : '❌ ') + msg;
-    t.className   = `show ${type}`;
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.className = type, 3000);
-}
+
 
 // ─── Pagination ──────────────────────────────
 let currentLeavePage = 1;
@@ -563,13 +565,13 @@ function renderLeaves() {
                 </td>
                 <td class="py-3 px-4">
                     <span class="status-badge ${row.type === 'Sick' ? 'type-sick' : 'type-permission'}">
-                        ${row.type === 'Sick' ? '🏥' : '🏖️'} ${row.type}
+                        ${row.type === 'Sick' ? '🏥 Sick' : '🏖️ Permission'}
                     </span>
                 </td>
                 <td class="py-3 px-4">
-                    <p class="info-cell text-xs text-slate-600" title="${row.information}">${row.information || '—'}</p>
-                    ${row.status === 'Rejected' && row.reject_reason 
-                        ? `<p class="text-[10px] text-red-400 mt-1 font-semibold" title="${row.reject_reason}">Reason: ${row.reject_reason}</p>` 
+                    <p class="text-xs font-bold text-slate-700 mb-1">${row.leave_category || row.sick_category || '-'}</p>
+                    ${row.information && row.information !== '-' 
+                        ? `<p class="info-cell text-[10px] text-slate-500" title="${row.information}">${row.information}</p>` 
                         : ''}
                 </td>
                 <td class="py-3 px-4 text-sm text-slate-600 whitespace-nowrap">
@@ -589,6 +591,11 @@ function renderLeaves() {
                 </td>
                 <td class="py-3 px-4 text-xs text-slate-400 whitespace-nowrap">${row.submitted}</td>
                 <td class="py-3 px-4">${statusBadge(row.status)}</td>
+                <td class="py-3 px-4">
+                    ${row.status === 'Rejected' && row.reject_reason 
+                        ? `<p class="text-[10px] text-red-400 font-semibold italic" title="${row.reject_reason}">${row.reject_reason}</p>` 
+                        : '<span class="text-slate-300">—</span>'}
+                </td>
                 <td class="py-3 px-4">
                     <div class="flex justify-end items-center gap-2 flex-wrap">
                         <button class="btn-approve flex items-center justify-center rounded-lg hover:bg-indigo-100 transition" style="color:#6366f1; background:#eef2ff; border-color:#c7d2fe; padding: 6px; width:32px; height:32px;" onclick='openManageModal(${JSON.stringify(row).replace(/'/g, "&#39;")})' title="Manage">
@@ -619,14 +626,39 @@ function statusBadge(status) {
 }
 
 // ─── Quick Approve / Reject ──────────────────
-async function doApprove(id) {
-    if (!confirm('Approve this leave request? This will create attendance records.')) return;
+let approveTargetId = null;
+
+function doApprove(id) {
+    approveTargetId = id;
+    document.getElementById('approveConfirmModal').style.display = 'flex';
+}
+
+function closeApproveModal() {
+    document.getElementById('approveConfirmModal').style.display = 'none';
+}
+
+async function execApprove() {
+    if (!approveTargetId) return;
+    const btn = document.getElementById('confirmApproveBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Approving...';
+
     try {
-        const res  = await fetch(LEAVE_APPROVE(id), { method:'POST', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
+        const res  = await fetch(LEAVE_APPROVE(approveTargetId), { method:'POST', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');
-        if (json.success) setTimeout(() => window.location.reload(), 800);
-    } catch(e) { showToast('Network error: ' + e.message, 'error'); }
+        if (json.success) {
+            closeApproveModal();
+            setTimeout(() => window.location.reload(), 800);
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = 'Yes, Approve';
+        }
+    } catch(e) { 
+        showToast('Network error: ' + e.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = 'Yes, Approve';
+    }
 }
 
 // Rejection with Modal
@@ -728,9 +760,10 @@ function openDeleteModal(id) { deleteTargetId = id; document.getElementById('del
 function closeDeleteModal()   { document.getElementById('deleteConfirmModal').classList.remove('open'); deleteTargetId = null; }
 async function execDelete() {
     if (!deleteTargetId) return;
+    const id = deleteTargetId;
     closeDeleteModal();
     try {
-        const res  = await fetch(LEAVE_DELETE(deleteTargetId), { method:'DELETE', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
+        const res  = await fetch(LEAVE_DELETE(id), { method:'DELETE', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');
         if (json.success) setTimeout(() => window.location.reload(), 800);

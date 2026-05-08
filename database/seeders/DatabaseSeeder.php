@@ -4,8 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Employee;
 use App\Models\Division;
+use App\Models\Attendance;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
@@ -91,11 +94,11 @@ class DatabaseSeeder extends Seeder
                 $clean = strtolower(str_replace(' ', '', $emp['posisi']));
 
                 Employee::create([
-                    'nip' => str_pad($nip++, 5, '0', STR_PAD_LEFT),
+                    'nip' => str_pad($nip++, 7, '0', STR_PAD_LEFT),
                     'name' => $emp['nama'],
                     'email' => $clean . '@attensys.com',
                     'password' => Hash::make($clean . '123'),
-                    'role' => $emp['posisi'] == 'HR Manager' ? 'admin_hr' : 'karyawan',
+                    'role' => $emp['posisi'] == 'HR Manager' ? 'Admin HR' : 'Employee',
                     'position' => $emp['posisi'],
                     'division_id' => $division->division_id,
                     'no_hp' => '08' . rand(1000000000, 9999999999),
@@ -109,16 +112,22 @@ class DatabaseSeeder extends Seeder
         $it = Division::where('division_name', 'IT Division')->first();
 
         Employee::create([
-            'nip' => '00000',
+            'nip' => '0000000',
             'name' => 'Muhammad Faturrahman',
             'email' => 'admin@attensys.com',
             'password' => Hash::make('admin123'),
-            'role' => 'super_admin',
+            'role' => 'Super Admin',
             'position' => 'System Administrator',
             'division_id' => $it->division_id,
             'no_hp' => '081234567890',
             'alamat' => 'Kantor Pusat',
             'status' => 'Aktif',
+        ]);
+
+        // SEED ATTENDANCE & PERMISSIONS
+        $this->call([
+            PermissionSeeder::class,
+            AttendanceSeeder::class,
         ]);
     }
 }

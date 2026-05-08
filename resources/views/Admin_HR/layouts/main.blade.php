@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/shared.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     @yield('styles')
 </head>
@@ -17,13 +18,7 @@
     <!-- Konten Utama akan Di-yield di sini -->
     @yield('main_structure')
 
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast">
-        <div class="toast-inner">
-            <span id="tIcon">✅</span>
-            <span id="tMsg">Success!</span>
-        </div>
-    </div>
+
 
     <!-- ===== MODALS ===== -->
     @yield('modals')

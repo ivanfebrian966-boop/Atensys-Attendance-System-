@@ -115,7 +115,7 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
-                <option value="Sick">Sick</option>
+
                 <option value="Permission">Permission</option>
             </select>
         </div>
@@ -137,8 +137,8 @@
                     <td>{{ $att->check_in ? \Carbon\Carbon::parse($att->check_in)->format('H:i') : '-' }}</td>
                     <td>{{ $att->check_out ? \Carbon\Carbon::parse($att->check_out)->format('H:i') : '-' }}</td>
                     <td class="status-cell">
-                        <span class="status-badge status-{{ strtolower($att->status) }}" data-status="{{ $att->status }}">
-                            ● {{ $att->status }}
+                        <span class="status-badge status-{{ strtolower($att->attendance_status) }}" data-status="{{ $att->attendance_status }}">
+                            ● {{ $att->attendance_status }}
                         </span>
                     </td>
                 </tr>
@@ -178,6 +178,7 @@
                     <th>Status</th>
                     <th>Information</th>
                     <th>Attachment</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -194,14 +195,14 @@
                     </td>
                     <td class="py-3 px-4">
                         @php
-                            $sc = match($perm->status) {
+                            $sc = match($perm->permission_status) {
                                 'Pending'  => 'bg-amber-100 text-amber-600',
                                 'Approved' => 'bg-emerald-100 text-emerald-600',
                                 'Rejected' => 'bg-red-100 text-red-600',
                                 default    => 'bg-slate-100 text-slate-600'
                             };
                         @endphp
-                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $sc }}">{{ $perm->status }}</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold {{ $sc }}">{{ $perm->permission_status }}</span>
                     </td>
                     <td class="py-3 px-4 max-w-[180px] truncate text-xs text-slate-500" title="{{ $perm->information }}">
                         {{ $perm->information }}
@@ -213,11 +214,32 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                                 </svg>
-                                View PDF
+                                PDF
                             </a>
                         @else
                             <span class="text-slate-400 text-sm">—</span>
                         @endif
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-2">
+                            @if($perm->permission_status === 'Pending')
+                                <button onclick='editLeave({
+                                    id: {{ $perm->permission_id }},
+                                    type: "{{ $perm->type }}",
+                                    start_raw: "{{ $perm->start_date }}",
+                                    end_raw: "{{ $perm->completion_date }}",
+                                    category: "{{ $perm->leave_category ?: $perm->sick_category }}",
+                                    information: "{{ addslashes($perm->information) }}"
+                                })' class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" title="Edit Request">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                                <button onclick="openDeleteModal({{ $perm->permission_id }})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Delete Request">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                            @else
+                                <span class="text-[10px] text-slate-400 font-medium italic">Locked</span>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -232,6 +254,24 @@
 
 @include('Employee.components.leave_modal')
 
+{{-- DELETE CONFIRM MODAL --}}
+<div id="deletePermissionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[60]" onclick="closeDeleteModal()">
+    <div class="bg-white rounded-3xl w-[400px] max-w-[90vw] p-6 shadow-2xl transform transition-all" onclick="event.stopPropagation()">
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">⚠️</div>
+        <h3 class="text-xl font-bold text-slate-800 text-center font-sora mb-2">Delete Request?</h3>
+        <p class="text-sm text-slate-500 text-center mb-6">This action cannot be undone. Your leave request will be permanently removed.</p>
+        
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="flex gap-3">
+                <button type="button" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="flex-1 px-4 py-2.5 rounded-xl bg-red-500 text-white font-semibold text-sm hover:bg-red-600 transition-shadow shadow-lg shadow-red-500/25">Yes, Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @endsection
 
 
@@ -240,7 +280,7 @@
 <script>
     @if(session('success'))
         document.addEventListener('DOMContentLoaded', () => {
-            if(typeof showToast === 'function') showToast('✅', '{{ session("success") }}');
+            if(typeof showToast === 'function') showToast('{{ session("success") }}', 'success');
         });
     @endif
 
@@ -283,5 +323,19 @@
         if (searchInput) searchInput.addEventListener('input', filterTable);
         if (filterSelect) filterSelect.addEventListener('change', filterTable);
     });
+
+    function openDeleteModal(id) {
+        const modal = document.getElementById('deletePermissionModal');
+        const form = document.getElementById('deleteForm');
+        form.action = `{{ url('employee/attendance/permission') }}/${id}/delete`;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deletePermissionModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
 </script>
 @endsection

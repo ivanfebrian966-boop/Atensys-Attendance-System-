@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/Employee/EmployeeDashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     @yield('styles')
 </head>
@@ -30,13 +31,7 @@
     
     @yield('modals')
 
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast">
-        <div class="toast-inner">
-            <span id="toastIcon">✅</span>
-            <span id="toastMsg">Success!</span>
-        </div>
-    </div>
+
 
     <!-- QR Code Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>

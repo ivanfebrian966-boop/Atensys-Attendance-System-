@@ -13,7 +13,7 @@ class DashboardHRController extends Controller
 {
     public function index()
     {
-        $pendingPermissionsCount = Permission::where('status', 'Pending')->count();
+        $pendingPermissionsCount = Permission::where('permission_status', 'Pending')->count();
         $features = [
             "QR Code Attendance" => "Quick attendance using QR scanning",
             "Attendance History" => "Complete attendance records",
@@ -23,19 +23,21 @@ class DashboardHRController extends Controller
 
         $user = Auth::user();
 
-        // Retrieve total employees (role: karyawan)
-        $totalEmployees = Employee::where('role', 'karyawan')->count();
+        // Retrieve total employees (role: Employee)
+        $totalEmployees = Employee::where('role', 'Employee')->count();
 
         $today = Carbon::today();
         
-        $present = Attendance::whereDate('created_at', $today)->where('status', 'Present')->count();
-        $late = Attendance::whereDate('created_at', $today)->where('status', 'Late')->count();
-        $absent = Attendance::whereDate('created_at', $today)->where('status', 'Absent')->count();
+        $present = Attendance::whereDate('created_at', $today)->where('attendance_status', 'Present')->count();
+        $late = Attendance::whereDate('created_at', $today)->where('attendance_status', 'Late')->count();
+        $absent = Attendance::whereDate('created_at', $today)->where('attendance_status', 'Absent')->count();
         
-        $sick = Attendance::whereDate('created_at', $today)->where('status', 'Sick')->count();
-        $permission = Attendance::whereDate('created_at', $today)->where('status', 'Permission')->count();
-
-        $recorded = $present + $late + $sick + $permission + $absent;
+        $sick = Permission::where('type', 'Sick')->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)->whereDate('completion_date', '>=', $today)->count();
+        $permission = Permission::where('type', 'Leave')->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)->whereDate('completion_date', '>=', $today)->count();
+        
+        $recorded = Attendance::whereDate('created_at', $today)->count();
 
         $presentPct = $totalEmployees > 0 ? round(($present / $totalEmployees) * 100) : 0;
         $absentPct = $totalEmployees > 0 ? round(($absent / $totalEmployees) * 100) : 0;
@@ -53,7 +55,7 @@ class DashboardHRController extends Controller
         for ($i = 0; $i < 6; $i++) {
             $date = $startOfWeek->copy()->addDays($i);
             $count = Attendance::whereDate('created_at', $date)
-                ->whereIn('status', ['Present', 'Late'])
+                ->whereIn('attendance_status', ['Present', 'Late'])
                 ->count();
             
             $pct = $totalEmployees > 0 ? round(($count / $totalEmployees) * 100) : 0;
@@ -72,9 +74,9 @@ class DashboardHRController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
+        $pendingPermissionsCount = Permission::where('permission_status', 'Pending')->count();
 
         return view('Admin_HR.pages.dashboard', [
-            'features' => $features,
             'totalEmployees' => $totalEmployees,
             'present' => $present,
             'absent' => $absent,

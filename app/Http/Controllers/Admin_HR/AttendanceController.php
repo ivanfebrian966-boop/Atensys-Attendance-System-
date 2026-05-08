@@ -6,20 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Permission;
+use App\Models\Division;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
     public function index()
     {
         $pendingPermissions = Permission::with('employee.division')
-            ->where('status', 'Pending')
+            ->where('permission_status', 'Pending')
             ->orderBy('created_at', 'desc')
             ->get();
+            
+        $divisions = Division::orderBy('division_name')->get();
 
-        return view('Admin_HR.pages.attendance', compact('pendingPermissions'));
+        return view('Admin_HR.pages.attendance', compact('pendingPermissions', 'divisions'));
     }
 
     /**
@@ -67,7 +70,7 @@ class AttendanceController extends Controller
                 $attendance = Attendance::create([
                     'nip' => $nip,
                     'check_in' => $now,
-                    'status' => $this->determineStatus($now),
+                    'attendance_status' => $this->determineStatus($now),
                 ]);
                 
                 return response()->json([
@@ -76,7 +79,7 @@ class AttendanceController extends Controller
                     'message' => 'Check In berhasil',
                     'employee' => $employee->name,
                     'time' => $now->format('H:i:s'),
-                    'status' => $attendance->status
+                    'status' => $attendance->attendance_status
                 ]);
             } elseif (!$todayAttendance->check_out) {
                 // Check Out
@@ -127,11 +130,11 @@ class AttendanceController extends Controller
                         'name' => $attendance->employee?->name ?? 'Unknown',
                         'division' => $attendance->employee?->division->division_name ?? '—',
                         'date' => Carbon::parse($attendance->created_at)->format('Y-m-d'),
-                        'status' => $attendance->status,
+                        'status' => $attendance->attendance_status,
                         'check_in' => $attendance->check_in ? Carbon::parse($attendance->check_in)->format('H:i:s') : '—',
                         'check_out' => $attendance->check_out ? Carbon::parse($attendance->check_out)->format('H:i:s') : '—',
                         'duration' => $this->calculateDuration($attendance->check_in, $attendance->check_out),
-                        'information' => $this->getPermissionInfo($attendance->nip, $attendance->status, $parsedDate)
+                        'information' => $this->getPermissionInfo($attendance->nip, $attendance->attendance_status, $parsedDate)
                     ];
                 });
             
@@ -153,7 +156,7 @@ class AttendanceController extends Controller
             $validated = $request->validate([
                 'nip' => 'required|exists:employees,nip',
                 'date' => 'required|date',
-                'status' => 'required|string',
+                'attendance_status' => 'required|string',
                 'check_in' => 'nullable',
                 'check_out' => 'nullable',
             ]);
@@ -165,7 +168,7 @@ class AttendanceController extends Controller
 
             Attendance::create([
                 'nip' => $validated['nip'],
-                'status' => $validated['status'],
+                'attendance_status' => $validated['attendance_status'],
                 'check_in' => $check_in,
                 'check_out' => $check_out,
                 'qr_code' => 'MANUAL',
@@ -186,7 +189,7 @@ class AttendanceController extends Controller
             
             $validated = $request->validate([
                 'date' => 'required|date',
-                'status' => 'required|string',
+                'attendance_status' => 'required|string',
                 'check_in' => 'nullable',
                 'check_out' => 'nullable',
                 'information' => 'nullable|string',
@@ -198,7 +201,7 @@ class AttendanceController extends Controller
             $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
 
             $attendance->update([
-                'status' => $validated['status'],
+                'attendance_status' => $validated['attendance_status'],
                 'check_in' => $check_in,
                 'check_out' => $check_out,
                 'created_at' => $date->setTime(7,0,0),
@@ -206,7 +209,7 @@ class AttendanceController extends Controller
             ]);
 
             // Jika status adalah Sick atau Permission, update keterangan di tabel permissions
-            if (in_array($validated['status'], ['Sick', 'Permission'])) {
+            if (in_array($validated['attendance_status'], ['Sick', 'Permission'])) {
                 Permission::updateOrCreate(
                     [
                         'nip' => $attendance->nip,
@@ -214,8 +217,8 @@ class AttendanceController extends Controller
                     ],
                     [
                         'completion_date' => $date->toDateString(),
-                        'type' => $validated['status'],
-                        'status' => 'Approved',
+                        'type' => $validated['attendance_status'] === 'Sick' ? 'Sick' : 'Leave',
+                        'permission_status' => 'Approved',
                         'information' => $validated['information'],
                     ]
                 );
@@ -246,16 +249,33 @@ class AttendanceController extends Controller
             
             $stats = Attendance::whereDate('created_at', $parsedDate)
                 ->selectRaw('COUNT(*) as total, 
-                            SUM(CASE WHEN status = "Present" THEN 1 ELSE 0 END) as present,
-                            SUM(CASE WHEN status = "Absent" THEN 1 ELSE 0 END) as absent,
-                            SUM(CASE WHEN status = "Late" THEN 1 ELSE 0 END) as late,
-                            SUM(CASE WHEN status = "Sick" THEN 1 ELSE 0 END) as sick,
-                            SUM(CASE WHEN status = "Permission" THEN 1 ELSE 0 END) as permission')
+                            SUM(CASE WHEN attendance_status = "Present" THEN 1 ELSE 0 END) as present,
+                            SUM(CASE WHEN attendance_status = "Absent" THEN 1 ELSE 0 END) as absent,
+                            SUM(CASE WHEN attendance_status = "Late" THEN 1 ELSE 0 END) as late')
                 ->first();
+
+            $sickCount = Permission::where('type', 'Sick')
+                ->where('permission_status', 'Approved')
+                ->whereDate('start_date', '<=', $parsedDate)
+                ->whereDate('completion_date', '>=', $parsedDate)
+                ->count();
+
+            $permCount = Permission::where('type', 'Leave')
+                ->where('permission_status', 'Approved')
+                ->whereDate('start_date', '<=', $parsedDate)
+                ->whereDate('completion_date', '>=', $parsedDate)
+                ->count();
             
             return response()->json([
                 'success' => true,
-                'data' => $stats
+                'data' => [
+                    'total' => $stats->total ?? 0,
+                    'present' => $stats->present ?? 0,
+                    'absent' => $stats->absent ?? 0,
+                    'late' => $stats->late ?? 0,
+                    'sick' => $sickCount,
+                    'permission' => $permCount
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -274,12 +294,12 @@ class AttendanceController extends Controller
 
     private function getPermissionInfo($nip, $status, $date)
     {
-        if (!in_array($status, ['Sick', 'Permission'])) return '—';
+        if ($status !== 'Permission') return '—';
 
         $perm = Permission::where('nip', $nip)
             ->whereDate('start_date', '<=', $date)
             ->whereDate('completion_date', '>=', $date)
-            ->where('status', 'Approved')
+            ->where('permission_status', 'Approved')
             ->first();
 
         return $perm ? $perm->information : '—';
@@ -287,7 +307,7 @@ class AttendanceController extends Controller
 
     public function getEmployees()
     {
-        $employees = Employee::where('role', 'karyawan')
+        $employees = Employee::where('role', 'Employee')
             ->orderBy('name')
             ->get(['nip', 'name', 'position']);
 
@@ -302,7 +322,7 @@ class AttendanceController extends Controller
         try {
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
-            $permission->update(['status' => 'Approved']);
+            $permission->update(['permission_status' => 'Approved']);
 
             $start = Carbon::parse($permission->start_date);
             $end = Carbon::parse($permission->completion_date);
@@ -317,7 +337,7 @@ class AttendanceController extends Controller
                     Attendance::create([
                         'nip' => $permission->nip,
                         'check_in' => $attendanceDate,
-                        'status' => $permission->type,
+                        'attendance_status' => 'Permission',
                         'qr_code' => 'SYSTEM',
                         'created_at' => $attendanceDate,
                         'updated_at' => $attendanceDate,
@@ -337,7 +357,7 @@ class AttendanceController extends Controller
     {
         try {
             $permission = Permission::findOrFail($id);
-            $permission->update(['status' => 'Rejected']);
+            $permission->update(['permission_status' => 'Rejected']);
             return back()->with('success', 'Perizinan ditolak.');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal: ' . $e->getMessage());

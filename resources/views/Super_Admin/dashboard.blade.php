@@ -32,7 +32,7 @@
         <h3 class="font-bold text-slate-900 text-sm mb-4" style="font-family:'Sora',sans-serif">Account Status</h3>
         <div class="space-y-3">
             @php
-                $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['pending'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
+                $total_users = max(($status_counts['aktif'] ?? 0) + ($status_counts['nonaktif'] ?? 0), 1);
             @endphp
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
@@ -43,15 +43,7 @@
                     <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['aktif'] ?? 0 }}</span>
                 </div>
             </div>
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-                    <span class="text-sm text-slate-600">Pending</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-bold text-slate-800" style="font-family:'Sora',sans-serif">{{ $status_counts['pending'] ?? 0 }}</span>
-                </div>
-            </div>
+
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
@@ -104,7 +96,7 @@
                             </div>
                         </td>
                         <td>
-                            @if($ru->role === 'admin_hr')
+                            @if($ru->role === 'Admin HR')
                                 <span class="badge badge-hr">Admin HR</span>
                             @else
                                 <span class="badge badge-employee">Employee</span>
@@ -116,10 +108,8 @@
                         <td>
                              @if($ru->status === 'Aktif')
                                  <span class="badge badge-active">● Active</span>
-                             @elseif($ru->status === 'Pending')
-                                 <span class="badge" style="background:rgba(251,191,36,0.1);color:#d97706">● Pending</span>
                              @else
-                                 <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Nonaktif</span>
+                                 <span class="badge" style="background:rgba(239,68,68,0.1);color:#dc2626">● Inactive</span>
                              @endif
                          </td>
                         <td><span class="text-slate-400 text-xs">{{ $ru->created_at->format('M Y') }}</span></td>
