@@ -480,7 +480,6 @@ a {
 }
 
 .btn-primary:hover {
-    transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
 }
 
@@ -519,9 +518,25 @@ a {
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
     box-shadow: var(--card-hover-shadow);
 }
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 0 16px 0 60px;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+.stat-card.green::after { background: #10b981; }
+.stat-card.red::after { background: #ef4444; }
+.stat-card.yellow::after { background: #f59e0b; }
+.stat-card.sky::after { background: #0ea5e9; }
+.stat-card.purple::after { background: #8b5cf6; }
+.stat-card.indigo::after { background: #6366f1; }
 
 .stat-icon-sm {
     width: 40px;

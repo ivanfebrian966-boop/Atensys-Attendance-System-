@@ -83,3 +83,17 @@ body { font-family: 'DM Sans', sans-serif; }
             -webkit-text-fill-color: #1e293b !important;
             transition: background-color 5000s ease-in-out 0s;
         }
+
+        /* Hide browser default eye icon */
+        input::-ms-reveal,
+        input::-ms-clear {
+            display: none;
+        }
+
+        input::-webkit-contacts-auto-fill-button,
+        input::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+        }

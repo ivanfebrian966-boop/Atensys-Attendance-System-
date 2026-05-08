@@ -174,12 +174,20 @@ class EmployeeController extends Controller
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
 
+        $mandatoryCategories = [
+            'Marriage Leave', 'Maternity Leave',
+            'Sick Leave with Medical Certificate', 'Hospitalization', 'Accident'
+        ];
+
+        $category = $request->type === 'Leave' ? $request->leave_category : $request->sick_category;
+        $fileRequired = in_array($category, $mandatoryCategories);
+
         $request->validate([
             'type' => 'required',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
             'information' => 'nullable|string|max:255',
-            'file' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB pdf
+            'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
 
         // Check if has attendance for these dates
@@ -223,12 +231,20 @@ class EmployeeController extends Controller
             return back()->with('error', 'Gagal: Pengajuan yang sudah diproses tidak dapat diubah.');
         }
 
+        $mandatoryCategories = [
+            'Marriage Leave', 'Maternity Leave',
+            'Sick Leave with Medical Certificate', 'Hospitalization', 'Accident'
+        ];
+
+        $category = $request->type === 'Leave' ? $request->leave_category : $request->sick_category;
+        $fileRequired = in_array($category, $mandatoryCategories) && !$permission->file;
+
         $request->validate([
             'type' => 'required',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
             'information' => 'nullable|string|max:255',
-            'file' => 'nullable|file|mimes:pdf|max:2048',
+            'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
 
         $filePath = $permission->file;

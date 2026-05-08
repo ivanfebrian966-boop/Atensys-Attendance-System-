@@ -229,7 +229,8 @@
                                     start_raw: "{{ $perm->start_date }}",
                                     end_raw: "{{ $perm->completion_date }}",
                                     category: "{{ $perm->leave_category ?: $perm->sick_category }}",
-                                    information: "{{ addslashes($perm->information) }}"
+                                    information: "{{ addslashes($perm->information) }}",
+                                    hasFile: {{ $perm->file ? "true" : "false" }}
                                 })' class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" title="Edit Request">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 </button>

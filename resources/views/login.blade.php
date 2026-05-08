@@ -155,15 +155,9 @@
                         @endif
                     </div>
                     <div class="relative">
-                        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </span>
                         <input type="password" name="password" id="pwd"
                                class="input-field {{ $errors->has('password') ? 'error' : '' }}"
-                               style="padding-right:3rem"
+                               style="padding-left:1rem; padding-right:3rem"
                                placeholder="••••••••" required>
                         <button type="button" onclick="togglePwd()"
                                 class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">

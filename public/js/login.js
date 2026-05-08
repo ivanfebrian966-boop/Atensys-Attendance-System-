@@ -14,6 +14,22 @@
             }
         }
 
+// ===== Toggle Password =====
+function togglePwd() {
+    const input = document.getElementById('pwd');
+    const show = document.getElementById('eye-show');
+    const hide = document.getElementById('eye-hide');
+    if (input.type === 'password') {
+        input.type = 'text';
+        show.classList.add('hidden');
+        hide.classList.remove('hidden');
+    } else {
+        input.type = 'password';
+        show.classList.remove('hidden');
+        hide.classList.add('hidden');
+    }
+}
+
     // ===== Toast Error =====
     document.addEventListener('DOMContentLoaded', function() {
         const toast = document.getElementById('toast');

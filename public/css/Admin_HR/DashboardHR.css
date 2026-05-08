@@ -25,7 +25,6 @@
     position: relative; overflow: hidden;
 }
 .stat-card:hover {
-    transform: translateY(-4px);
     box-shadow: var(--card-hover-shadow);
 }
 .stat-card::after {

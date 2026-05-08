@@ -7,32 +7,32 @@
 @section('content')
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
-    <div class="stat-card fade-up d1">
+    <div class="stat-card indigo fade-up d1">
         <div class="stat-icon-sm" style="background:#eef2ff;color:#6366f1">👥</div>
         <p class="stat-value text-slate-900">{{ $attendances->total() }}</p>
         <p class="stat-label">Total Records</p>
     </div>
-    <div class="stat-card fade-up d2">
+    <div class="stat-card green fade-up d2">
         <div class="stat-icon-sm" style="background:#ecfdf5;color:#10b981">✅</div>
         <p class="stat-value text-emerald-600">{{ $counts['present'] }}</p>
         <p class="stat-label">Present</p>
     </div>
-    <div class="stat-card fade-up d3">
+    <div class="stat-card yellow fade-up d3">
         <div class="stat-icon-sm" style="background:#fffbeb;color:#f59e0b">⏰</div>
         <p class="stat-value text-amber-500">{{ $counts['late'] }}</p>
         <p class="stat-label">Late</p>
     </div>
-    <div class="stat-card fade-up d4">
+    <div class="stat-card red fade-up d4">
         <div class="stat-icon-sm" style="background:#fef2f2;color:#ef4444">❌</div>
         <p class="stat-value text-red-500">{{ $counts['absent'] }}</p>
         <p class="stat-label">Absent</p>
     </div>
-    <div class="stat-card fade-up d5">
+    <div class="stat-card sky fade-up d5">
         <div class="stat-icon-sm" style="background:#f0f9ff;color:#0ea5e9">🏥</div>
         <p class="stat-value text-sky-500">{{ $counts['sick'] }}</p>
         <p class="stat-label">Sick</p>
     </div>
-    <div class="stat-card fade-up d6">
+    <div class="stat-card purple fade-up d6">
         <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📝</div>
         <p class="stat-value text-purple-500">{{ $counts['permission'] }}</p>
         <p class="stat-label">Leave</p>

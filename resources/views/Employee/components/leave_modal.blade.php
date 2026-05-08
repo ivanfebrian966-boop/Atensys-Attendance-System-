@@ -275,9 +275,12 @@
 
 <script>
     if (typeof window.openLeaveModal !== 'function') {
-            window.openLeaveModal = function(isEdit = false) {
+            window.openLeaveModal = function(isEdit = false, hasFile = false) {
             const m = document.getElementById('leaveModal');
             if(m) {
+                isEditing = isEdit;
+                hasExistingFile = hasFile;
+
                 if (!isEdit) {
                     // Reset form for NEW request
                     document.getElementById('leaveForm').reset();
@@ -285,6 +288,7 @@
                     document.getElementById('leaveModalTitle').textContent = "New Leave Request";
                     document.getElementById('leaveModalSub').textContent = "Fill in the details to submit a leave or sick request";
                     document.getElementById('leaveSubmitText').textContent = "Submit Request";
+                    document.getElementById('uploadText').textContent = "Click or drag to upload your document";
                     setPill('leave');
                     updateInformation();
                 }
@@ -301,6 +305,7 @@
             document.getElementById('leaveModalTitle').textContent = "Edit Leave Request";
             document.getElementById('leaveModalSub').textContent = "Update your pending leave request details";
             document.getElementById('leaveSubmitText').textContent = "Save Changes";
+            document.getElementById('uploadText').textContent = data.hasFile ? "✅ Document already uploaded" : "Click or drag to upload your document";
 
             // Set type
             const typeVal = data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
@@ -322,7 +327,7 @@
                 updateInformation();
             }, 50);
 
-            window.openLeaveModal(true);
+            window.openLeaveModal(true, data.hasFile);
         };
 
         window.closeLeaveModal = function() {
@@ -357,6 +362,9 @@
             { text: "Medical Checkup", requireUpload: false },
             { text: "Others", requireUpload: false }
         ];
+
+        let isEditing = false;
+        let hasExistingFile = false;
 
         window.setPill = function(type) {
             const pillPerm = document.getElementById('pill-permission');
@@ -398,16 +406,24 @@
             
             const fileInput = document.getElementById('file_upload');
             const labelEl = document.getElementById('attachment_label');
+            const uploadZone = document.getElementById('uploadZone');
             
             if (fileInput) {
-                // fileInput.required = isRequired; // Don't require on edit if already uploaded
+                // If we are editing and there's already a file, don't force re-upload
+                if (isEditing && hasExistingFile) {
+                    fileInput.required = false;
+                } else {
+                    fileInput.required = isRequired;
+                }
             }
             
             if (labelEl) {
                 if (isRequired) {
                     labelEl.innerHTML = 'Attachment <span style="color:#ef4444; font-weight:bold;">*</span>';
+                    if(uploadZone) uploadZone.style.borderColor = fileInput.files.length ? '#6366f1' : '#f87171';
                 } else {
                     labelEl.innerHTML = 'Attachment <span style="color:#94a3b8; font-weight:normal;">(Optional)</span>';
+                    if(uploadZone) uploadZone.style.borderColor = '#c7d2fe';
                 }
             }
         };
@@ -422,12 +438,36 @@
                 setPill('permission'); 
             }
             updateInformation();
+
+            const form = document.getElementById('leaveForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const catSelect = document.getElementById('leave_category');
+                    const fileInput = document.getElementById('file_upload');
+                    const selectedOption = catSelect.options[catSelect.selectedIndex];
+                    const isRequired = selectedOption.dataset.requireUpload === 'true';
+
+                    if (isRequired && !fileInput.files.length && (!isEditing || !hasExistingFile)) {
+                        e.preventDefault();
+                        if(typeof showToast === 'function') {
+                            showToast('Please upload a supporting document for this category.', 'error');
+                        } else {
+                            alert('Please upload a supporting document for this category.');
+                        }
+                        document.getElementById('uploadZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
         });
+
         window.updateFileName = function(input) {
             const el = document.getElementById('uploadText');
             if (input.files.length && el) {
                 el.textContent = '✅ ' + input.files[0].name;
                 document.getElementById('uploadZone').style.borderColor = '#6366f1';
+            } else {
+                el.textContent = 'Click or drag to upload your document';
+                updateUploadRequirement();
             }
         };
 
