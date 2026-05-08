@@ -378,16 +378,43 @@
 
             <div class="form-group">
                 <label class="form-label">Status</label>
-                <select id="manageStatus" class="form-select" required>
+                <select id="manageStatus" class="form-select" required onchange="toggleManageRejectReason()">
                     <option value="Pending">Pending</option>
                     <option value="Accepted">Accepted</option>
                     <option value="Rejected">Rejected</option>
                 </select>
             </div>
 
+            <div class="form-group" id="manageRejectReasonGroup" style="display:none;">
+                <label class="form-label">Rejection Reason</label>
+                <textarea id="manageRejectReason" class="form-input" rows="3" placeholder="Enter reason for rejection..."></textarea>
+            </div>
+
             <div class="flex gap-2 justify-end mt-6">
                 <button type="button" class="btn-ghost" onclick="closeManageModal()">Cancel</button>
                 <button type="submit" class="btn-primary" id="manageSubmitBtn">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- REJECT REASON MODAL --}}
+<div id="rejectModal" onclick="closeRejectModal()" style="position:fixed; inset:0; background:rgba(15,23,42,0.5); display:none; align-items:center; justify-content:center; z-index:9998; backdrop-filter:blur(4px);">
+    <div class="manage-box" onclick="event.stopPropagation()">
+        <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Reject Leave Request</h3>
+        <p class="text-sm text-slate-500 mb-4">Please provide a reason for rejecting this request.</p>
+
+        <form id="rejectForm" onsubmit="submitRejectForm(event)">
+            <input type="hidden" id="rejectId">
+            
+            <div class="form-group">
+                <label class="form-label">Reason</label>
+                <textarea id="rejectReason" class="form-input" rows="3" required placeholder="Enter reason for rejection..."></textarea>
+            </div>
+
+            <div class="flex gap-2 justify-end mt-6">
+                <button type="button" class="btn-ghost" onclick="closeRejectModal()">Cancel</button>
+                <button type="submit" class="btn-danger" id="rejectSubmitBtn">Confirm Reject</button>
             </div>
         </form>
     </div>
@@ -541,6 +568,9 @@ function renderLeaves() {
                 </td>
                 <td class="py-3 px-4">
                     <p class="info-cell text-xs text-slate-600" title="${row.information}">${row.information || '—'}</p>
+                    ${row.status === 'Rejected' && row.reject_reason 
+                        ? `<p class="text-[10px] text-red-400 mt-1 font-semibold" title="${row.reject_reason}">Reason: ${row.reject_reason}</p>` 
+                        : ''}
                 </td>
                 <td class="py-3 px-4 text-sm text-slate-600 whitespace-nowrap">
                     ${row.start_date} — ${row.end_date}
@@ -598,14 +628,44 @@ async function doApprove(id) {
     } catch(e) { showToast('Network error: ' + e.message, 'error'); }
 }
 
-async function doReject(id) {
-    if (!confirm('Reject this leave request?')) return;
+// Rejection with Modal
+function doReject(id) {
+    document.getElementById('rejectId').value = id;
+    document.getElementById('rejectReason').value = '';
+    document.getElementById('rejectModal').style.display = 'flex';
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').style.display = 'none';
+}
+
+async function submitRejectForm(e) {
+    e.preventDefault();
+    const id = document.getElementById('rejectId').value;
+    const reason = document.getElementById('rejectReason').value;
+    const btn = document.getElementById('rejectSubmitBtn');
+
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+
     try {
-        const res  = await fetch(LEAVE_REJECT(id), { method:'POST', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
+        const res = await fetch(LEAVE_REJECT(id), {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reject_reason: reason })
+        });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');
-        if (json.success) setTimeout(() => window.location.reload(), 800);
-    } catch(e) { showToast('Network error: ' + e.message, 'error'); }
+        if (json.success) {
+            closeRejectModal();
+            setTimeout(() => window.location.reload(), 800);
+        }
+    } catch(e) {
+        showToast('Network error: ' + e.message, 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Confirm Reject';
+    }
 }
 
 // ─── Manage ──────────────────────────────────
@@ -615,7 +675,15 @@ function openManageModal(row) {
     document.getElementById('manageStart').value = row.start_raw;
     document.getElementById('manageEnd').value = row.end_raw;
     document.getElementById('manageStatus').value = row.status;
+    document.getElementById('manageRejectReason').value = row.reject_reason || '';
+    
+    toggleManageRejectReason();
     document.getElementById('manageModal').style.display = 'flex';
+}
+function toggleManageRejectReason() {
+    const status = document.getElementById('manageStatus').value;
+    const group = document.getElementById('manageRejectReasonGroup');
+    group.style.display = status === 'Rejected' ? 'block' : 'none';
 }
 function closeManageModal() {
     document.getElementById('manageModal').style.display = 'none';
@@ -631,13 +699,14 @@ async function submitManageForm(e) {
     const start_date = document.getElementById('manageStart').value;
     const completion_date = document.getElementById('manageEnd').value;
     const status = document.getElementById('manageStatus').value;
+    const reject_reason = status === 'Rejected' ? document.getElementById('manageRejectReason').value : null;
 
     try {
         const url = `{{ url('admin-hr/leaves') }}/${id}`;
         const res = await fetch(url, {
             method: 'PUT',
             headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ start_date, completion_date, status })
+            body: JSON.stringify({ start_date, completion_date, status, reject_reason })
         });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');

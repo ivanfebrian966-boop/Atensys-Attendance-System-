@@ -69,8 +69,9 @@ class LeaveController extends Controller
                     'start_raw'   => $start->format('Y-m-d'),
                     'end_raw'     => $end->format('Y-m-d'),
                     'days'        => $days,
-                    'status'      => $perm->status,
-                    'file'        => $perm->file ? asset('storage/' . $perm->file) : null,
+                    'status'          => $perm->status,
+                    'reject_reason'   => $perm->reject_reason,
+                    'file'            => $perm->file ? asset('storage/' . $perm->file) : null,
                     'submitted'   => Carbon::parse($perm->created_at)->format('d M Y, H:i'),
                     'overdue'     => $perm->status === 'Accepted' && Carbon::parse($perm->completion_date)->isPast(),
                 ];
@@ -124,7 +125,7 @@ class LeaveController extends Controller
         }
     }
 
-    public function reject($id)
+    public function reject(Request $request, $id)
     {
         try {
             $permission = Permission::findOrFail($id);
@@ -133,7 +134,10 @@ class LeaveController extends Controller
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
 
-            $permission->update(['status' => 'Rejected']);
+            $permission->update([
+                'status' => 'Rejected',
+                'reject_reason' => $request->reject_reason
+            ]);
 
             // If rejection happens after absence period, mark those days as Absent
             $start = Carbon::parse($permission->start_date);
@@ -177,6 +181,7 @@ class LeaveController extends Controller
                 'start_date'      => $request->start_date,
                 'completion_date' => $request->completion_date,
                 'status'          => $request->status,
+                'reject_reason'   => $request->status === 'Rejected' ? $request->reject_reason : null,
             ]);
 
             // If it was accepted previously, we delete the SYSTEM attendance records for the old date range.

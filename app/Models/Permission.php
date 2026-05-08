@@ -16,6 +16,7 @@ class Permission extends Model
         'nip',
         'type',
         'status',
+        'reject_reason',
         'information',
         'file',
         'start_date',
