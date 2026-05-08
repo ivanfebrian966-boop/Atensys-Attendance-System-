@@ -196,7 +196,7 @@
                         @php
                             $sc = match($perm->status) {
                                 'Pending'  => 'bg-amber-100 text-amber-600',
-                                'Accepted' => 'bg-emerald-100 text-emerald-600',
+                                'Approved' => 'bg-emerald-100 text-emerald-600',
                                 'Rejected' => 'bg-red-100 text-red-600',
                                 default    => 'bg-slate-100 text-slate-600'
                             };

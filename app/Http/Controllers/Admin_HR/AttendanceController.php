@@ -215,7 +215,7 @@ class AttendanceController extends Controller
                     [
                         'completion_date' => $date->toDateString(),
                         'type' => $validated['status'],
-                        'status' => 'Accepted',
+                        'status' => 'Approved',
                         'information' => $validated['information'],
                     ]
                 );
@@ -279,7 +279,7 @@ class AttendanceController extends Controller
         $perm = Permission::where('nip', $nip)
             ->whereDate('start_date', '<=', $date)
             ->whereDate('completion_date', '>=', $date)
-            ->where('status', 'Accepted')
+            ->where('status', 'Approved')
             ->first();
 
         return $perm ? $perm->information : '—';
@@ -302,7 +302,7 @@ class AttendanceController extends Controller
         try {
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
-            $permission->update(['status' => 'Accepted']);
+            $permission->update(['status' => 'Approved']);
 
             $start = Carbon::parse($permission->start_date);
             $end = Carbon::parse($permission->completion_date);

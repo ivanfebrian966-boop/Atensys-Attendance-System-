@@ -19,7 +19,7 @@ class LeaveController extends Controller
         $stats = [
             'total'      => Permission::count(),
             'pending'    => Permission::where('status', 'Pending')->count(),
-            'accepted'   => Permission::where('status', 'Accepted')->count(),
+            'approved'   => Permission::where('status', 'Approved')->count(),
             'rejected'   => Permission::where('status', 'Rejected')->count(),
             'sick'       => Permission::where('type', 'Sick')->count(),
             'permission' => Permission::where('type', 'Permission')->count(),
@@ -73,7 +73,7 @@ class LeaveController extends Controller
                     'reject_reason'   => $perm->reject_reason,
                     'file'            => $perm->file ? asset('storage/' . $perm->file) : null,
                     'submitted'   => Carbon::parse($perm->created_at)->format('d M Y, H:i'),
-                    'overdue'     => $perm->status === 'Accepted' && Carbon::parse($perm->completion_date)->isPast(),
+                    'overdue'     => $perm->status === 'Approved' && Carbon::parse($perm->completion_date)->isPast(),
                 ];
             });
 
@@ -93,7 +93,7 @@ class LeaveController extends Controller
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
 
-            $permission->update(['status' => 'Accepted']);
+            $permission->update(['status' => 'Approved']);
 
             // Create attendance records for each day of the approved leave
             $start = Carbon::parse($permission->start_date);
@@ -185,7 +185,7 @@ class LeaveController extends Controller
             ]);
 
             // If it was accepted previously, we delete the SYSTEM attendance records for the old date range.
-            if ($oldStatus === 'Accepted') {
+            if ($oldStatus === 'Approved') {
                 Attendance::where('nip', $permission->nip)
                     ->whereBetween(DB::raw('DATE(created_at)'), [$oldStart, $oldEnd])
                     ->where('qr_code', 'SYSTEM')
@@ -193,7 +193,7 @@ class LeaveController extends Controller
             }
 
             // Apply new status logic
-            if ($request->status === 'Accepted') {
+            if ($request->status === 'Approved') {
                 $start = Carbon::parse($request->start_date);
                 $end   = Carbon::parse($request->completion_date);
 
@@ -281,7 +281,7 @@ class LeaveController extends Controller
         $today  = Carbon::today();
 
         // Get all accepted permissions where the leave has fully ended
-        $finishedLeaves = Permission::where('status', 'Accepted')
+        $finishedLeaves = Permission::where('status', 'Approved')
             ->where('completion_date', '<', $today->toDateString())
             ->with('employee')
             ->get();

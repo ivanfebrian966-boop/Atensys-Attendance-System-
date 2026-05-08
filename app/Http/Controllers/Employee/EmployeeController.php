@@ -48,7 +48,7 @@ class EmployeeController extends Controller
         $hasPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
-            ->whereIn('status', ['Accepted', 'Pending'])
+            ->whereIn('status', ['Approved', 'Pending'])
             ->exists();
 
         if ($hasPermission) {
@@ -84,7 +84,7 @@ class EmployeeController extends Controller
         $hasPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
-            ->where('status', 'Accepted')
+            ->where('status', 'Approved')
             ->exists();
 
         if ($hasPermission) {

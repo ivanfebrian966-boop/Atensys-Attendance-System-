@@ -42,7 +42,7 @@
 
         /* ─── Status Badges ─── */
         .badge-pending  { background: #fffbeb; color: #d97706; }
-        .badge-accepted { background: #ecfdf5; color: #059669; }
+        .badge-approved { background: #ecfdf5; color: #059669; }
         .badge-rejected { background: #fef2f2; color: #ef4444; }
 
         /* ─── Action buttons ─── */
@@ -160,8 +160,8 @@
             </div>
             <div class="stat-card green fade-up d3">
                 <div class="stat-icon" style="background:#ecfdf5">✅</div>
-                <p class="stat-value text-emerald-600" id="sc-accepted">{{ $stats['accepted'] }}</p>
-                <p class="stat-label">Accepted</p>
+                <p class="stat-value text-emerald-600" id="sc-approved">{{ $stats['approved'] }}</p>
+                <p class="stat-label">Approved</p>
             </div>
             <div class="stat-card red fade-up d4">
                 <div class="stat-icon" style="background:#fef2f2">❌</div>
@@ -252,7 +252,7 @@
                             </td>
                             <td class="py-3 px-4 text-right">
                                 <div class="flex justify-end gap-2">
-                                    <button class="btn-approve" onclick="doApprove({{ $perm->permission_id }})">✓ ACC</button>
+                                    <button class="btn-approve" onclick="doApprove({{ $perm->permission_id }})">✓ Approve</button>
                                     <button class="btn-reject" onclick="doReject({{ $perm->permission_id }})">✕ Reject</button>
                                 </div>
                             </td>
@@ -296,7 +296,7 @@
                     <select id="filterStatus" class="filter-select" onchange="loadLeaves()">
                         <option value="all">All Status</option>
                         <option value="Pending">⏳ Pending</option>
-                        <option value="Accepted">✅ Accepted</option>
+                        <option value="Approved">✅ Approved</option>
                         <option value="Rejected">❌ Rejected</option>
                     </select>
                 </div>
@@ -380,7 +380,7 @@
                 <label class="form-label">Status</label>
                 <select id="manageStatus" class="form-select" required onchange="toggleManageRejectReason()">
                     <option value="Pending">Pending</option>
-                    <option value="Accepted">Accepted</option>
+                    <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
                 </select>
             </div>
@@ -612,9 +612,10 @@ function renderLeaves() {
 }
 
 function statusBadge(status) {
-    const map = { Pending:'badge-pending', Accepted:'badge-accepted', Rejected:'badge-rejected' };
-    const icon = { Pending:'⏳', Accepted:'✅', Rejected:'❌' };
-    return `<span class="px-3 py-1 rounded-full text-xs font-bold ${map[status]||'bg-slate-100 text-slate-600'}">${icon[status]??''} ${status}</span>`;
+    const map = { Pending:'badge-pending', Approved:'badge-approved', Rejected:'badge-rejected' };
+    const icon = { Pending:'⏳', Approved:'✅', Rejected:'❌' };
+    const label = status === 'Approved' ? 'Approved' : status;
+    return `<span class="px-3 py-1 rounded-full text-xs font-bold ${map[status]||'bg-slate-100 text-slate-600'}">${icon[status]??''} ${label}</span>`;
 }
 
 // ─── Quick Approve / Reject ──────────────────

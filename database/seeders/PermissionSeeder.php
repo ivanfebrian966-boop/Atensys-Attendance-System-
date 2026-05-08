@@ -28,7 +28,7 @@ class PermissionSeeder extends Seeder
             Permission::where('nip', $employee->nip)->delete();
 
             $types = ['Permission', 'Sick'];
-            $statuses = ['Accepted', 'Pending', 'Rejected'];
+            $statuses = ['Approved', 'Pending', 'Rejected'];
 
             $reasons = [
                 'Sick' => ['Demam dan flu tinggi', 'Sakit kepala migrain', 'Istirahat pasca kontrol dokter', 'Pemeriksaan laboratorium', 'Gejala tipes'],
@@ -58,9 +58,9 @@ class PermissionSeeder extends Seeder
                     'updated_at' => $date,
                 ]);
 
-                // HANYA jika status Accepted, buat record di Attendance
+                // HANYA jika status Approved, buat record di Attendance
                 // (Ini mensimulasikan data yang sudah disetujui admin di masa lalu)
-                if ($status === 'Accepted') {
+                if ($status === 'Approved') {
                     Attendance::create([
                         'nip' => $employee->nip,
                         'status' => $type,
