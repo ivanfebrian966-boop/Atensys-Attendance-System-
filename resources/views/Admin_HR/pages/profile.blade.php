@@ -101,15 +101,15 @@
 
                 <div class="space-y-4">
                     @foreach($rows as $row)
-                    <div class="flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors">
-                        <div class="w-9 h-9 rounded-lg bg-{{ $row['clr'] }}-50 flex items-center justify-center flex-shrink-0">
-                            <svg class="w-4 h-4 text-{{ $row['clr'] }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $row['icon'] }}"/>
+                    <div class="group flex items-center gap-4 p-3.5 rounded-2xl bg-gradient-to-br from-slate-50/80 to-slate-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] hover:bg-white/80 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-{{ $row['clr'] }}-100 to-{{ $row['clr'] }}-50 flex items-center justify-center flex-shrink-0 shadow-inner border border-{{ $row['clr'] }}-200/50 group-hover:scale-110 transition-transform duration-300">
+                            <svg class="w-5 h-5 text-{{ $row['clr'] }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $row['icon'] }}"/>
                             </svg>
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ $row['label'] }}</p>
-                            <p class="text-sm text-slate-800 font-semibold truncate">{{ $row['value'] }}</p>
+                            <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{{ $row['label'] }}</p>
+                            <p class="text-[15px] text-slate-800 font-bold truncate" style="font-family:'Sora',sans-serif">{{ $row['value'] }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -129,30 +129,34 @@
                     <p class="text-xs text-slate-400 mt-0.5">HR Admin account info</p>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200">
-                        <div class="flex items-center gap-2 mb-1">
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <p class="text-sm font-bold text-emerald-800">Active Account</p>
+                <div class="space-y-4">
+                    {{-- Active Status Card --}}
+                    <div class="group bg-gradient-to-br from-emerald-50/80 to-emerald-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] rounded-2xl p-4 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                            <p class="text-sm font-bold text-emerald-800" style="font-family:'Sora',sans-serif">Active Account</p>
                         </div>
-                        <p class="text-xs text-emerald-600">Your account is active and fully functional</p>
+                        <p class="text-[12px] text-emerald-600/90 font-medium">Your account is active and fully functional</p>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wide mb-1">Role</p>
-                        <p class="font-bold text-slate-800 text-sm">HR Admin</p>
+                    {{-- Role --}}
+                    <div class="group bg-gradient-to-br from-slate-50/80 to-slate-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] rounded-2xl p-4 hover:bg-white/80 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1">Role</p>
+                        <p class="text-[15px] text-slate-800 font-bold" style="font-family:'Sora',sans-serif">HR Admin</p>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wide mb-1">Registered</p>
-                        <p class="font-bold text-slate-800 text-sm">
+                    {{-- Registered --}}
+                    <div class="group bg-gradient-to-br from-slate-50/80 to-slate-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] rounded-2xl p-4 hover:bg-white/80 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1">Registered</p>
+                        <p class="text-[15px] text-slate-800 font-bold" style="font-family:'Sora',sans-serif">
                             {{ $user->created_at ? $user->created_at->format('d F Y') : 'N/A' }}
                         </p>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                        <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wide mb-1">Last Updated</p>
-                        <p class="font-bold text-slate-800 text-sm">
+                    {{-- Last Updated --}}
+                    <div class="group bg-gradient-to-br from-slate-50/80 to-slate-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] rounded-2xl p-4 hover:bg-white/80 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-1">Last Updated</p>
+                        <p class="text-[15px] text-slate-800 font-bold" style="font-family:'Sora',sans-serif">
                             {{ $user->updated_at ? $user->updated_at->format('d F Y') : 'N/A' }}
                         </p>
                     </div>

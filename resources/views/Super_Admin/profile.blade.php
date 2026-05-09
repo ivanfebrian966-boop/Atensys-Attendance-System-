@@ -51,33 +51,33 @@
             <div class="space-y-4">
                 @php
                     $infoItems = [
-                        ['label'=>'Full Name',  'value'=>$user->name,          'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
-                        ['label'=>'Email',      'value'=>$user->email,          'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
-                        ['label'=>'Phone',      'value'=>$user->no_hp ?? 'Not set', 'icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2'],
-                        ['label'=>'Address',    'value'=>$user->alamat ?? 'Not set', 'icon'=>'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'],
+                        ['label'=>'Full Name',  'value'=>$user->name,          'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', 'clr'=>'indigo'],
+                        ['label'=>'Email',      'value'=>$user->email,          'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'clr'=>'blue'],
+                        ['label'=>'Phone',      'value'=>$user->no_hp ?? 'Not set', 'icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2', 'clr'=>'pink'],
+                        ['label'=>'Address',    'value'=>$user->alamat ?? 'Not set', 'icon'=>'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', 'clr'=>'emerald'],
                     ];
                 @endphp
                 @foreach($infoItems as $item)
-                <div class="flex items-start gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors">
-                    <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/>
+                <div class="group flex items-center gap-4 p-3.5 rounded-2xl bg-gradient-to-br from-slate-50/80 to-slate-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] hover:bg-white/80 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-{{ $item['clr'] }}-100 to-{{ $item['clr'] }}-50 flex items-center justify-center flex-shrink-0 shadow-inner border border-{{ $item['clr'] }}-200/50 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-5 h-5 text-{{ $item['clr'] }}-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $item['icon'] }}"/>
                         </svg>
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-widest">{{ $item['label'] }}</p>
-                        <p class="text-sm text-slate-800 font-semibold truncate">{{ $item['value'] }}</p>
+                        <p class="text-[11px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{{ $item['label'] }}</p>
+                        <p class="text-[15px] text-slate-800 font-bold truncate" style="font-family:'Sora',sans-serif">{{ $item['value'] }}</p>
                     </div>
                 </div>
                 @endforeach
 
                 <div class="mt-4 pt-4 border-t border-slate-100">
-                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-3 border border-emerald-200">
-                        <div class="flex items-center gap-2 mb-1">
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                            <p class="text-xs font-bold text-emerald-800">Active Account</p>
+                    <div class="group bg-gradient-to-br from-emerald-50/80 to-emerald-100/40 backdrop-blur-xl border border-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.6),_0_4px_12px_rgba(0,0,0,0.03)] rounded-2xl p-4 hover:shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_8px_16px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                            <p class="text-sm font-bold text-emerald-800" style="font-family:'Sora',sans-serif">Active Account</p>
                         </div>
-                        <p class="text-[11px] text-emerald-600">Registered since {{ $user->created_at ? $user->created_at->format('d F Y') : '-' }}</p>
+                        <p class="text-[12px] text-emerald-600/90 font-medium">Registered since {{ $user->created_at ? $user->created_at->format('d F Y') : '-' }}</p>
                     </div>
                 </div>
             </div>
