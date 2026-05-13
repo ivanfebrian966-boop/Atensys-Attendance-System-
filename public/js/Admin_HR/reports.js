@@ -150,7 +150,23 @@ function renderBarChart() {
     const presentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Present').length);
     const absentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Absent').length);
     const lateData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Late').length);
-    const labels = dates.map(d => d.slice(5)); // MM-DD
+    
+    const formatChartLabel = (dateStr) => {
+        const d = new Date(dateStr);
+        const month = d.toLocaleDateString('en-US', { month: 'long' });
+        const day = d.getDate();
+        const getSuffix = (n) => {
+            if (n >= 11 && n <= 13) return 'th';
+            switch (n % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        };
+        return `${month} ${day}${getSuffix(day)}`;
+    };
+    const labels = dates.map(d => formatChartLabel(d));
 
     if (trendChart) {
         trendChart.destroy();
