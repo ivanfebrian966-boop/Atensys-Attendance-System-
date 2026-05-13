@@ -60,7 +60,13 @@
             @endif
         </div>
         <div class="bg-indigo-50/50 border-t border-indigo-50 p-3 text-center text-xs text-indigo-600/80 rounded-b-2xl mt-auto">
-            <span class="font-semibold">Note:</span> Standard clock-in is at 07:45. Arrivals after this time will be marked as late.
+            @if(!$todayAttendance || !$todayAttendance->check_in)
+                <span class="font-semibold">Reminder:</span> Check-in time is <strong>08:00 AM</strong>. Arrivals after 08:00 AM will be marked as late.
+            @elseif($todayAttendance->check_in && !$todayAttendance->check_out)
+                <span class="font-semibold">Reminder:</span> Check-out time is <strong>17:00 (5:00 PM)</strong>. Don't forget to check out before leaving.
+            @else
+                <span class="font-semibold">Status:</span> Your attendance for today is complete.
+            @endif
         </div>
     </div>
 
