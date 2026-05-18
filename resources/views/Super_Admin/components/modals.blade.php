@@ -20,10 +20,6 @@
                     <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
                 </div>
                 <div class="form-field">
-                    <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000002" value="{{ old('nip') }}" required>
-                </div>
-                <div class="form-field">
                     <label class="form-label">Division</label>
                     <select name="division_id" class="form-select" required>
                         <option value="">Select Division</option>
@@ -31,6 +27,10 @@
                         <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">NIP</label>
+                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000002" value="{{ old('nip') }}" required>
                 </div>
                 <div class="form-field">
                     <label class="form-label">Position</label>

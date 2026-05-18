@@ -18,7 +18,8 @@ return new class extends Migration
             $table->datetime('check_out')->nullable();
             $table->enum('attendance_status', ['Present', 'Late', 'Permission', 'Absent']);
             $table->text('qr_code');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
 
             $table->foreign('nip')->references('nip')->on('employees')->onDelete('cascade');
         });

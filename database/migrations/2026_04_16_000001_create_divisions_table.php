@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('divisions', function (Blueprint $table) {
             $table->id('division_id');
-            $table->string('division_name', 50);
-            $table->timestamps();
+            $table->string('division_name', 30);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

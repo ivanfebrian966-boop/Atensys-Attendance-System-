@@ -146,14 +146,6 @@
 
                 <!-- Password -->
                 <div>
-                    <div class="flex items-center justify-between mb-1.5">
-                        <label class="text-sm font-medium text-slate-700">Password</label>
-                        @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors">
-                            Forgot Password?
-                        </a>
-                        @endif
-                    </div>
                     <div class="relative">
                         <input type="password" name="password" id="pwd"
                                class="input-field {{ $errors->has('password') ? 'error' : '' }}"

@@ -22,7 +22,6 @@
 
             <!-- Info -->
             <div class="text-center md:text-left flex-1">
-                <p class="text-white/70 text-xs font-medium uppercase tracking-widest mb-1">System Administrator</p>
                 <h1 class="text-3xl font-bold text-white leading-tight" style="font-family:'Sora',sans-serif">
                     {{ $user->name }}
                 </h1>

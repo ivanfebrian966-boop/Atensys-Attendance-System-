@@ -39,7 +39,8 @@ return new class extends Migration
             $table->string('file')->nullable();
             $table->date('start_date');
             $table->date('completion_date');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
 
             $table->foreign('nip')->references('nip')->on('employees')->onDelete('cascade');
         });

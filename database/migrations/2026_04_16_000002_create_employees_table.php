@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->string('nip', 7)->primary();
-            $table->string('password', 255);
-            $table->string('name', 100);
+            $table->string('password', 60);
+            $table->string('name', 75);
             $table->enum('role', ['Super Admin', 'Admin HR', 'Employee']);
-            $table->string('position', 100);
-            $table->string('email', 100)->unique();
+            $table->string('position', 30);
+            $table->string('email', 50)->unique();
             $table->unsignedBigInteger('division_id');
             $table->string('no_hp', 15);
             $table->text('alamat');
             $table->enum('status', ['Aktif', 'Tidak Aktif',])->default('Aktif');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
 
             $table->foreign('division_id')->references('division_id')->on('divisions')->onDelete('cascade');
         });
