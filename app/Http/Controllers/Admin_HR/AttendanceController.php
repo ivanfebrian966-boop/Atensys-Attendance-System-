@@ -15,6 +15,8 @@ class AttendanceController extends Controller
 {
     public function index()
     {
+        Attendance::syncMissingCheckouts();
+
         $pendingPermissions = Permission::with('employee.division')
             ->where('permission_status', 'Pending')
             ->orderBy('created_at', 'desc')
@@ -116,6 +118,7 @@ class AttendanceController extends Controller
     
     public function getAttendanceData(Request $request)
     {
+        Attendance::syncMissingCheckouts();
         try {
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();
@@ -243,6 +246,7 @@ class AttendanceController extends Controller
     
     public function getStats(Request $request)
     {
+        Attendance::syncMissingCheckouts();
         try {
             $date = $request->input('date', Carbon::today()->toDateString());
             $parsedDate = Carbon::parse($date)->toDateString();

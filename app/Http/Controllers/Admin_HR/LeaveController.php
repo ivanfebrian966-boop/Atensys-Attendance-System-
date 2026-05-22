@@ -15,6 +15,7 @@ class LeaveController extends Controller
     {
         // Auto-run mark absent on page load
         $this->runMarkAbsent();
+        Attendance::syncMissingCheckouts();
 
         $stats = [
             'total'      => Permission::count(),

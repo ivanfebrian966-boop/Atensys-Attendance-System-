@@ -17,6 +17,8 @@ class EmployeeController extends Controller
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
 
+        Attendance::syncMissingCheckouts();
+
         $todayAttendance = Attendance::where('nip', $user->nip)
             ->whereDate('check_in', Carbon::today())
             ->first();
@@ -114,6 +116,8 @@ class EmployeeController extends Controller
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
 
+        Attendance::syncMissingCheckouts();
+
         $attendances = Attendance::where('nip', $user->nip)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -141,6 +145,8 @@ class EmployeeController extends Controller
     {
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
+
+        Attendance::syncMissingCheckouts();
 
         $todayAttendance = Attendance::where('nip', $user->nip)
             ->whereDate('check_in', Carbon::today())

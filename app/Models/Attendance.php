@@ -26,4 +26,15 @@ class Attendance extends Model
     {
         return $this->belongsTo(Employee::class, 'nip', 'nip');
     }
+
+    /**
+     * Mark past attendances with missing checkouts as Absent.
+     */
+    public static function syncMissingCheckouts()
+    {
+        self::whereNull('check_out')
+            ->whereDate('check_in', '<', \Carbon\Carbon::today())
+            ->whereIn('attendance_status', ['Present', 'Late'])
+            ->update(['attendance_status' => 'Absent']);
+    }
 }
