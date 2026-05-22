@@ -82,14 +82,6 @@
                     <input type="text" name="name" class="form-input" placeholder="Admin full name" required>
                 </div>
                 <div class="form-field">
-                    <label class="form-label">NIP</label>
-                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000001" required>
-                </div>
-                <div class="form-field col-span-2">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
-                </div>
-                <div class="form-field">
                     <label class="form-label">Division</label>
                     <select name="division_id" class="form-select" required>
                         <option value="">Select Division</option>
@@ -101,6 +93,14 @@
                 <div class="form-field">
                     <label class="form-label">Position</label>
                     <input type="text" name="position" class="form-input" placeholder="e.g.: HR Manager" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">NIP</label>
+                    <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000001" required>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" placeholder="email@attensys.id" required>
                 </div>
                 <div class="form-field">
                     <label class="form-label">Phone Number</label>
