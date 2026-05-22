@@ -39,6 +39,8 @@ return new class extends Migration
             $table->string('file')->nullable();
             $table->date('start_date');
             $table->date('completion_date');
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
 

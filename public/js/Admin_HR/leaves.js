@@ -116,6 +116,7 @@ function renderLeaves() {
                 </td>
                 <td class="py-3 px-4 text-sm text-slate-600 whitespace-nowrap">
                     ${row.start_date} — ${row.end_date}
+                    ${row.start_time && row.end_time ? `<br><span class="text-xs text-slate-400">🕒 ${row.start_time} - ${row.end_time}</span>` : ''}
                 </td>
                 <td class="py-3 px-4">
                     <span class="days-badge">${row.days}d</span>

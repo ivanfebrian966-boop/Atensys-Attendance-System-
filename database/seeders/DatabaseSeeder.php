@@ -123,11 +123,5 @@ class DatabaseSeeder extends Seeder
             'alamat' => 'Kantor Pusat',
             'status' => 'Aktif',
         ]);
-
-        // SEED ATTENDANCE & PERMISSIONS
-        $this->call([
-            PermissionSeeder::class,
-            AttendanceSeeder::class,
-        ]);
     }
 }

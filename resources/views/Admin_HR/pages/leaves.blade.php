@@ -110,6 +110,9 @@
                                 <div class="text-sm text-slate-600 whitespace-nowrap">
                                     {{ \Carbon\Carbon::parse($perm->start_date)->format('d M') }} — 
                                     {{ \Carbon\Carbon::parse($perm->completion_date)->format('d M Y') }}
+                                    @if($perm->start_time && $perm->end_time)
+                                        <br><span class="text-xs text-slate-400">🕒 {{ \Carbon\Carbon::parse($perm->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($perm->end_time)->format('H:i') }}</span>
+                                    @endif
                                 </div>
                             </td>
                             <td class="py-3 px-4">

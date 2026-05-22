@@ -222,6 +222,18 @@
                     </div>
                 </div>
 
+                <!-- Time Range (2-col grid) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="leave-form-field">
+                        <label class="leave-form-label">Start Time (Optional)</label>
+                        <input type="time" name="start_time" class="leave-form-input" min="08:00" max="17:00">
+                    </div>
+                    <div class="leave-form-field">
+                        <label class="leave-form-label">End Time (Optional)</label>
+                        <input type="time" name="end_time" class="leave-form-input" min="08:00" max="17:00">
+                    </div>
+                </div>
+
                 <!-- Leave Category -->
                 <div class="leave-form-field">
                     <label class="leave-form-label">Leave Category</label>
@@ -313,9 +325,11 @@
             if(radio) radio.checked = true;
             setPill(typeVal);
 
-            // Set dates
+            // Set dates and times
             form.querySelector('input[name="start_date"]').value = data.start_raw;
             form.querySelector('input[name="completion_date"]').value = data.end_raw;
+            form.querySelector('input[name="start_time"]').value = data.start_time || '';
+            form.querySelector('input[name="end_time"]').value = data.end_time || '';
 
             // Set category after a short delay for setPill to finish
             setTimeout(() => {

@@ -23,6 +23,8 @@ class Permission extends Model
         'file',
         'start_date',
         'completion_date',
+        'start_time',
+        'end_time',
     ];
 
     public function employee()
