@@ -66,8 +66,8 @@
 
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon-sm" style="background:#faf5ff;color:#8b5cf6">📋</div>
-                <p class="stat-value text-purple-500">{{ $permission ?? 0 }}</p>
-                <p class="stat-label">Permission</p>
+                <p class="stat-value text-purple-500">{{ $leave ?? 0 }}</p>
+                <p class="stat-label">Leave</p>
             </div>
         </div>
 
