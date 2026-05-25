@@ -210,6 +210,29 @@
                     </div>
                 </div>
 
+                <!-- Duration Selector -->
+                <div class="leave-form-field">
+                    <label class="leave-form-label">Duration</label>
+                    <div class="duration-pills grid grid-cols-2 gap-3">
+                        <label class="type-pill active" id="pill-full">
+                            <input type="radio" name="duration_mode" value="full" checked onchange="setLeaveDuration('full')">
+                            <div class="pill-icon">📅</div>
+                            <div>
+                                <div class="pill-label">Full Day</div>
+                                <div class="pill-desc">All-day absence</div>
+                            </div>
+                        </label>
+                        <label class="type-pill" id="pill-partial">
+                            <input type="radio" name="duration_mode" value="partial" onchange="setLeaveDuration('partial')">
+                            <div class="pill-icon">⏰</div>
+                            <div>
+                                <div class="pill-label">Partial</div>
+                                <div class="pill-desc">Specific hours</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Date Range (2-col grid like SA) -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="leave-form-field">
@@ -222,14 +245,14 @@
                     </div>
                 </div>
 
-                <!-- Time Range (2-col grid) -->
-                <div class="grid grid-cols-2 gap-4">
+                <!-- Time Range (only for Partial mode) -->
+                <div id="timeRangeDiv" class="grid grid-cols-2 gap-4 hidden">
                     <div class="leave-form-field">
-                        <label class="leave-form-label">Start Time (Optional)</label>
+                        <label class="leave-form-label">Start Time</label>
                         <input type="time" name="start_time" class="leave-form-input" min="08:00" max="17:00">
                     </div>
                     <div class="leave-form-field">
-                        <label class="leave-form-label">End Time (Optional)</label>
+                        <label class="leave-form-label">End Time</label>
                         <input type="time" name="end_time" class="leave-form-input" min="08:00" max="17:00">
                     </div>
                 </div>
@@ -328,8 +351,19 @@
             // Set dates and times
             form.querySelector('input[name="start_date"]').value = data.start_raw;
             form.querySelector('input[name="completion_date"]').value = data.end_raw;
-            form.querySelector('input[name="start_time"]').value = data.start_time || '';
-            form.querySelector('input[name="end_time"]').value = data.end_time || '';
+
+            // Set duration mode based on whether times exist
+            if (data.start_time || data.end_time) {
+                const partialRadio = form.querySelector('input[name="duration_mode"][value="partial"]');
+                if (partialRadio) partialRadio.checked = true;
+                setLeaveDuration('partial');
+                form.querySelector('input[name="start_time"]').value = data.start_time || '';
+                form.querySelector('input[name="end_time"]').value = data.end_time || '';
+            } else {
+                const fullRadio = form.querySelector('input[name="duration_mode"][value="full"]');
+                if (fullRadio) fullRadio.checked = true;
+                setLeaveDuration('full');
+            }
 
             // Set category after a short delay for setPill to finish
             setTimeout(() => {
@@ -410,6 +444,31 @@
             }
             updateUploadRequirement();
         };
+
+        window.setLeaveDuration = function(mode) {
+            const timeDiv = document.getElementById('timeRangeDiv');
+            if (!timeDiv) return;
+
+            // Toggle active styling for duration cards
+            const pillFull = document.getElementById('pill-full');
+            const pillPartial = document.getElementById('pill-partial');
+            if (pillFull) pillFull.classList.toggle('active', mode === 'full');
+            if (pillPartial) pillPartial.classList.toggle('active', mode === 'partial');
+
+            if (mode === 'partial') {
+                timeDiv.classList.remove('hidden');
+            } else {
+                timeDiv.classList.add('hidden');
+                // clear time inputs
+                const inputs = timeDiv.querySelectorAll('input');
+                inputs.forEach(i => i.value = '');
+            }
+        };
+        // Initialize based on default selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultMode = document.querySelector('input[name="duration_mode"]:checked')?.value || 'full';
+            setLeaveDuration(defaultMode);
+        });
 
         window.updateUploadRequirement = function() {
             const catSelect = document.getElementById('leave_category');
