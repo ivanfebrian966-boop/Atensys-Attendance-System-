@@ -24,13 +24,12 @@
                     <div class="text-6xl mb-3">⏰</div>
                     <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
                     <div class="flex flex-col gap-2 max-w-xs mx-auto">
-                            @csrf
-                            <button type="submit" class="btn-primary w-full">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                </svg>
-                                Check In
-                            </button>
+                        <button type="button" onclick="scrollToQr()" class="btn-primary width-auto justify-center items-center flex">
+                            <svg class="h-4 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                            </svg>
+                            Show QR to Check In
+                        </button>
                         <button onclick="window.openLeaveModal()" class="btn-secondary w-full justify-center items-center flex">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -44,15 +43,9 @@
                     <div class="text-6xl mb-3">✅</div>
                     <p class="text-emerald-600 font-semibold">Checked in at {{ \Carbon\Carbon::parse($todayAttendance->check_in)->format('H:i') }}</p>
                     <p class="text-slate-500 text-sm mt-2">Don't forget to check out</p>
-                    <form action="{{ route('employee.attendance.checkout') }}" method="POST" class="mt-4">
-                        @csrf
-                        <button type="submit" class="btn-secondary">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-4-4m0 0l-4 4m4-4v12"/>
-                            </svg>
-                            Check Out
-                        </button>
-                    </form>
+                    <button type="button" onclick="scrollToQr()" class="btn-secondary mt-4 width-auto">
+                        Check Out
+                    </button>
                 </div>
             @else
                 <div class="mb-4">
@@ -74,7 +67,7 @@
     </div>
 
     {{-- QR Code --}}
-    <div class="panel fade-up d2">
+    <div class="panel fade-up d2" id="qrCodeSection">
         <div class="panel-header">
             <div>
                 <h3 class="panel-title">Your QR Code</h3>
@@ -346,6 +339,19 @@
         const modal = document.getElementById('deletePermissionModal');
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+    }
+
+    function scrollToQr() {
+        const qrSection = document.getElementById('qrCodeSection');
+        if (qrSection) {
+            qrSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Tambahkan sedikit highlight effect opsional
+            qrSection.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
+            setTimeout(() => {
+                qrSection.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
+            }, 1500);
+        }
     }
 </script>
 @endsection
