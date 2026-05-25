@@ -51,7 +51,7 @@ function onScanSuccess(decodedText, decodedResult) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
     
     // Send to server
-    fetch('/attendance/process-qr', {
+    fetch('/admin-hr/attendance/process-qr', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

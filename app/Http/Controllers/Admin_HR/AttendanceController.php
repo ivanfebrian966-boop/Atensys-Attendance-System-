@@ -47,7 +47,12 @@ class AttendanceController extends Controller
             $nip = $qrData;
             if (strpos($qrData, ':') !== false) {
                 $parts = explode(':', $qrData);
-                $nip = end($parts);
+                // Format dari Frontend: ATTENSYS:EMP:NIP:TIMESTAMP
+                if (count($parts) >= 3 && $parts[0] === 'ATTENSYS' && $parts[1] === 'EMP') {
+                    $nip = $parts[2];
+                } else {
+                    $nip = end($parts); // Fallback
+                }
             }
             
             $employee = Employee::where('nip', $nip)->first();
@@ -62,17 +67,18 @@ class AttendanceController extends Controller
             $today = Carbon::today();
             $now = Carbon::now();
             
-            // Check if checked in today
+            // 1. Cek Atd ada atau enggak, kalau enggak ada, maka anggap dia belum menekan cekin
             $todayAttendance = Attendance::where('nip', $nip)
-                ->whereDate('check_in', $today)
+                ->whereDate('created_at', $today)
                 ->first();
             
             if (!$todayAttendance) {
-                // Check In
+                // Belum ada attendance hari ini -> Check In
                 $attendance = Attendance::create([
                     'nip' => $nip,
                     'check_in' => $now,
                     'attendance_status' => $this->determineStatus($now),
+                    'qr_code' => $qrData,
                 ]);
                 
                 return response()->json([
@@ -83,8 +89,26 @@ class AttendanceController extends Controller
                     'time' => $now->format('H:i:s'),
                     'status' => $attendance->attendance_status
                 ]);
-            } elseif (!$todayAttendance->check_out) {
-                // Check Out
+
+            } elseif (!is_null($todayAttendance->check_out)) {
+                // 4. Kalau sudah ada check_out maka dia sudah tidak bisa check in atau check out lagi.
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Karyawan ' . $employee->name . ' sudah check out hari ini'
+                ], 400);
+
+            } elseif (!is_null($todayAttendance->check_in) && !is_null($todayAttendance->attendance_status) && is_null($todayAttendance->check_out)) {
+                // 2. Kalau ada atd, tapi ada isi di kolom check_in, maka anggap dia perlu verifikasi (jeda waktu sebelum bisa check_out)
+                $checkInTime = Carbon::parse($todayAttendance->check_in);
+                if ($now->diffInMinutes($checkInTime) < 5) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Jeda waktu terlalu singkat untuk verifikasi. Anda baru saja Check In.'
+                    ], 400);
+                }
+
+                // 3. Kalau ada atd, ada isi kolom check_in dan ada isi kolom attendance_status 
+                // dan tidak ada isi kolom check_out, maka dianggap akan check_out
                 $todayAttendance->update([
                     'check_out' => $now
                 ]);
@@ -96,10 +120,12 @@ class AttendanceController extends Controller
                     'employee' => $employee->name,
                     'time' => $now->format('H:i:s')
                 ]);
+
             } else {
+                // Kondisi lainnya (misal status Sick/Permission yang tidak memiliki check_in)
                 return response()->json([
                     'success' => false,
-                    'message' => 'Karyawan ' . $employee->name . ' sudah check out hari ini'
+                    'message' => 'Anda tidak dapat melakukan absensi QR saat ini. (Status saat ini: ' . $todayAttendance->attendance_status . ')'
                 ], 400);
             }
         } catch (\Exception $e) {

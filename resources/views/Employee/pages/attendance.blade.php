@@ -24,7 +24,6 @@
                     <div class="text-6xl mb-3">⏰</div>
                     <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
                     <div class="flex flex-col gap-2 max-w-xs mx-auto">
-                        <form action="{{ route('employee.attendance.checkin') }}" method="POST">
                             @csrf
                             <button type="submit" class="btn-primary w-full">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +31,6 @@
                                 </svg>
                                 Check In
                             </button>
-                        </form>
                         <button onclick="window.openLeaveModal()" class="btn-secondary w-full justify-center items-center flex">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
