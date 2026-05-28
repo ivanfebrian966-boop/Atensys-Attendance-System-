@@ -12,13 +12,13 @@ function initQRScanner() {
         console.error('Html5Qrcode library not loaded');
         return;
     }
-    
+
     qrReader = new Html5Qrcode("qr-reader");
-    
+
     Html5Qrcode.getCameras().then(cameras => {
         if (cameras && cameras.length) {
             const cameraId = cameras[0].id;
-            
+
             qrReader.start(
                 cameraId,
                 {
@@ -28,7 +28,7 @@ function initQRScanner() {
                 onScanSuccess,
                 onScanFailure
             );
-            
+
             console.log('QR Scanner started with camera: ' + cameraId);
         } else {
             setQRStatus('❌ Camera not found', 'error');
@@ -43,13 +43,13 @@ function initQRScanner() {
  */
 function onScanSuccess(decodedText, decodedResult) {
     if (isProcessing) return; // Prevent multiple simultaneous scans
-    
+
     isProcessing = true;
     setQRStatus('⏳ Processing...', 'processing');
-    
+
     // CSRF Token from meta tag
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-    
+
     // Send to server
     fetch('/admin-hr/attendance/process-qr', {
         method: 'POST',
@@ -59,42 +59,42 @@ function onScanSuccess(decodedText, decodedResult) {
         },
         body: JSON.stringify({ qr_data: decodedText })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const icon = data.type === 'check_in' ? '✅' : '👋';
-            const message = data.type === 'check_in' 
-                ? `Check In: ${data.employee} (${data.time})` 
-                : `Check Out: ${data.employee} (${data.duration})`;
-            
-            setQRStatus(`${icon} ${message}`, 'success');
-            if (typeof showToast === 'function') showToast(icon, message, 3000);
-            
-            // Reload attendance data if functions exist
-            setTimeout(() => {
-                if (typeof loadAttendanceData === 'function') loadAttendanceData();
-                if (typeof updateStats === 'function') updateStats();
-            }, 1000);
-            
-            // Pause scanner briefly to prevent duplicate scans
-            qrReader.pause();
-            setTimeout(() => {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const icon = data.type === 'check_in' ? '✅' : '👋';
+                const message = data.type === 'check_in'
+                    ? `Check In: ${data.employee} (${data.time})`
+                    : `Check Out: ${data.employee} (${data.duration})`;
+
+                setQRStatus(`${icon} ${message}`, 'success');
+                if (typeof showToast === 'function') showToast(icon, message, 3000);
+
+                // Reload attendance data if functions exist
+                setTimeout(() => {
+                    if (typeof loadAttendanceData === 'function') loadAttendanceData();
+                    if (typeof updateStats === 'function') updateStats();
+                }, 1000);
+
+                // Pause scanner briefly to prevent duplicate scans
+                qrReader.pause();
+                setTimeout(() => {
+                    isProcessing = false;
+                    qrReader.resume();
+                    setQRStatus('🟢 Ready to scan', 'ready');
+                }, 2000);
+            } else {
+                setQRStatus(`❌ ${data.message}`, 'error');
+                if (typeof showToast === 'function') showToast('❌', data.message, 3000);
                 isProcessing = false;
-                qrReader.resume();
-                setQRStatus('🟢 Ready to scan', 'ready');
-            }, 2000);
-        } else {
-            setQRStatus(`❌ ${data.message}`, 'error');
-            if (typeof showToast === 'function') showToast('❌', data.message, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            setQRStatus('❌ Connection error', 'error');
+            if (typeof showToast === 'function') showToast('❌', 'Failed to connect to server', 3000);
             isProcessing = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        setQRStatus('❌ Connection error', 'error');
-        if (typeof showToast === 'function') showToast('❌', 'Failed to connect to server', 3000);
-        isProcessing = false;
-    });
+        });
 }
 
 /**
@@ -110,9 +110,9 @@ function onScanFailure(error) {
 function setQRStatus(message, status) {
     const resultEl = document.getElementById('qr-result');
     if (!resultEl) return;
-    
+
     resultEl.innerText = message;
-    
+
     // Color based on status
     if (status === 'success') {
         resultEl.style.color = '#10b981';

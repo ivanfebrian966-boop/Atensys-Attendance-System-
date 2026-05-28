@@ -113,7 +113,8 @@ function renderReports() {
 }
 
 function updateSummaryCardsEmpty() {
-    const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rPerm', 'rPresentPct', 'rAbsentPct', 'rLatePct', 'rPermPct'];
+    const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rSick', 'rPerm',
+                  'rPresentPct', 'rAbsentPct', 'rLatePct', 'rSickPct', 'rPermPct'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = id.includes('Pct') ? '—' : '0';
@@ -124,20 +125,24 @@ function updateSummaryCardsEmpty() {
 function renderSummaryCards() {
     const total = filteredData.length;
     const present = filteredData.filter(r => r.status === 'Present').length;
-    const absent = filteredData.filter(r => r.status === 'Absent').length;
-    const late = filteredData.filter(r => r.status === 'Late').length;
-    const perm = filteredData.filter(r => r.status === 'Permission').length;
+    const absent  = filteredData.filter(r => r.status === 'Absent').length;
+    const late    = filteredData.filter(r => r.status === 'Late').length;
+    const sick    = filteredData.filter(r => r.status === 'Sick').length;
+    const perm    = filteredData.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
     const pct = v => total ? (v / total * 100).toFixed(1) + '%' : '—';
 
-    if(document.getElementById('rTotal')) document.getElementById('rTotal').textContent = total;
-    if(document.getElementById('rPresent')) document.getElementById('rPresent').textContent = present;
-    if(document.getElementById('rAbsent')) document.getElementById('rAbsent').textContent = absent;
-    if(document.getElementById('rLate')) document.getElementById('rLate').textContent = late;
-    if(document.getElementById('rPerm')) document.getElementById('rPerm').textContent = perm;
-    if(document.getElementById('rPresentPct')) document.getElementById('rPresentPct').textContent = pct(present);
-    if(document.getElementById('rAbsentPct')) document.getElementById('rAbsentPct').textContent = pct(absent);
-    if(document.getElementById('rLatePct')) document.getElementById('rLatePct').textContent = pct(late);
-    if(document.getElementById('rPermPct')) document.getElementById('rPermPct').textContent = pct(perm);
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('rTotal',      total);
+    set('rPresent',    present);
+    set('rAbsent',     absent);
+    set('rLate',       late);
+    set('rSick',       sick);
+    set('rPerm',       perm);
+    set('rPresentPct', pct(present));
+    set('rAbsentPct',  pct(absent));
+    set('rLatePct',    pct(late));
+    set('rSickPct',    pct(sick));
+    set('rPermPct',    pct(perm));
 }
 
 /* ---- Bar chart ---- */
@@ -288,12 +293,13 @@ function renderDetailTable(data) {
     const names = [...new Set(data.map(r => r.name))];
     _detailFull = names.map(name => {
         const rows = data.filter(r => r.name === name);
-        const div = rows[0]?.div || '—';
-        const total = rows.length;
+        const div  = rows[0]?.div || '—';
+        const total   = rows.length;
         const present = rows.filter(r => r.status === 'Present').length;
-        const absent = rows.filter(r => r.status === 'Absent').length;
-        const late = rows.filter(r => r.status === 'Late').length;
-        const perm = rows.filter(r => r.status === 'Permission').length;
+        const absent  = rows.filter(r => r.status === 'Absent').length;
+        const late    = rows.filter(r => r.status === 'Late').length;
+        const sick    = rows.filter(r => r.status === 'Sick').length;
+        const perm    = rows.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
         const rate = total ? Math.round(present / total * 100) : 0;
         const ciRows = rows.filter(r => r.ci && r.ci !== '-').map(r => r.ci);
         const avgCi = ciRows.length
@@ -303,7 +309,7 @@ function renderDetailTable(data) {
                 return `${String(Math.floor(avg / 60)).padStart(2, '0')}:${String(avg % 60).padStart(2, '0')}`;
             })()
             : '—';
-        return { name, div, total, present, absent, late, perm, rate, avgCi };
+        return { name, div, total, present, absent, late, sick, perm, rate, avgCi };
     }).sort((a, b) => b.rate - a.rate);
 
     filterReport();
@@ -311,20 +317,27 @@ function renderDetailTable(data) {
 
 function filterReport() {
     const s = (document.getElementById('searchReport')?.value || '').toLowerCase();
-    const list = _detailFull.filter(r => !s || r.name.toLowerCase().includes(s));
+    const list = _detailFull.filter(r => !s || r.name.toLowerCase().includes(s) || (r.div || '').toLowerCase().includes(s));
     const body = document.getElementById('reportDetailBody');
     const empty = document.getElementById('reportEmpty');
     const info = document.getElementById('reportInfo');
+    const cardViewActive = !document.getElementById('reportCardView')?.classList.contains('hidden');
 
     if (!list.length) {
         if (body) body.innerHTML = '';
         if (empty) empty.classList.remove('hidden');
         if (info) info.textContent = '0 data';
         renderReportPagination(0);
+        if (cardViewActive) renderReportCards([]);
         return;
     }
     if (empty) empty.classList.add('hidden');
     if (info) info.textContent = `${list.length} employees`;
+
+    // Sync card view with the same filtered list
+    if (cardViewActive) {
+        renderReportCards(list);
+    }
 
     const totalPages = Math.ceil(list.length / PAGE_SIZE) || 1;
     if (currentPage > totalPages) currentPage = totalPages;
@@ -436,18 +449,20 @@ function switchReportView(view) {
         if (cardView) cardView.classList.remove('hidden');
         if (btnTable) btnTable.classList.remove('active');
         if (btnCard) btnCard.classList.add('active');
-        renderReportCards();
+        // Re-run filterReport so cards respect the current search term
+        filterReport();
     }
 }
 
 /**
- * Render cards from the global _detailFull data (already populated by renderDetailTable)
+ * Render cards from a (filtered) list. Falls back to _detailFull when no list is supplied.
  */
-function renderReportCards() {
+function renderReportCards(list) {
     const cardContainer = document.getElementById('reportCardContainer');
     if (!cardContainer || !_detailFull) return;
+    const data = list || _detailFull;
 
-    cardContainer.innerHTML = _detailFull.map(r => {
+    cardContainer.innerHTML = data.map(r => {
         const percentage = r.rate + '%';
         const initialsStr = initials(r.name);
         const nameSub = r.name;
@@ -508,7 +523,7 @@ function divColor(div) {
 }
 
 function fmtDate(d) {
-    return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+    return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
 function downloadCSV(filename, rows) {

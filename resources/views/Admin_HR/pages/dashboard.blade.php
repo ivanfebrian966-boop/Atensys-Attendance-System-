@@ -34,7 +34,7 @@
 
         <!-- ===== STAT CARDS ===== -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
-            <div class="stat-card fade-up d1">
+            <div class="stat-card indigo fade-up d1">
                 <div class="stat-icon-sm" style="background:#eef2ff;color:#6366f1">👥</div>
                 <p class="stat-value text-slate-900">{{ $totalEmployees ?? 120 }}</p>
                 <p class="stat-label">Total Employees</p>

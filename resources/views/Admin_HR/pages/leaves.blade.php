@@ -21,7 +21,7 @@
 
         {{-- ===== STAT CARDS ===== --}}
         <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-            <div class="stat-card fade-up d1">
+            <div class="stat-card indigo fade-up d1">
                 <div class="stat-icon" style="background:#eef2ff">📋</div>
                 <p class="stat-value text-slate-800" id="sc-total">{{ $stats['total'] }}</p>
                 <p class="stat-label">Total</p>

@@ -139,7 +139,7 @@ function initials(name) {
 }
 function fmtDate(iso) {
     if(!iso||iso==='-') return '—';
-    const m=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    const m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const [y,mo,d]=iso.split('-');
     return `${parseInt(d)} ${m[parseInt(mo)-1]} ${y}`;
 }

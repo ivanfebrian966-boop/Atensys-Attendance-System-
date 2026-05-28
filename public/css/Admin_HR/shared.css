@@ -181,6 +181,8 @@ a    { text-decoration:none; color:inherit; }
 .stat-card.purple::after { background:#8b5cf6; }
 .stat-card.indigo::after { background:#6366f1; }
 .stat-card.cyan::after   { background:#06b6d4; }
+.stat-card.sky::after    { background:#0ea5e9; }
+.stat-card.yellow::after { background:#f59e0b; }
 .stat-icon {
     width:44px; height:44px; border-radius:14px;
     display:flex; align-items:center; justify-content:center;
