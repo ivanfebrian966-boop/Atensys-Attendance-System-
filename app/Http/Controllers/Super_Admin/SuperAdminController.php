@@ -95,7 +95,7 @@ class SuperAdminController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->back()->with('success', 'Karyawan berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Employee Added Successfully!');
     }
 
     public function storeHrAdmin(Request $request)
@@ -126,11 +126,11 @@ class SuperAdminController extends Controller
                 'position' => $request->position,
             ]);
 
-            return redirect()->back()->with('success', 'Akun HR Admin berhasil dibuat!');
+            return redirect()->back()->with('success', 'HR Admin Account Created Successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput()->with('error_modal', 'modalAddAdmin');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membuat akun: ' . $e->getMessage())->withInput();
+            return redirect()->back()->with('error', 'Failed to create account: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -164,14 +164,14 @@ class SuperAdminController extends Controller
 
         $employee->update($data);
 
-        return redirect()->back()->with('success', 'Data karyawan berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Employee Updated Successfully!');
     }
 
     public function deleteEmployee($nip)
     {
         $employee = Employee::findOrFail($nip);
         $employee->delete();
-        return redirect()->back()->with('success', 'Akun karyawan berhasil dihapus!');
+        return redirect()->back()->with('success', 'Employee Account Deleted Successfully!');
     }
 
     public function updateHrAdmin(Request $request, $nip)
@@ -204,14 +204,14 @@ class SuperAdminController extends Controller
 
         $employee->update($data);
 
-        return redirect()->back()->with('success', 'Akun HR Admin berhasil diperbarui!');
+        return redirect()->back()->with('success', 'HR Admin Account Updated Successfully!');
     }
 
     public function deleteHrAdmin($nip)
     {
         $employee = Employee::findOrFail($nip);
         $employee->delete();
-        return redirect()->back()->with('success', 'Akun HR Admin berhasil dihapus!');
+        return redirect()->back()->with('success', 'HR Admin Account Deleted Successfully!');
     }
 
     public function storeDivision(Request $request)
@@ -224,7 +224,7 @@ class SuperAdminController extends Controller
             'division_name' => $request->division_name,
         ]);
 
-        return redirect()->back()->with('success', 'Divisi berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Division Added Successfully!');
     }
 
     public function updateDivision(Request $request, $id)
@@ -238,7 +238,7 @@ class SuperAdminController extends Controller
             'division_name' => $request->division_name,
         ]);
 
-        return redirect()->back()->with('success', 'Divisi berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Division Updated Successfully!');
     }
 
     public function deleteDivision($id)
@@ -246,11 +246,11 @@ class SuperAdminController extends Controller
         $division = Division::findOrFail($id);
         
         if ($division->employees()->count() > 0) {
-            return redirect()->back()->with('error', 'Tidak dapat menghapus divisi yang memiliki karyawan!');
+            return redirect()->back()->with('error', 'Can\'t delete this division because it has employees!');
         }
 
         $division->delete();
-        return redirect()->back()->with('success', 'Divisi berhasil dihapus!');
+        return redirect()->back()->with('success', 'Division Deleted Successfully!');
     }
 
     public function profile()
@@ -288,6 +288,6 @@ class SuperAdminController extends Controller
 
         $user->update($data);
 
-        return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Profile Updated Successfully!');
     }
 }
