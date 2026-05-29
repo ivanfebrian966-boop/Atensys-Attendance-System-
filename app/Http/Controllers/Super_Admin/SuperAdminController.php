@@ -70,47 +70,53 @@ class SuperAdminController extends Controller
 
     public function storeEmployee(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:employees',
-            'nip' => 'required|string|size:7|unique:employees',
-            'division_id' => 'required|exists:divisions,division_id',
-            'jabatan' => 'required|string|max:100',
-            'no_hp' => 'required|string|max:15',
-            'alamat' => 'required|string|max:500',
-            'password' => 'required|string|min:8',
-            'status' => 'required|in:Aktif,Tidak Aktif',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:75',
+                'email' => 'required|string|email|max:50|unique:employees',
+                'nip' => 'required|string|size:7|unique:employees',
+                'division_id' => 'required|exists:divisions,division_id',
+                'jabatan' => 'required|string|max:30',
+                'no_hp' => 'required|string|max:15',
+                'alamat' => 'required|string|max:500',
+                'password' => 'required|string|min:8',
+                'status' => 'required|in:Aktif,Tidak Aktif',
+            ]);
 
-        Employee::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'nip' => $request->nip,
-            'password' => Hash::make($request->password),
-            'role' => 'Employee',
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-            'position' => $request->jabatan,
-            'division_id' => $request->division_id,
-            'status' => $request->status,
-        ]);
+            Employee::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'nip' => $request->nip,
+                'password' => Hash::make($request->password),
+                'role' => 'Employee',
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+                'position' => $request->jabatan,
+                'division_id' => $request->division_id,
+                'status' => $request->status,
+            ]);
 
-        return redirect()->back()->with('success', 'Karyawan berhasil ditambahkan!');
+            return redirect()->back()->with('success', 'Karyawan berhasil ditambahkan!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput()->with('error_modal', 'modalAddEmployee');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal membuat akun: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function storeHrAdmin(Request $request)
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:75',
                 'nip' => 'required|string|size:7|unique:employees',
-                'email' => 'required|string|email|max:100|unique:employees',
+                'email' => 'required|string|email|max:50|unique:employees',
                 'password' => 'required|string|min:8',
                 'phone' => 'required|string|max:15',
                 'address' => 'required|string|max:500',
                 'status' => 'required|in:Aktif,Tidak Aktif',
                 'division_id' => 'required|exists:divisions,division_id',
-                'position' => 'required|string',
+                'position' => 'required|string|max:30',
             ]);
 
             Employee::create([
@@ -139,10 +145,10 @@ class SuperAdminController extends Controller
         $employee = Employee::findOrFail($nip);
         
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
+            'name' => 'required|string|max:75',
+            'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
             'division_id' => 'required|exists:divisions,division_id',
-            'jabatan' => 'required|string|max:100',
+            'jabatan' => 'required|string|max:30',
             'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Tidak Aktif',
@@ -179,13 +185,13 @@ class SuperAdminController extends Controller
         $employee = Employee::findOrFail($nip);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:employees,email,' . $nip . ',nip',
+            'name' => 'required|string|max:75',
+            'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Tidak Aktif',
             'division_id' => 'required|exists:divisions,division_id',
-            'position' => 'required|string',
+            'position' => 'required|string|max:30',
         ]);
 
         $data = [
@@ -224,7 +230,7 @@ class SuperAdminController extends Controller
             'division_name' => $request->division_name,
         ]);
 
-        return redirect()->back()->with('success', 'Divisi berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Division added successfully!');
     }
 
     public function updateDivision(Request $request, $id)
