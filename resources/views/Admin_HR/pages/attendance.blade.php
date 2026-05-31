@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 @extends('Admin_HR.layouts.main')
-
+ 
 @section('title', 'Attendance — ATTENSYS')
-
+ 
 @section('styles')
     <link rel="stylesheet" href="{{ asset('css/Admin_HR/attendance.css') }}">
-    <!-- QR Code Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 @endsection
-
+ 
 @section('main_structure')
 @include('Admin_HR.components.sidebar')
-
+ 
 <div class="main-content">
     @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Attendance',
         'pageSubtitle' => now()->translatedFormat('l, d F Y'),
     ])
-
+ 
     <div class="p-4 md:p-6">
-
+ 
         <!-- QR CODE SCANNER -->
         <div class="panel fade-up d1 mb-6">
             <div class="panel-header">
                 <div>
                     <h3 class="panel-title">Scan Attendance QR Code</h3>
-
                     <p class="panel-subtitle">Point camera at QR code to check in</p>
                 </div>
             </div>
@@ -35,7 +33,7 @@
                 <div id="qr-result" class="mt-4 text-center text-emerald-600 font-semibold"></div>
             </div>
         </div>
-
+ 
         <!-- STAT CARDS -->
         <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             <div class="stat-card indigo fade-up d1">
@@ -47,40 +45,34 @@
                 <div class="stat-icon" style="background:#ecfdf5">✅</div>
                 <p class="stat-value text-emerald-600" id="sPresent">0</p>
                 <p class="stat-label">Present</p>
-
             </div>
             <div class="stat-card red fade-up d3">
                 <div class="stat-icon" style="background:#fef2f2">❌</div>
                 <p class="stat-value text-red-500" id="sAbsent">0</p>
                 <p class="stat-label">Absent</p>
-
             </div>
             <div class="stat-card amber fade-up d4">
                 <div class="stat-icon" style="background:#fffbeb">⏰</div>
                 <p class="stat-value text-amber-500" id="sLate">0</p>
                 <p class="stat-label">Late</p>
-
             </div>
-
             <div class="stat-card sky fade-up d5">
                 <div class="stat-icon" style="background:#f0f9ff">🏥</div>
                 <p class="stat-value text-sky-500" id="sSick">0</p>
                 <p class="stat-label">Sick</p>
             </div>
-
             <div class="stat-card purple fade-up d6">
                 <div class="stat-icon" style="background:#faf5ff">📋</div>
                 <p class="stat-value text-purple-500" id="sPerm">0</p>
                 <p class="stat-label">Leave</p>
             </div>
         </div>
-        
+ 
         <!-- ATTENDANCE TABLE -->
         <div class="panel fade-up d2">
             <div class="panel-header">
                 <div>
                     <h3 class="panel-title">Attendance Data</h3>
-
                     <p class="panel-subtitle">Daily employee attendance summary</p>
                 </div>
                 <div class="header-actions">
@@ -93,11 +85,9 @@
                     <input type="date" id="filterDate" class="filter-select" value="{{ date('Y-m-d') }}" onchange="loadAttendanceData()" style="padding-left:12px">
                     <select id="filterAttStatus" class="filter-select" onchange="filterAtt()">
                         <option value="">All Status</option>
-
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-
                         <option value="Permission">Permission</option>
                     </select>
                     <select id="filterAttDiv" class="filter-select" onchange="filterAtt()">
@@ -120,7 +110,7 @@
                     </button>
                 </div>
             </div>
-
+ 
             <div class="overflow-x-auto">
                 <table class="data-table">
                     <thead>
@@ -138,130 +128,204 @@
                     <tbody id="attBody"></tbody>
                 </table>
             </div>
-
+ 
             <div id="attEmpty" class="empty-state hidden">
                 <div class="empty-icon">📋</div>
                 <p class="empty-title">No attendance data</p>
                 <p class="empty-sub">Change date filter or add manual data</p>
             </div>
-
+ 
             <div class="table-footer">
                 <p class="table-info" id="attInfo">— data</p>
                 <div class="pagination" id="attPagination"></div>
             </div>
         </div>
-
-    </div><!-- end p-4 -->
-</div><!-- end main-content -->
+ 
+    </div>
+</div>
 @endsection
-
+ 
 @section('modals')
-<!-- MODAL ADD ATT -->
+ 
+{{-- ===== MODAL ADD ATT ===== --}}
 <div class="modal-overlay" id="modalAddAtt" onclick="closeModalOutside(event,'modalAddAtt')">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div><h3 class="modal-title">Add Attendance Data</h3><p class="modal-sub">Manual attendance input</p></div>
-
-            <button class="modal-close" onclick="closeModal('modalAddAtt')">✕</button>
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width:480px;width:100%;">
+ 
+        {{-- Header --}}
+        <div class="modal-header" style="padding:16px 20px 14px;gap:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg style="width:16px;height:16px;color:#4f46e5;stroke:#4f46e5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="modal-title" style="font-size:15px;margin:0;">Add Attendance</h3>
+                    <p class="modal-sub" style="font-size:12px;margin:0;">Manual entry</p>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('modalAddAtt')" style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#94a3b8;">✕</button>
         </div>
-        <div class="modal-body">
-            <div class="form-grid">
-                <div class="form-field col-2" style="position:relative">
-                    <label class="form-label">Employee Name *</label>
-                    <input type="text" id="aaName" class="form-input" placeholder="Type to search employee..." autocomplete="off" oninput="filterEmployeeDropdown('aaName','aaEmpId','aaDropdown')">
-                    <input type="hidden" id="aaEmpId">
-                    <ul id="aaDropdown" class="emp-dropdown" style="display:none"></ul>
-                    <span class="form-error" id="eaaName"></span>
+ 
+        {{-- Body --}}
+        <div class="modal-body" style="padding:16px 20px;">
+ 
+            {{-- Employee Search --}}
+            <div style="position:relative;margin-bottom:14px;">
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Employee *</label>
+                {{-- Employee preview (shown after select) --}}
+                <div id="aaEmpPreview" style="display:none;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;">
+                    <div id="aaEmpAvatar" style="width:28px;height:28px;border-radius:50%;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#4f46e5;flex-shrink:0;"></div>
+                    <div style="flex:1;min-width:0;">
+                        <p id="aaEmpNameDisplay" style="font-size:13px;font-weight:500;color:#1e293b;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+                        <p id="aaEmpSubDisplay" style="font-size:11px;color:#94a3b8;margin:0;"></p>
+                    </div>
+                    <button onclick="clearEmployeeSelection()" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:2px;line-height:1;font-size:14px;" title="Clear">✕</button>
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Date *</label>
-                    <input type="date" id="aaDate" class="form-input">
+                <input type="text" id="aaName" class="form-input" placeholder="Search by name or NIP..."
+                    autocomplete="off" style="font-size:13px;"
+                    oninput="filterEmployeeDropdown('aaName','aaEmpId','aaDropdown')">
+                <input type="hidden" id="aaEmpId">
+                <ul id="aaDropdown" class="emp-dropdown" style="display:none"></ul>
+                <span class="form-error" id="eaaName"></span>
+            </div>
+ 
+            {{-- Date + Status --}}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                <div>
+                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date *</label>
+                    <input type="date" id="aaDate" class="form-input" style="font-size:13px;">
+                    <span class="form-error" id="eaaDate"></span>
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Status *</label>
-                    <select id="aaStatus" class="form-select">
+                <div>
+                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Status *</label>
+                    <select id="aaStatus" class="form-select" style="font-size:13px;">
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-
                         <option value="Permission">Permission</option>
                     </select>
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Check In</label>
-                    <input type="time" id="aaCheckIn" class="form-input">
-                </div>
-                <div class="form-field">
-                    <label class="form-label">Check Out</label>
-                    <input type="time" id="aaCheckOut" class="form-input">
-                </div>
-                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-ghost" onclick="closeModal('modalAddAtt')">Cancel</button>
-                <button class="btn-primary" onclick="saveAtt()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+ 
+            {{-- Time Type Toggle --}}
+            <div style="margin-bottom:12px;">
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;display:block;">Time Type *</label>
+                <div style="display:flex;gap:8px;">
+                    <button type="button" id="tglBtnIn" onclick="setTimeType('check_in')"
+                        style="flex:1;height:38px;border-radius:8px;border:1.5px solid #c7d2fe;background:#eef2ff;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
+                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                        Check In
+                    </button>
+                    <button type="button" id="tglBtnOut" onclick="setTimeType('check_out')"
+                        style="flex:1;height:38px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
+                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Check Out
+                    </button>
+                </div>
+                <input type="hidden" name="aaTimeType" id="aaTimeType" value="check_in">
+            </div>
+ 
+            {{-- Time Input Block --}}
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
+                <div id="aaTimeIconWrap" style="width:36px;height:36px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg id="aaTimeIcon" style="width:16px;height:16px;stroke:#4f46e5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    Save
-                </button>
+                </div>
+                <div style="flex:1;">
+                    <p id="aaTimeLabelText" style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 2px;">CHECK IN TIME</p>
+                    <input type="time" id="aaCheckIn" style="border:none;background:transparent;font-size:20px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
+                    <input type="time" id="aaCheckOut" style="display:none;border:none;background:transparent;font-size:20px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
+                </div>
             </div>
+            <span class="form-error" id="eaaCheckIn"></span>
+            <span class="form-error" id="eaaCheckOut"></span>
+ 
+        </div>
+ 
+        {{-- Footer --}}
+        <div class="modal-footer" style="padding:12px 20px;gap:8px;">
+            <button class="btn-ghost" onclick="closeModal('modalAddAtt')" style="font-size:13px;">Cancel</button>
+            <button class="btn-primary" onclick="saveAtt()" style="font-size:13px;display:flex;align-items:center;gap:6px;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Save
+            </button>
         </div>
     </div>
 </div>
-
-<!-- MODAL EDIT ATT -->
+ 
+{{-- ===== MODAL EDIT ATT ===== --}}
 <div class="modal-overlay" id="modalEditAtt" onclick="closeModalOutside(event,'modalEditAtt')">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <div><h3 class="modal-title">Correct Attendance</h3><p class="modal-sub">Edit attendance data</p></div>
-            <button class="modal-close" onclick="closeModal('modalEditAtt')">✕</button>
+    <div class="modal-box" onclick="event.stopPropagation()" style="max-width:480px;width:100%;">
+        <div class="modal-header" style="padding:16px 20px 14px;gap:12px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:34px;height:34px;border-radius:8px;background:#fef9c3;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg style="width:16px;height:16px;stroke:#ca8a04;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="modal-title" style="font-size:15px;margin:0;">Correct Attendance</h3>
+                    <p class="modal-sub" style="font-size:12px;margin:0;">Edit attendance data</p>
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeModal('modalEditAtt')" style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#94a3b8;">✕</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="padding:16px 20px;">
             <input type="hidden" id="eaId">
-            <div class="form-grid">
-                <div class="form-field col-2">
-                    <label class="form-label">Employee Name</label>
-                    <input type="text" id="eaName" class="form-input" readonly style="background:#f8fafc;color:#64748b;cursor:not-allowed">
+ 
+            {{-- Employee (readonly) --}}
+            <div style="margin-bottom:14px;">
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Employee</label>
+                <input type="text" id="eaName" class="form-input" readonly
+                    style="background:#f8fafc;color:#64748b;cursor:not-allowed;font-size:13px;">
+            </div>
+ 
+            {{-- Date + Status --}}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+                <div>
+                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date</label>
+                    <input type="date" id="eaDate" class="form-input" style="font-size:13px;">
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Date</label>
-                    <input type="date" id="eaDate" class="form-input">
-                </div>
-                <div class="form-field">
-                    <label class="form-label">Status *</label>
-                    <select id="eaStatus" class="form-select">
+                <div>
+                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Status *</label>
+                    <select id="eaStatus" class="form-select" style="font-size:13px;">
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
-
                         <option value="Permission">Permission</option>
                     </select>
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Check In</label>
-                    <input type="time" id="eaCheckIn" class="form-input">
+            </div>
+ 
+            {{-- Check In + Check Out side by side --}}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+                    <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK IN</p>
+                    <input type="time" id="eaCheckIn" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
-                <div class="form-field">
-                    <label class="form-label">Check Out</label>
-                    <input type="time" id="eaCheckOut" class="form-input">
-                </div>
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+                    <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK OUT</p>
+                    <input type="time" id="eaCheckOut" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn-ghost" onclick="closeModal('modalEditAtt')">Cancel</button>
-                <button class="btn-primary" onclick="updateAtt()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Save Changes
-                </button>
-            </div>
+        </div>
+        <div class="modal-footer" style="padding:12px 20px;gap:8px;">
+            <button class="btn-ghost" onclick="closeModal('modalEditAtt')" style="font-size:13px;">Cancel</button>
+            <button class="btn-primary" onclick="updateAtt()" style="font-size:13px;display:flex;align-items:center;gap:6px;">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Save Changes
+            </button>
         </div>
     </div>
 </div>
-
-<!-- MODAL DELETE -->
+ 
+{{-- ===== MODAL DELETE ===== --}}
 <div class="modal-overlay" id="modalDelAtt" onclick="closeModalOutside(event,'modalDelAtt')">
     <div class="modal-box modal-sm" onclick="event.stopPropagation()">
         <div class="del-icon-wrap"><div class="del-icon">🗑</div></div>
@@ -273,17 +337,18 @@
         </div>
     </div>
 </div>
-
+ 
 @endsection
-
+ 
 @section('scripts')
 <script>
-    const ATTENDANCE_DATA_URL = "{{ route('admin-hr.attendance.data') }}";
-    const ATTENDANCE_STATS_URL = "{{ route('admin-hr.attendance.stats') }}";
-    const ATTENDANCE_STORE_URL = "{{ route('admin-hr.attendance.store') }}";
-    const ATTENDANCE_UPDATE_URL = "{{ url('admin-hr/attendance/update') }}"; // We'll append ID in JS
-    const ATTENDANCE_DELETE_URL = "{{ url('admin-hr/attendance/delete') }}"; // We'll append ID in JS
+    const ATTENDANCE_DATA_URL   = "{{ route('admin-hr.attendance.data') }}";
+    const ATTENDANCE_STATS_URL  = "{{ route('admin-hr.attendance.stats') }}";
+    const ATTENDANCE_STORE_URL  = "{{ route('admin-hr.attendance.store') }}";
+    const ATTENDANCE_UPDATE_URL = "{{ url('admin-hr/attendance/update') }}";
+    const ATTENDANCE_DELETE_URL = "{{ url('admin-hr/attendance/delete') }}";
 </script>
 <script src="{{ asset('js/Admin_HR/attendance.js') }}"></script>
 <script src="{{ asset('js/Admin_HR/attendance_qr.js') }}"></script>
 @endsection
+ 
