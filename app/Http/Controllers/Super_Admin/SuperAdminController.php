@@ -96,16 +96,12 @@ class SuperAdminController extends Controller
                 'status' => $request->status,
             ]);
 
-<<<<<<< HEAD
-            return redirect()->back()->with('success', 'Karyawan berhasil ditambahkan!');
+            return redirect()->back()->with('success', 'Employee Added Successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput()->with('error_modal', 'modalAddEmployee');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal membuat akun: ' . $e->getMessage())->withInput();
+            return redirect()->back()->with('error', 'Failed to create account: ' . $e->getMessage())->withInput();
         }
-=======
-        return redirect()->back()->with('success', 'Employee Added Successfully!');
->>>>>>> 884a657e3ff457e37862bdf7b2de74a7cf8eb029
     }
 
     public function storeHrAdmin(Request $request)
@@ -234,11 +230,7 @@ class SuperAdminController extends Controller
             'division_name' => $request->division_name,
         ]);
 
-<<<<<<< HEAD
         return redirect()->back()->with('success', 'Division added successfully!');
-=======
-        return redirect()->back()->with('success', 'Division Added Successfully!');
->>>>>>> 884a657e3ff457e37862bdf7b2de74a7cf8eb029
     }
 
     public function updateDivision(Request $request, $id)
