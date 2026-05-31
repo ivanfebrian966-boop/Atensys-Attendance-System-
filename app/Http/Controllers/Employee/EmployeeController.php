@@ -55,7 +55,7 @@ class EmployeeController extends Controller
             ->exists();
 
         if ($hasPermission) {
-            return back()->with('error', 'Gagal: Anda sudah memiliki pengajuan izin/sakit untuk hari ini.');
+            return back()->with('error', 'Failed: You already have a permission/sick request for today.');
         }
 
         // Check if already checked in today
@@ -91,7 +91,7 @@ class EmployeeController extends Controller
             ->exists();
 
         if ($hasPermission) {
-            return back()->with('error', 'Gagal: Anda tidak bisa absen karena sedang dalam masa izin/sakit.');
+            return back()->with('error', 'Failed: You cannot check in/out during approved leave or sick period.');
         }
 
         $attendance = Attendance::where('nip', $user->nip)
@@ -189,9 +189,13 @@ class EmployeeController extends Controller
         $fileRequired = in_array($category, $mandatoryCategories);
 
         $request->validate([
-            'type' => 'required',
+            'type' => 'required|in:Leave,Sick',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
+            'leave_category' => 'nullable|string',
+            'sick_category' => 'nullable|string',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
             'information' => 'nullable|string|max:255',
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
@@ -204,7 +208,7 @@ class EmployeeController extends Controller
             ->exists();
 
         if ($hasAttendance) {
-            return back()->with('error', 'Gagal: Anda sudah memiliki catatan kehadiran pada rentang tanggal tersebut.');
+            return back()->with('error', 'Failed: You already have attendance records on the specified date range.');
         }
 
         $filePath = null;
@@ -216,10 +220,12 @@ class EmployeeController extends Controller
         Permission::create([
             'nip' => $user->nip,
             'type' => $request->type,
-            'leave_category' => $request->leave_category,
-            'sick_category' => $request->sick_category,
+            'leave_category' => $request->type === 'Leave' ? $request->leave_category : null,
+            'sick_category' => $request->type === 'Sick' ? $request->sick_category : null,
             'start_date' => $request->start_date,
             'completion_date' => $request->completion_date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'information' => $request->information ?: '-',
             'file' => $filePath,
             'permission_status' => 'Pending',
@@ -234,7 +240,7 @@ class EmployeeController extends Controller
         $permission = Permission::where('nip', $user->nip)->findOrFail($id);
 
         if ($permission->permission_status !== 'Pending') {
-            return back()->with('error', 'Gagal: Pengajuan yang sudah diproses tidak dapat diubah.');
+            return back()->with('error', 'Failed: Processed requests cannot be modified.');
         }
 
         $mandatoryCategories = [
@@ -246,9 +252,13 @@ class EmployeeController extends Controller
         $fileRequired = in_array($category, $mandatoryCategories) && !$permission->file;
 
         $request->validate([
-            'type' => 'required',
+            'type' => 'required|in:Leave,Sick',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
+            'leave_category' => 'nullable|string',
+            'sick_category' => 'nullable|string',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
             'information' => 'nullable|string|max:255',
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
@@ -261,10 +271,12 @@ class EmployeeController extends Controller
 
         $permission->update([
             'type' => $request->type,
-            'leave_category' => $request->leave_category,
-            'sick_category' => $request->sick_category,
+            'leave_category' => $request->type === 'Leave' ? $request->leave_category : null,
+            'sick_category' => $request->type === 'Sick' ? $request->sick_category : null,
             'start_date' => $request->start_date,
             'completion_date' => $request->completion_date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
             'information' => $request->information ?: '-',
             'file' => $filePath,
         ]);
@@ -278,7 +290,7 @@ class EmployeeController extends Controller
         $permission = Permission::where('nip', $user->nip)->findOrFail($id);
 
         if ($permission->permission_status !== 'Pending') {
-            return back()->with('error', 'Gagal: Pengajuan yang sudah diproses tidak dapat dihapus.');
+            return back()->with('error', 'Failed: Processed requests cannot be deleted.');
         }
 
         $permission->delete();

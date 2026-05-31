@@ -185,7 +185,7 @@ class AttendanceController extends Controller
             $validated = $request->validate([
                 'nip' => 'required|exists:employees,nip',
                 'date' => 'required|date',
-                'attendance_status' => 'required|string',
+                'attendance_status' => 'nullable|string',
                 'check_in' => 'nullable',
                 'check_out' => 'nullable',
             ]);
@@ -195,9 +195,21 @@ class AttendanceController extends Controller
             $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
             $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
 
+            $status = $validated['attendance_status'] ?? null;
+            if (!$status) {
+                if ($check_in) {
+                    $limit = $date->copy()->setTime(8, 0, 0);
+                    $status = $check_in->greaterThan($limit) ? 'Late' : 'Present';
+                } elseif ($check_out) {
+                    $status = 'Present';
+                } else {
+                    $status = 'Absent';
+                }
+            }
+
             Attendance::create([
                 'nip' => $validated['nip'],
-                'attendance_status' => $validated['attendance_status'],
+                'attendance_status' => $status,
                 'check_in' => $check_in,
                 'check_out' => $check_out,
                 'qr_code' => 'MANUAL',

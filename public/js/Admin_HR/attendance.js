@@ -331,7 +331,6 @@ function openAddAttModal() {
     clearEmployeeSelection();
 
     document.getElementById('aaDate').value   = today;
-    document.getElementById('aaStatus').value = 'Present';
     document.getElementById('aaCheckIn').value  = '';
     document.getElementById('aaCheckOut').value = '';
 
@@ -345,7 +344,6 @@ function openAddAttModal() {
 function saveAtt() {
     const nip      = document.getElementById('aaEmpId')?.value;
     const date     = document.getElementById('aaDate')?.value;
-    const status   = document.getElementById('aaStatus')?.value;
     const timeType = document.getElementById('aaTimeType')?.value || 'check_in';
 
     const check_in  = timeType === 'check_in'  ? (document.getElementById('aaCheckIn')?.value  || '') : '';
@@ -375,7 +373,7 @@ function saveAtt() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify({ nip, date, attendance_status: status, check_in, check_out, time_type: timeType })
+        body: JSON.stringify({ nip, date, check_in, check_out, time_type: timeType })
     })
     .then(r => r.json())
     .then(data => {

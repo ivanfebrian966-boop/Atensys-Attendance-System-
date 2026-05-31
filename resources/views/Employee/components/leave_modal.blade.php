@@ -47,6 +47,23 @@
     }
     .leave-modal-body {
         padding: 24px 32px;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .leave-modal-body::-webkit-scrollbar {
+        width: 6px;
+    }
+    .leave-modal-body::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+    .leave-modal-body::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    .leave-modal-body::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
     .leave-modal-footer {
         padding: 16px 32px 24px;
@@ -165,6 +182,16 @@
         box-shadow: 0 4px 14px rgba(99,102,241,0.25);
     }
     .btn-leave-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    
+    /* Spinner animation */
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    @-webkit-keyframes spin {
+        from { -webkit-transform: rotate(0deg); }
+        to { -webkit-transform: rotate(360deg); }
+    }
 </style>
 
 <!-- ===== LEAVE MODAL (Super Admin Style) ===== -->
@@ -184,7 +211,7 @@
 
         <!-- Body -->
         <div class="leave-modal-body">
-            <form id="leaveForm" action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data">
+            <form id="leaveForm" action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
 
                 <!-- Type Selector -->
@@ -268,12 +295,11 @@
                 <!-- Reason (Additional details) -->
                 <div class="leave-form-field">
                     <label class="leave-form-label">Additional Details (Optional)</label>
-                    <textarea id="leave_detail" class="leave-form-textarea" rows="2"
+                    <textarea name="information" id="leave_detail" class="leave-form-textarea" rows="2"
                               placeholder="Explain further details..." oninput="updateInformation()"></textarea>
                 </div>
 
-                <!-- Hidden Input for Controller -->
-                <input type="hidden" name="information" id="real_information" required>
+                <!-- Hidden Input for Controller (information field is set dynamically) -->
 
                 <!-- File Upload -->
                 <div class="leave-form-field">
@@ -296,8 +322,8 @@
 
         <!-- Footer (SA style: Cancel + Submit) -->
         <div class="leave-modal-footer">
-            <button type="button" class="btn-leave-ghost" onclick="closeLeaveModal()">Cancel</button>
-            <button type="submit" form="leaveForm" class="btn-leave-primary">
+            <button type="button" class="btn-leave-ghost" onclick="closeLeaveModal()" id="cancelLeaveBtn">Cancel</button>
+            <button type="button" class="btn-leave-primary" id="submitLeaveBtn" onclick="submitLeaveForm()">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
                 </svg>
@@ -438,10 +464,7 @@
 
         window.updateInformation = function() {
             const det = document.getElementById('leave_detail').value;
-            const hiddenInfo = document.getElementById('real_information');
-            if(hiddenInfo) {
-                hiddenInfo.value = det.trim();
-            }
+            // The information field will be set automatically from textarea
             updateUploadRequirement();
         };
 
@@ -511,25 +534,16 @@
                 setPill('permission'); 
             }
             updateInformation();
+            updateUploadRequirement();
 
             const form = document.getElementById('leaveForm');
             if (form) {
-                form.addEventListener('submit', function(e) {
-                    const catSelect = document.getElementById('leave_category');
-                    const fileInput = document.getElementById('file_upload');
-                    const selectedOption = catSelect.options[catSelect.selectedIndex];
-                    const isRequired = selectedOption.dataset.requireUpload === 'true';
-
-                    if (isRequired && !fileInput.files.length && (!isEditing || !hasExistingFile)) {
-                        e.preventDefault();
-                        if(typeof showToast === 'function') {
-                            showToast('Please upload a supporting document for this category.', 'error');
-                        } else {
-                            alert('Please upload a supporting document for this category.');
-                        }
-                        document.getElementById('uploadZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                });
+                // Set default dates to today
+                const today = new Date().toISOString().split('T')[0];
+                const startInput = form.querySelector('input[name="start_date"]');
+                const endInput = form.querySelector('input[name="completion_date"]');
+                if (startInput && !startInput.value) startInput.value = today;
+                if (endInput && !endInput.value) endInput.value = today;
             }
         });
 
@@ -544,8 +558,181 @@
             }
         };
 
+        window.submitLeaveForm = function() {
+            const form = document.getElementById('leaveForm');
+            if (!form) {
+                showNotification('Form not found', 'error');
+                return;
+            }
+
+            // Validate required fields
+            const startDate = form.querySelector('input[name="start_date"]').value;
+            const endDate = form.querySelector('input[name="completion_date"]').value;
+            const type = form.querySelector('input[name="type"]:checked')?.value;
+            const category = document.getElementById('leave_category')?.value;
+
+            if (!startDate) {
+                showNotification('Please select a start date', 'error');
+                return;
+            }
+            if (!endDate) {
+                showNotification('Please select an end date', 'error');
+                return;
+            }
+            if (!type) {
+                showNotification('Please select request type', 'error');
+                return;
+            }
+            if (!category || category === '') {
+                showNotification('Please select a leave category', 'error');
+                return;
+            }
+
+            // Check if file upload is required
+            const catSelect = document.getElementById('leave_category');
+            const fileInput = document.getElementById('file_upload');
+            const selectedOption = catSelect.options[catSelect.selectedIndex];
+            const isRequired = selectedOption?.dataset.requireUpload === 'true';
+
+            if (isRequired && !fileInput.files.length && (!isEditing || !hasExistingFile)) {
+                showNotification('Please upload a supporting document for this category', 'error');
+                document.getElementById('uploadZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            // Disable button and show loading state
+            const submitBtn = document.getElementById('submitLeaveBtn');
+            const cancelBtn = document.getElementById('cancelLeaveBtn');
+            submitBtn.disabled = true;
+            cancelBtn.disabled = true;
+            submitBtn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"></circle><path stroke="currentColor" stroke-width="2" d="M12 2a10 10 0 010 20"></path></svg><span>Submitting...</span>';
+
+            // Use FormData to properly handle file uploads
+            const formData = new FormData(form);
+            
+            console.log('Submitting form with data:', {
+                type: formData.get('type'),
+                start_date: formData.get('start_date'),
+                completion_date: formData.get('completion_date'),
+                leave_category: formData.get('leave_category'),
+                sick_category: formData.get('sick_category'),
+                information: formData.get('information'),
+                has_file: fileInput.files.length > 0
+            });
+
+            // Submit using fetch
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (response.status === 302 || response.status === 301) {
+                    // Redirect - submission successful
+                    return response.text().then(() => {
+                        showNotification('Leave request submitted successfully! Redirecting...', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    });
+                } else if (response.ok) {
+                    return response.json().then(data => {
+                        showNotification(data.message || 'Leave request submitted successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }).catch(() => {
+                        // If response is not JSON, assume success
+                        showNotification('Leave request submitted successfully!', 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    });
+                } else {
+                    return response.text().then(text => {
+                        console.error('Error response:', text);
+                        // Try to parse as JSON for error details
+                        try {
+                            const data = JSON.parse(text);
+                            let errMsg = data.message || 'Submission failed';
+                            if (data.errors) {
+                                const firstKey = Object.keys(data.errors)[0];
+                                if (firstKey && data.errors[firstKey].length) {
+                                    errMsg = data.errors[firstKey][0];
+                                }
+                            }
+                            throw new Error(errMsg);
+                        } catch (e) {
+                            throw new Error(e.message || 'Submission failed. Please try again.');
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                showNotification('Error: ' + error.message, 'error');
+                submitBtn.disabled = false;
+                cancelBtn.disabled = false;
+                submitBtn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg><span id="leaveSubmitText">Submit Request</span>';
+            });
+        };
+
+        window.showNotification = function(message, type = 'info') {
+            console.log(`[Leave Modal] ${type.toUpperCase()}: ${message}`);
+            
+            // Try multiple notification systems
+            if (typeof showToast === 'function') {
+                if (type === 'success') {
+                    showToast('✅', message, 3000);
+                } else if (type === 'error') {
+                    showToast('❌', message, 3000);
+                } else {
+                    showToast('ℹ️', message, 3000);
+                }
+            } else if (window.Toastify) {
+                const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: bgColor,
+                }).showToast();
+            } else {
+                // Fallback to alert
+                alert(`[${type.toUpperCase()}] ${message}`);
+            }
+        };
+
         @if($errors->any())
             document.addEventListener('DOMContentLoaded', function() { window.openLeaveModal(); });
         @endif
+
+        // Handle success/error messages from session
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                showNotification("{{ session('success') }}", 'success');
+            @endif
+            @if(session('error'))
+                showNotification("{{ session('error') }}", 'error');
+            @endif
+            
+            // Reset submit button after page load
+            setTimeout(() => {
+                const submitBtn = document.getElementById('submitLeaveBtn');
+                const cancelBtn = document.getElementById('cancelLeaveBtn');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg><span id="leaveSubmitText">Submit Request</span>';
+                }
+                if (cancelBtn) {
+                    cancelBtn.disabled = false;
+                }
+            }, 1000);
+        });
     }
 </script>
