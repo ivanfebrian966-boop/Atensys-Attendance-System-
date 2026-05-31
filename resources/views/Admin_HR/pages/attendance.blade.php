@@ -273,21 +273,10 @@
                     style="background:#f8fafc;color:#64748b;cursor:not-allowed;font-size:13px;">
             </div>
  
-            {{-- Date + Status --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-                <div>
-                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date</label>
-                    <input type="date" id="eaDate" class="form-input" style="font-size:13px;">
-                </div>
-                <div>
-                    <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Status *</label>
-                    <select id="eaStatus" class="form-select" style="font-size:13px;">
-                        <option value="Present">Present</option>
-                        <option value="Absent">Absent</option>
-                        <option value="Late">Late</option>
-                        <option value="Permission">Permission</option>
-                    </select>
-                </div>
+            {{-- Date (Full Width) --}}
+            <div style="margin-bottom:14px;">
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date</label>
+                <input type="date" id="eaDate" class="form-input" style="font-size:13px;">
             </div>
  
             {{-- Check In + Check Out side by side --}}

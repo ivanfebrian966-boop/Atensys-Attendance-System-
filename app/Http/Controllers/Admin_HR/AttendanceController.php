@@ -230,7 +230,7 @@ class AttendanceController extends Controller
             
             $validated = $request->validate([
                 'date' => 'required|date',
-                'attendance_status' => 'required|string',
+                'attendance_status' => 'nullable|string',
                 'check_in' => 'nullable',
                 'check_out' => 'nullable',
                 'information' => 'nullable|string',
@@ -241,8 +241,25 @@ class AttendanceController extends Controller
             $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
             $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
 
+            $status = $validated['attendance_status'] ?? null;
+            if (!$status) {
+                if ($check_in) {
+                    $limit = $date->copy()->setTime(8, 0, 0);
+                    $status = $check_in->greaterThan($limit) ? 'Late' : 'Present';
+                } elseif ($check_out) {
+                    $status = 'Present';
+                } else {
+                    $originalStatus = $attendance->attendance_status;
+                    if (in_array($originalStatus, ['Sick', 'Permission'])) {
+                        $status = $originalStatus;
+                    } else {
+                        $status = 'Absent';
+                    }
+                }
+            }
+
             $attendance->update([
-                'attendance_status' => $validated['attendance_status'],
+                'attendance_status' => $status,
                 'check_in' => $check_in,
                 'check_out' => $check_out,
                 'created_at' => $date->setTime(7,0,0),
@@ -250,7 +267,7 @@ class AttendanceController extends Controller
             ]);
 
             // Jika status adalah Sick atau Permission, update keterangan di tabel permissions
-            if (in_array($validated['attendance_status'], ['Sick', 'Permission'])) {
+            if (in_array($status, ['Sick', 'Permission'])) {
                 Permission::updateOrCreate(
                     [
                         'nip' => $attendance->nip,
@@ -258,9 +275,9 @@ class AttendanceController extends Controller
                     ],
                     [
                         'completion_date' => $date->toDateString(),
-                        'type' => $validated['attendance_status'] === 'Sick' ? 'Sick' : 'Leave',
+                        'type' => $status === 'Sick' ? 'Sick' : 'Leave',
                         'permission_status' => 'Approved',
-                        'information' => $validated['information'],
+                        'information' => $validated['information'] ?? null,
                     ]
                 );
             }

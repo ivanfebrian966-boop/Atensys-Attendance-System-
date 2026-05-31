@@ -400,7 +400,6 @@ function editAtt(id) {
     document.getElementById('eaId').value       = id;
     document.getElementById('eaName').value     = r.name    || '';
     document.getElementById('eaDate').value     = r.date    || '';
-    document.getElementById('eaStatus').value   = r.status  || 'Present';
     document.getElementById('eaCheckIn').value  = r.check_in  || '';
     document.getElementById('eaCheckOut').value = r.check_out || '';
 
@@ -411,7 +410,6 @@ function editAtt(id) {
 function updateAtt() {
     const id        = document.getElementById('eaId')?.value;
     const date      = document.getElementById('eaDate')?.value;
-    const status    = document.getElementById('eaStatus')?.value;
     const check_in  = document.getElementById('eaCheckIn')?.value;
     const check_out = document.getElementById('eaCheckOut')?.value;
 
@@ -428,7 +426,6 @@ function updateAtt() {
         },
         body: JSON.stringify({
             date,
-            attendance_status: status,
             check_in:  sanitizeTime(check_in),
             check_out: sanitizeTime(check_out)
         })
