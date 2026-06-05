@@ -48,6 +48,8 @@ class LoginController extends Controller
                 return redirect()->route('super_admin.dashboard');
             } elseif ($user->role === 'Admin HR') {
                 return redirect()->route('admin-hr.dashboard');
+            } elseif ($user->role === 'Scanner Device') {
+                return redirect()->route('scanner.index');
             }
 
             return redirect()->route('employee.dashboard');

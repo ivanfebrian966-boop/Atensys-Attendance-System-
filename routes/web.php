@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin_HR\LeaveController;
 use App\Http\Controllers\Admin_HR\SidebarController;
 use App\Http\Controllers\Admin_HR\HolidayController;
 use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\ScannerController;
 use Illuminate\Support\Facades\Route;
 
 // hakaman awal
@@ -80,6 +81,7 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['rol
     // Holiday / Tanggal Merah
     Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays');
     Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
+    Route::put('/holidays/{id}', [HolidayController::class, 'update'])->name('holidays.update');
     Route::delete('/holidays/{id}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
     Route::get('/holidays/check', [HolidayController::class, 'check'])->name('holidays.check');
 });
@@ -101,3 +103,9 @@ Route::prefix('employee')->middleware('role:Employee')->group(function () {
 
 // Legacy employee route
 Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee')->middleware('role:Employee');
+
+// Scanner Device Routes
+Route::group(['prefix' => 'scanner', 'as' => 'scanner.', 'middleware' => ['role:Scanner Device']], function () {
+    Route::get('/', [ScannerController::class, 'index'])->name('index');
+    Route::post('/process-qr', [AttendanceController::class, 'processQr'])->name('process-qr');
+});

@@ -138,23 +138,7 @@
                     
                     <div class="h-px bg-slate-100 my-1"></div>
                     
-                    <!-- Weekly Option -->
-                    <div class="relative group/sub">
-                        <div class="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center justify-between cursor-pointer font-semibold group-hover/sub:text-indigo-600 transition-colors">
-                            <span>Weekly</span>
-                            <svg class="w-4 h-4 text-slate-400 group-hover/sub:translate-x-0.5 group-hover/sub:text-indigo-500 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                        
-                        <!-- Week Flyout Menu -->
-                        <div class="absolute right-full top-0 mr-1 w-44 rounded-2xl bg-white border border-slate-100 shadow-xl opacity-0 scale-95 pointer-events-none group-hover/sub:opacity-100 group-hover/sub:scale-100 group-hover/sub:pointer-events-auto transition-all duration-200 origin-top-right py-1.5 z-40 flyout-menu">
-                            <button type="button" data-val="week-1" data-label="Week 1" class="dropdown-item w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Week 1</button>
-                            <button type="button" data-val="week-2" data-label="Week 2" class="dropdown-item w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Week 2</button>
-                            <button type="button" data-val="week-3" data-label="Week 3" class="dropdown-item w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Week 3</button>
-                            <button type="button" data-val="week-4" data-label="Week 4" class="dropdown-item w-full text-left px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition-colors">Week 4</button>
-                        </div>
-                    </div>
+
 
                     <!-- Monthly Option -->
                     <div class="relative group/sub">

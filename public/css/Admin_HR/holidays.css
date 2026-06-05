@@ -1,31 +1,28 @@
-/* ── Holiday Calendar Styles ────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   Holiday Calendar Styles
+   ══════════════════════════════════════════════════════ */
+
+/* ── Calendar Grid ───────────────────────────────────── */
 .holiday-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+    gap: 3px;
 }
+
+/* Day Labels (Sun–Sat) */
 .cal-day-label {
     text-align: center;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: #94a3b8;
     padding: 6px 0;
     text-transform: uppercase;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
 }
-.cal-day-label:first-child {
-    color: #ef4444; /* Red for Sunday label */
-}
-.cal-day-label:nth-child(7) {
-    color: #3b82f6; /* Blue for Saturday label */
-}
+.cal-day-label:first-child  { color: #ef4444; }
+.cal-day-label:last-child   { color: #3b82f6; }
 
-.cal-day.sunday:not(.holiday):not(.today) {
-    color: #ef4444; /* Red for Sunday dates */
-}
-.cal-day.saturday:not(.holiday):not(.today) {
-    color: #3b82f6; /* Blue for Saturday dates */
-}
+/* Day Cells */
 .cal-day {
     aspect-ratio: 1;
     display: flex;
@@ -33,37 +30,77 @@
     align-items: center;
     justify-content: center;
     border-radius: 10px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     color: #334155;
     position: relative;
-    cursor: default;
-    transition: background .15s;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+    gap: 1px;
+    user-select: none;
 }
+.cal-day:not(.empty):hover {
+    transform: scale(1.07);
+}
+.cal-day.empty {
+    background: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Day number span */
+.cal-num {
+    line-height: 1;
+    font-size: 13px;
+}
+
+/* Today */
 .cal-day.today {
     background: #eef2ff;
     color: #4f46e5;
     font-weight: 700;
     border: 1.5px solid #c7d2fe;
 }
+.cal-day.today .cal-num { font-size: 13px; }
+
+/* Holiday */
 .cal-day.holiday {
     background: linear-gradient(135deg, #fee2e2, #fecaca);
     color: #b91c1c;
     font-weight: 700;
     cursor: pointer;
 }
-.cal-day.holiday::after {
-    content: '🔴';
-    font-size: 7px;
-    position: absolute;
-    bottom: 4px;
+.cal-day.holiday:hover {
+    background: linear-gradient(135deg, #fecaca, #fca5a5);
 }
-.cal-day.empty { background: transparent; }
-.cal-day:not(.empty):not(.holiday):hover { background: #f1f5f9; }
+
+/* Holiday dots (multiple) */
+.cal-hol-dots {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+}
+.cal-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #dc2626;
+    flex-shrink: 0;
+}
+
+/* Weekend colors */
+.cal-day.sunday:not(.holiday):not(.today)   { color: #ef4444; }
+.cal-day.saturday:not(.holiday):not(.today) { color: #3b82f6; }
+
+/* Non-holiday hover */
+.cal-day:not(.empty):not(.holiday):not(.today):hover { background: #f1f5f9; }
+
+/* ── Calendar Navigation ─────────────────────────────── */
 .cal-nav {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 .cal-nav button {
     width: 32px; height: 32px;
@@ -75,31 +112,54 @@
     color: #64748b;
     font-size: 16px;
     transition: all .15s;
+    flex-shrink: 0;
 }
 .cal-nav button:hover { background: #eef2ff; color: #4f46e5; border-color: #c7d2fe; }
-.holiday-badge {
-    display: inline-flex;
+
+/* ── Calendar Legend ─────────────────────────────────── */
+.cal-legend {
+    display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    background: #fee2e2;
-    color: #b91c1c;
+    gap: 16px;
+    padding: 10px 16px 14px;
+    flex-wrap: wrap;
 }
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+.legend-dot {
+    width: 12px; height: 12px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.today-dot   { background: #eef2ff; border: 1.5px solid #c7d2fe; }
+.holiday-dot { background: linear-gradient(135deg,#fee2e2,#fecaca); }
+.weekend-dot { border-radius: 50%; width: 10px; height: 10px; }
+.sun-dot     { background: #ef4444; }
+.sat-dot     { background: #3b82f6; }
+
+/* ── Holiday List Rows ───────────────────────────────── */
 .hol-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 0;
+    padding: 11px 4px;
     border-bottom: 1px solid #f1f5f9;
+    transition: background .12s;
+    border-radius: 8px;
 }
 .hol-row:last-child { border-bottom: none; }
+.hol-row:hover { background: #fafafa; }
+
 .hol-date-badge {
     flex-shrink: 0;
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
     border-radius: 12px;
     background: linear-gradient(135deg, #fee2e2, #fecaca);
     display: flex;
@@ -108,8 +168,93 @@
     justify-content: center;
     color: #b91c1c;
 }
-.hol-date-badge .day-num { font-size: 18px; font-weight: 800; line-height: 1; }
-.hol-date-badge .month-txt { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.hol-date-badge .day-num  { font-size: 17px; font-weight: 800; line-height: 1; }
+.hol-date-badge .month-txt{ font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+
 .hol-info { flex: 1; min-width: 0; }
-.hol-name { font-size: 14px; font-weight: 600; color: #1e293b; margin: 0; }
-.hol-year { font-size: 11px; color: #cbd5e1; }
+.hol-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.hol-name-secondary {
+    font-size: 11px;
+    font-weight: 500;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* ── List Action Buttons ─────────────────────────────── */
+.hol-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.btn-icon-edit,
+.btn-icon-del {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all .15s;
+    padding: 0;
+}
+.btn-icon-edit:hover { background: #eef2ff; border-color: #c7d2fe; }
+.btn-icon-del        { border-color: #fecaca; background: #fff5f5; }
+.btn-icon-del:hover  { background: #fee2e2; border-color: #fca5a5; }
+
+/* ── Modal Name Fields ───────────────────────────────── */
+.name-field-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.name-field-badge {
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.btn-add-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4f46e5;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all .15s;
+}
+.btn-add-name:hover { background: #e0e7ff; border-color: #a5b4fc; }
+
+.btn-remove-name {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all .15s;
+    padding: 0;
+}
+.btn-remove-name:hover { background: #fee2e2; border-color: #fca5a5; }

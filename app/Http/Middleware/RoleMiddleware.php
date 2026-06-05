@@ -31,6 +31,8 @@ class RoleMiddleware
             return redirect()->route('admin-hr.dashboard');
         } elseif ($user->role === 'Employee') {
             return redirect()->route('employee.dashboard');
+        } elseif ($user->role === 'Scanner Device') {
+            return redirect()->route('scanner.index');
         }
 
         return redirect()->route('home');

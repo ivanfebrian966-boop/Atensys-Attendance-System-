@@ -14,53 +14,61 @@ use Illuminate\Support\Facades\DB;
 class HolidayController extends Controller
 {
     /**
-     * Tampilkan halaman kelola tanggal merah.
+     * Tampilkan halaman kalender hari libur.
      */
     public function index()
     {
-        $holidays = HolidayDate::orderBy('date', 'desc')->get();
+        $holidays = HolidayDate::orderBy('date', 'asc')->get();
 
-        // Format untuk kalender JS
-        $holidayDates = $holidays->pluck('date')->map(fn($d) => $d->format('Y-m-d'))->toArray();
+        // Format untuk kalender JS: { "Y-m-d": ["Nama1","Nama2"] }
+        $holidayMap = [];
+        foreach ($holidays as $h) {
+            $holidayMap[$h->date->format('Y-m-d')] = $h->names ?? [];
+        }
 
-        return view('Admin_HR.pages.holidays', compact('holidays', 'holidayDates'));
+        return view('Admin_HR.pages.holidays', compact('holidays', 'holidayMap'));
     }
 
     /**
-     * Store a new holiday and automatically generate Holiday attendance records.
+     * Simpan hari libur baru.
+     * Mendukung lebih dari 1 nama hari libur dalam satu tanggal.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'date' => 'required|date|unique:holiday_dates,date',
-            'name' => 'required|string|max:150',
+            'date'    => 'required|date|unique:holiday_dates,date',
+            'names'   => 'required|array|min:1',
+            'names.*' => 'required|string|max:150',
         ], [
-            'date.unique' => 'This date is already registered as a holiday.',
-            'date.required' => 'Holiday date is required.',
-            'name.required' => 'Holiday name is required.',
+            'date.unique'    => 'Tanggal ini sudah terdaftar sebagai hari libur.',
+            'date.required'  => 'Tanggal hari libur wajib diisi.',
+            'names.required' => 'Nama hari libur wajib diisi.',
+            'names.*.required' => 'Nama hari libur tidak boleh kosong.',
         ]);
 
         try {
             DB::beginTransaction();
 
+            $names = array_values(array_filter(array_map('trim', $request->names)));
+
             $holiday = HolidayDate::create([
-                'date' => $request->date,
-                'name' => $request->name,
-                'description' => null,
+                'date'  => $request->date,
+                'names' => $names,
             ]);
 
-            // Create Holiday attendance for all active employees
+            // Buat absensi Holiday untuk semua karyawan aktif
             $this->generateHolidayAttendances($holiday->date);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Holiday "' . $holiday->name . '" saved successfully.',
+                'message' => 'Hari libur "' . implode(' & ', $names) . '" berhasil disimpan.',
                 'holiday' => [
-                    'id'   => $holiday->id,
-                    'date' => $holiday->date->format('Y-m-d'),
-                    'name' => $holiday->name,
+                    'id'        => $holiday->id,
+                    'date'      => $holiday->date->format('Y-m-d'),
+                    'names'     => $holiday->names,
+                    'label'     => $holiday->names_label,
                     'formatted' => $holiday->date->translatedFormat('l, d F Y'),
                 ],
             ]);
@@ -68,13 +76,51 @@ class HolidayController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to save: ' . $e->getMessage(),
+                'message' => 'Gagal menyimpan: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Delete a holiday and remove associated auto-generated Holiday attendance records.
+     * Update nama-nama hari libur pada tanggal tertentu.
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'names'   => 'required|array|min:1',
+            'names.*' => 'required|string|max:150',
+        ], [
+            'names.required'   => 'Minimal 1 nama hari libur harus diisi.',
+            'names.*.required' => 'Nama hari libur tidak boleh kosong.',
+        ]);
+
+        try {
+            $holiday = HolidayDate::findOrFail($id);
+            $names   = array_values(array_filter(array_map('trim', $request->names)));
+
+            $holiday->update(['names' => $names]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Hari libur berhasil diperbarui.',
+                'holiday' => [
+                    'id'        => $holiday->id,
+                    'date'      => $holiday->date->format('Y-m-d'),
+                    'names'     => $holiday->names,
+                    'label'     => $holiday->names_label,
+                    'formatted' => $holiday->date->translatedFormat('l, d F Y'),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Hapus hari libur beserta absensi Holiday yang di-generate otomatis.
      */
     public function destroy($id)
     {
@@ -84,7 +130,7 @@ class HolidayController extends Controller
             $holiday = HolidayDate::findOrFail($id);
             $dateStr = $holiday->date->format('Y-m-d');
 
-            // Delete only auto-generated Holiday attendance records (qr_code = SYSTEM-HOLIDAY)
+            // Hapus hanya absensi auto-generated (qr_code = SYSTEM-HOLIDAY)
             Attendance::whereDate('created_at', $dateStr)
                 ->where('qr_code', 'SYSTEM-HOLIDAY')
                 ->delete();
@@ -95,72 +141,62 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Holiday deleted successfully.',
+                'message' => 'Hari libur berhasil dihapus.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete: ' . $e->getMessage(),
+                'message' => 'Gagal menghapus: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
-     * Endpoint JSON: check if a specific date is a holiday.
-     * Used by QR scanner JS.
+     * Endpoint JSON: cek apakah tanggal tertentu adalah hari libur.
      */
     public function check(Request $request)
     {
-        $date = $request->input('date', Carbon::today()->toDateString());
-
+        $date    = $request->input('date', Carbon::today()->toDateString());
         $holiday = HolidayDate::whereDate('date', $date)->first();
 
         return response()->json([
             'is_holiday' => (bool) $holiday,
-            'name'       => $holiday ? $holiday->name : null,
+            'names'      => $holiday ? ($holiday->names ?? []) : [],
+            'name'       => $holiday ? $holiday->names_label : null,
             'date'       => $date,
         ]);
     }
 
     /**
-     * Generate 'Holiday' attendance record for all active employees
-     * who do not have an existing attendance or approved permission/leave on that date.
-     * Skips weekends (Saturday and Sunday).
+     * Generate absensi 'Holiday' untuk semua karyawan aktif
+     * yang belum memiliki absensi atau izin disetujui pada tanggal tersebut.
+     * Melewati akhir pekan (Sabtu & Minggu).
      */
     private function generateHolidayAttendances(Carbon $date): void
     {
-        $dateStr = $date->toDateString();
-
-        // Saturdays and Sundays are not workdays, do not generate holiday attendance records
         if ($date->isWeekend()) {
             return;
         }
 
+        $dateStr   = $date->toDateString();
         $employees = Employee::where('role', 'Employee')->where('status', 'Aktif')->get();
 
         foreach ($employees as $emp) {
-            // Check if attendance already exists for that day
             $existsAttendance = Attendance::where('nip', $emp->nip)
                 ->whereDate('created_at', $dateStr)
                 ->exists();
 
-            if ($existsAttendance) {
-                continue; // Skip if record already exists
-            }
+            if ($existsAttendance) continue;
 
-            // Check if there is an approved permission/leave for that day
             $existsPermission = Permission::where('nip', $emp->nip)
                 ->where('permission_status', 'Approved')
                 ->whereDate('start_date', '<=', $dateStr)
                 ->whereDate('completion_date', '>=', $dateStr)
                 ->exists();
 
-            if ($existsPermission) {
-                continue; // Skip if approved leave/sick exists
-            }
+            if ($existsPermission) continue;
 
-            // Create Holiday attendance
             $attendanceDate = $date->copy()->setTime(7, 0, 0);
             Attendance::create([
                 'nip'               => $emp->nip,

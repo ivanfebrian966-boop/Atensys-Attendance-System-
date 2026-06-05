@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('nip', 7)->primary();
             $table->string('password', 60);
             $table->string('name', 75);
-            $table->enum('role', ['Super Admin', 'Admin HR', 'Employee']);
+            $table->enum('role', ['Super Admin', 'Admin HR', 'Employee', 'Scanner Device']);
             $table->string('position', 30);
             $table->string('email', 50)->unique();
             $table->unsignedBigInteger('division_id');
