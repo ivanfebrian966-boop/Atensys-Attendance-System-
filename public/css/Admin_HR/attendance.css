@@ -199,6 +199,11 @@
     color: #6b21a8;
 }
 
+.status-holiday {
+    background: #ffe4e6;
+    color: #9f1239;
+}
+
 /* Leave Request Buttons */
 .btn-approve {
     background: #10b981;

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nip', 7);
             $table->datetime('check_in')->nullable();
             $table->datetime('check_out')->nullable();
-            $table->enum('attendance_status', ['Present', 'Late', 'Permission', 'Absent']);
+            $table->enum('attendance_status', ['Present', 'Late', 'Permission', 'Absent', 'Holiday']);
             $table->text('qr_code');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();

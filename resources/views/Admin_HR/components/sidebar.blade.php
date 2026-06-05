@@ -47,6 +47,18 @@
             </svg>
             Reports
         </a>
+
+        <a href="{{ route('admin-hr.holidays') }}" class="nav-item {{ request()->routeIs('admin-hr.holidays') ? 'active' : '' }}">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Holiday Calendar
+            @php $todayHoliday = \App\Models\HolidayDate::whereDate('date', today())->exists(); @endphp
+            @if($todayHoliday)
+                <span style="margin-left:auto;background:#ef4444;color:white;font-size:9px;font-weight:700;border-radius:999px;padding:1px 6px;line-height:16px;">LIBUR</span>
+            @endif
+        </a>
+
         <p class="nav-section-label">Settings</p>
 
         <a href="{{ route('admin-hr.profile') }}" class="nav-item {{ request()->routeIs('admin-hr.profile') ? 'active' : '' }}">

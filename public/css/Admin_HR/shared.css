@@ -183,6 +183,7 @@ a    { text-decoration:none; color:inherit; }
 .stat-card.cyan::after   { background:#06b6d4; }
 .stat-card.sky::after    { background:#0ea5e9; }
 .stat-card.yellow::after { background:#f59e0b; }
+.stat-card.rose::after   { background:#f43f5e; }
 .stat-icon {
     width:44px; height:44px; border-radius:14px;
     display:flex; align-items:center; justify-content:center;

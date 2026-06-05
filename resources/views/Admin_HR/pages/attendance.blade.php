@@ -10,16 +10,33 @@
  
 @section('main_structure')
 @include('Admin_HR.components.sidebar')
- 
+
 <div class="main-content">
     @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Attendance',
         'pageSubtitle' => now()->translatedFormat('l, d F Y'),
     ])
- 
+
     <div class="p-4 md:p-6">
- 
-        <!-- QR CODE SCANNER -->
+
+        @php
+            $todayHolidayObj = \App\Models\HolidayDate::whereDate('date', today())->first();
+        @endphp
+
+        {{-- ── BANNER HARI LIBUR (tampil hanya jika hari ini libur) ── --}}
+        @if($todayHolidayObj)
+        <div class="fade-up d1 mb-4" style="background:linear-gradient(135deg,#fee2e2,#fef2f2);border:1.5px solid #fca5a5;border-radius:16px;padding:16px 20px;display:flex;align-items:center;gap:14px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:#ef4444;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">🎉</div>
+            <div style="flex:1;">
+                <p style="font-size:15px;font-weight:700;color:#b91c1c;margin:0 0 3px;">Hari Ini: {{ $todayHolidayObj->name }}</p>
+                <p style="font-size:12px;color:#ef4444;margin:0;">Sistem scan absensi <strong>ditutup</strong>. Semua karyawan yang belum izin dianggap hadir (Holiday).</p>
+            </div>
+            <a href="{{ route('admin-hr.holidays') }}" style="flex-shrink:0;font-size:12px;font-weight:600;color:#b91c1c;text-decoration:none;background:#fff;border:1px solid #fca5a5;border-radius:8px;padding:6px 12px;white-space:nowrap;">
+                Kelola Libur →
+            </a>
+        </div>
+        @endif
+
         <div class="panel fade-up d1 mb-6">
             <div class="panel-header">
                 <div>
@@ -35,7 +52,7 @@
         </div>
  
         <!-- STAT CARDS -->
-        <div class="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
             <div class="stat-card indigo fade-up d1">
                 <div class="stat-icon" style="background:#eef2ff">💼</div>
                 <p class="stat-value text-slate-900" id="sTotal">0</p>
@@ -66,6 +83,11 @@
                 <p class="stat-value text-purple-500" id="sPerm">0</p>
                 <p class="stat-label">Leave</p>
             </div>
+            <div class="stat-card rose fade-up d7">
+                <div class="stat-icon" style="background:#ffe4e6">🎉</div>
+                <p class="stat-value text-rose-500" id="sHoliday">0</p>
+                <p class="stat-label">Holiday</p>
+            </div>
         </div>
  
         <!-- ATTENDANCE TABLE -->
@@ -89,6 +111,7 @@
                         <option value="Absent">Absent</option>
                         <option value="Late">Late</option>
                         <option value="Permission">Permission</option>
+                        <option value="Holiday">Holiday</option>
                     </select>
                     <select id="filterAttDiv" class="filter-select" onchange="filterAtt()">
                         <option value="">All Divisions</option>

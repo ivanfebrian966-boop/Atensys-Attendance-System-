@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin_HR\ReportsController;
 use App\Http\Controllers\Admin_HR\AttendanceController;
 use App\Http\Controllers\Admin_HR\LeaveController;
 use App\Http\Controllers\Admin_HR\SidebarController;
+use App\Http\Controllers\Admin_HR\HolidayController;
 use App\Http\Controllers\Employee\EmployeeController;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,12 @@ Route::group(['prefix' => 'admin-hr', 'as' => 'admin-hr.', 'middleware' => ['rol
     Route::put('/leaves/{id}', [LeaveController::class, 'update'])->name('leaves.update');
     Route::delete('/leaves/{id}', [LeaveController::class, 'destroy'])->name('leaves.destroy');
     Route::post('/leaves/mark-absent', [LeaveController::class, 'markAbsent'])->name('leaves.mark-absent');
+
+    // Holiday / Tanggal Merah
+    Route::get('/holidays', [HolidayController::class, 'index'])->name('holidays');
+    Route::post('/holidays', [HolidayController::class, 'store'])->name('holidays.store');
+    Route::delete('/holidays/{id}', [HolidayController::class, 'destroy'])->name('holidays.destroy');
+    Route::get('/holidays/check', [HolidayController::class, 'check'])->name('holidays.check');
 });
 
 // Employee Routes

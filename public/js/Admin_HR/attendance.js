@@ -46,6 +46,7 @@ function updateStats() {
                 set('sLate',    s.late);
                 set('sSick',    s.sick);
                 set('sPerm',    s.permission);
+                set('sHoliday', s.holiday);
             }
         })
         .catch(err => console.error('updateStats error:', err));
@@ -204,7 +205,8 @@ function getStatusClass(status) {
         'Absent':     'status-absent',
         'Late':       'status-late',
         'Sick':       'status-sick',
-        'Permission': 'status-permission'
+        'Permission': 'status-permission',
+        'Holiday':    'status-holiday'
     };
     return map[status] || '';
 }
@@ -215,7 +217,8 @@ function getStatusIcon(status) {
         'Absent':     '❌',
         'Late':       '⏰',
         'Sick':       '🏥',
-        'Permission': '📋'
+        'Permission': '📋',
+        'Holiday':    '🎉'
     };
     return map[status] || '—';
 }

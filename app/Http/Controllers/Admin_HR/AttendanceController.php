@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin_HR;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Employee;
+use App\Models\HolidayDate;
 use App\Models\Permission;
 use App\Models\Division;
 use Carbon\Carbon;
@@ -34,6 +35,17 @@ class AttendanceController extends Controller
     public function processQr(Request $request)
     {
         try {
+            // ── Blokir scan saat hari libur nasional ──────────────────────
+            $today = Carbon::today();
+            $holiday = HolidayDate::whereDate('date', $today)->first();
+            if ($holiday) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '🎉 Hari ini adalah hari libur: ' . $holiday->name . '. Sistem absensi ditutup.'
+                ], 403);
+            }
+            // ─────────────────────────────────────────────────────────────
+
             $qrData = $request->input('qr_data');
             
             if (!$qrData) {
@@ -64,7 +76,6 @@ class AttendanceController extends Controller
                 ], 404);
             }
             
-            $today = Carbon::today();
             $now = Carbon::now();
             
             // 1. Cek Atd ada atau enggak, kalau enggak ada, maka anggap dia belum menekan cekin
@@ -310,7 +321,8 @@ class AttendanceController extends Controller
                 ->selectRaw('COUNT(*) as total, 
                             SUM(CASE WHEN attendance_status = "Present" THEN 1 ELSE 0 END) as present,
                             SUM(CASE WHEN attendance_status = "Absent" THEN 1 ELSE 0 END) as absent,
-                            SUM(CASE WHEN attendance_status = "Late" THEN 1 ELSE 0 END) as late')
+                            SUM(CASE WHEN attendance_status = "Late" THEN 1 ELSE 0 END) as late,
+                            SUM(CASE WHEN attendance_status = "Holiday" THEN 1 ELSE 0 END) as holiday')
                 ->first();
 
             $sickCount = Permission::where('type', 'Sick')
@@ -333,7 +345,8 @@ class AttendanceController extends Controller
                     'absent' => $stats->absent ?? 0,
                     'late' => $stats->late ?? 0,
                     'sick' => $sickCount,
-                    'permission' => $permCount
+                    'permission' => $permCount,
+                    'holiday' => $stats->holiday ?? 0
                 ]
             ]);
         } catch (\Exception $e) {

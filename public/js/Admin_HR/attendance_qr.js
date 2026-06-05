@@ -7,14 +7,32 @@ let qrReader;
 let isProcessing = false;
 
 /* =========================================================
-   INIT QR SCANNER
+   INIT QR SCANNER (dengan cek hari libur)
    ========================================================= */
 
-function initQRScanner() {
+async function initQRScanner() {
     if (!window.Html5Qrcode) {
         console.error('Html5Qrcode library not loaded');
         return;
     }
+
+    // ── Cek apakah hari ini adalah hari libur ──────────────────
+    try {
+        const today = new Date().toISOString().slice(0, 10);
+        const res   = await fetch(`/admin-hr/holidays/check?date=${today}`);
+        const data  = await res.json();
+
+        if (data.is_holiday) {
+            // Tampilkan status libur, jangan nyalakan kamera
+            setQRStatus(`🎉 Hari Libur: ${data.name}. Scanner dinonaktifkan.`, 'holiday');
+            showHolidayOverlay(data.name);
+            return;
+        }
+    } catch (e) {
+        // Jika endpoint gagal, tetap lanjut (fail open untuk UX)
+        console.warn('Holiday check failed, proceeding with scanner:', e);
+    }
+    // ──────────────────────────────────────────────────────────
 
     qrReader = new Html5Qrcode('qr-reader');
 
@@ -38,6 +56,32 @@ function initQRScanner() {
         .catch(err => {
             setQRStatus('Failed to access camera: ' + err, 'error');
         });
+}
+
+/* =========================================================
+   OVERLAY HARI LIBUR
+   ========================================================= */
+
+function showHolidayOverlay(holidayName) {
+    const container = document.getElementById('qr-reader');
+    if (!container) return;
+
+    container.style.position = 'relative';
+    container.innerHTML = `
+        <div style="
+            min-height:220px;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:12px;padding:30px 20px;
+            background:linear-gradient(135deg,#fee2e2,#fef2f2);
+            border-radius:12px;border:2px dashed #fca5a5;
+        ">
+            <div style="font-size:48px;line-height:1;">🎉</div>
+            <div style="text-align:center;">
+                <p style="font-size:16px;font-weight:700;color:#b91c1c;margin:0 0 6px;">Hari Libur Nasional</p>
+                <p style="font-size:14px;font-weight:600;color:#ef4444;margin:0 0 8px;">${holidayName}</p>
+                <p style="font-size:12px;color:#f87171;margin:0;">Sistem scan absensi ditutup hari ini.<br>Semua karyawan dianggap hadir.</p>
+            </div>
+        </div>`;
 }
 
 /* =========================================================
@@ -114,7 +158,8 @@ function setQRStatus(message, status) {
         success:    '#10b981',
         error:      '#ef4444',
         processing: '#f59e0b',
-        ready:      '#6366f1'
+        ready:      '#6366f1',
+        holiday:    '#b91c1c',
     };
     el.style.color = colorMap[status] || '#64748b';
 }
@@ -133,7 +178,7 @@ function stopQRScanner() {
 
 document.addEventListener('DOMContentLoaded', () => {
     initQRScanner();
-    setQRStatus('Ready to scan', 'ready');
+    setQRStatus('Initializing...', 'processing');
 });
 
 window.addEventListener('beforeunload', stopQRScanner);
