@@ -29,7 +29,7 @@ class AttendanceController extends Controller
             if (!preg_match('/ATTENSYS:EMP:([A-Z0-9]+):(.+)/', $qrData, $matches)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Format QR code tidak valid'
+                    'message' => 'QR code format is not valid'
                 ], 400);
             }
             
@@ -42,7 +42,7 @@ class AttendanceController extends Controller
             if (!$employee) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Karyawan tidak ditemukan'
+                    'message' => 'Employee not found'
                 ], 404);
             }
             
@@ -76,7 +76,7 @@ class AttendanceController extends Controller
                 if ($attendance->check_out) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Anda sudah check out hari ini. Hubungi admin jika ingin koreksi.'
+                        'message' => 'You have already checked out today. Please contact the admin if you need corrections.'
                     ], 400);
                 }
                 
@@ -86,7 +86,7 @@ class AttendanceController extends Controller
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Check Out berhasil',
+                    'message' => 'Check Out successful',
                     'type' => 'check_out',
                     'time' => $currentTime,
                     'employee' => $employee->name,

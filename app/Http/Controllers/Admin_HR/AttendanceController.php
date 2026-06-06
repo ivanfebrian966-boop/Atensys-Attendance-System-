@@ -41,7 +41,7 @@ class AttendanceController extends Controller
             if ($holiday) {
                 return response()->json([
                     'success' => false,
-                    'message' => '🎉 Hari ini adalah hari libur: ' . $holiday->name . '. Sistem absensi ditutup.'
+                    'message' => '🎉 Today is a holiday: ' . $holiday->name . '. Attendance system is closed.'
                 ], 403);
             }
             // ─────────────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ class AttendanceController extends Controller
             if (!$qrData) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'QR code data tidak ditemukan'
+                    'message' => 'QR code data is not found'
                 ], 400);
             }
             
@@ -85,13 +85,13 @@ class AttendanceController extends Controller
                     if ($diff > 30) {
                         return response()->json([
                             'success' => false,
-                            'message' => 'QR Code kedaluwarsa. Silakan gunakan QR Code terbaru di layar handphone.'
+                            'message' => 'QR Code expired. Please use the latest QR Code on your phone screen.'
                         ], 400);
                     }
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Format QR Code tidak valid atau kedaluwarsa.'
+                        'message' => 'QR Code format is not valid or expired.'
                     ], 400);
                 }
             }
@@ -101,7 +101,7 @@ class AttendanceController extends Controller
             if (!$employee) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Karyawan tidak ditemukan. NIP: ' . $nip
+                    'message' => 'Employee not found. NIP: ' . $nip
                 ], 404);
             }
             
@@ -134,7 +134,7 @@ class AttendanceController extends Controller
                 // 4. Kalau sudah ada check_out maka dia sudah tidak bisa check in atau check out lagi.
                 return response()->json([
                     'success' => false,
-                    'message' => 'Karyawan ' . $employee->name . ' sudah check out hari ini'
+                    'message' => 'Employee ' . $employee->name . ' has already checked out today'
                 ], 400);
 
             } elseif (!is_null($todayAttendance->check_in) && !is_null($todayAttendance->attendance_status) && is_null($todayAttendance->check_out)) {
@@ -143,7 +143,7 @@ class AttendanceController extends Controller
                 if ($now->diffInMinutes($checkInTime) < 5) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Jeda waktu terlalu singkat untuk verifikasi. Anda baru saja Check In.'
+                        'message' => 'Time interval is too short for verification. You just checked in.'
                     ], 400);
                 }
 
@@ -156,7 +156,7 @@ class AttendanceController extends Controller
                 return response()->json([
                     'success' => true,
                     'type' => 'check_out',
-                    'message' => 'Check Out berhasil',
+                    'message' => 'Check Out successful',
                     'employee' => $employee->name,
                     'time' => $now->format('H:i:s')
                 ]);
@@ -165,7 +165,7 @@ class AttendanceController extends Controller
                 // Kondisi lainnya (misal status Sick/Permission yang tidak memiliki check_in)
                 return response()->json([
                     'success' => false,
-                    'message' => 'Anda tidak dapat melakukan absensi QR saat ini. (Status saat ini: ' . $todayAttendance->attendance_status . ')'
+                    'message' => 'You cannot perform QR attendance at this time.'
                 ], 400);
             }
         } catch (\Exception $e) {
@@ -322,7 +322,7 @@ class AttendanceController extends Controller
                 );
             }
 
-            return response()->json(['success' => true, 'message' => 'Data absensi berhasil diperbarui']);
+            return response()->json(['success' => true, 'message' => 'Attendance data updated successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -333,7 +333,7 @@ class AttendanceController extends Controller
         try {
             $attendance = Attendance::findOrFail($id);
             $attendance->delete();
-            return response()->json(['success' => true, 'message' => 'Data absensi berhasil dihapus']);
+            return response()->json(['success' => true, 'message' => 'Attendance data deleted successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -447,10 +447,10 @@ class AttendanceController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Perizinan disetujui!');
+            return back()->with('success', 'Permission approved!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Gagal: ' . $e->getMessage());
+            return back()->with('error', 'Failed: ' . $e->getMessage());
         }
     }
 
@@ -459,9 +459,9 @@ class AttendanceController extends Controller
         try {
             $permission = Permission::findOrFail($id);
             $permission->update(['permission_status' => 'Rejected']);
-            return back()->with('success', 'Perizinan ditolak.');
+            return back()->with('success', 'Permission rejected.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal: ' . $e->getMessage());
+            return back()->with('error', 'Failed: ' . $e->getMessage());
         }
     }
 }

@@ -40,10 +40,10 @@ class HolidayController extends Controller
             'names'   => 'required|array|min:1',
             'names.*' => 'required|string|max:150',
         ], [
-            'date.unique'    => 'Tanggal ini sudah terdaftar sebagai hari libur.',
-            'date.required'  => 'Tanggal hari libur wajib diisi.',
-            'names.required' => 'Nama hari libur wajib diisi.',
-            'names.*.required' => 'Nama hari libur tidak boleh kosong.',
+            'date.unique'    => 'This date is already registered as a holiday.',
+            'date.required'  => 'Holiday date is required.',
+            'names.required' => 'Holiday name is required.',
+            'names.*.required' => 'Holiday name cannot be empty.',
         ]);
 
         try {
@@ -63,7 +63,7 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Hari libur "' . implode(' & ', $names) . '" berhasil disimpan.',
+                'message' => 'Holiday "' . implode(' & ', $names) . '" successfully saved.',
                 'holiday' => [
                     'id'        => $holiday->id,
                     'date'      => $holiday->date->format('Y-m-d'),
@@ -76,7 +76,7 @@ class HolidayController extends Controller
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan: ' . $e->getMessage(),
+                'message' => 'Failed to save: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -90,8 +90,8 @@ class HolidayController extends Controller
             'names'   => 'required|array|min:1',
             'names.*' => 'required|string|max:150',
         ], [
-            'names.required'   => 'Minimal 1 nama hari libur harus diisi.',
-            'names.*.required' => 'Nama hari libur tidak boleh kosong.',
+            'names.required'   => 'At least 1 holiday name must be filled.',
+            'names.*.required' => 'Holiday name cannot be empty.',
         ]);
 
         try {
@@ -102,7 +102,7 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Hari libur berhasil diperbarui.',
+                'message' => 'Holiday successfully updated.',
                 'holiday' => [
                     'id'        => $holiday->id,
                     'date'      => $holiday->date->format('Y-m-d'),
@@ -114,7 +114,7 @@ class HolidayController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memperbarui: ' . $e->getMessage(),
+                'message' => 'Failed to update: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -141,13 +141,13 @@ class HolidayController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Hari libur berhasil dihapus.',
+                'message' => 'Holiday successfully deleted.',
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menghapus: ' . $e->getMessage(),
+                'message' => 'Failed to delete: ' . $e->getMessage(),
             ], 500);
         }
     }

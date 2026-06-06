@@ -110,7 +110,7 @@ Route::prefix('employee')->middleware('role:Employee')->group(function () {
 Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employee')->middleware('role:Employee');
 
 // Scanner Device Routes
-Route::group(['prefix' => 'scanner', 'as' => 'scanner.', 'middleware' => ['scanner.auth']], function () {
+Route::group(['prefix' => 'scanner', 'as' => 'scanner.', 'middleware' => ['role:Scanner']], function () {
     Route::get('/', [ScannerController::class, 'index'])->name('index');
     Route::post('/process-qr', [\App\Http\Controllers\Admin_HR\AttendanceController::class, 'processQr'])->name('process-qr');
     Route::get('/logout', [ScannerController::class, 'logout'])->name('logout');
