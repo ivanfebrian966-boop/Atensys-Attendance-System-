@@ -56,6 +56,17 @@
             @endif
         </a>
 
+        <a href="{{ route('super_admin.scanners') }}" class="nav-item {{ request()->routeIs('super_admin.scanners') ? 'active' : '' }}">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2a2 2 0 002-2v-5a2 2 0 00-2-2H4a2 2 0 00-2 2v5a2 2 0 002 2h2m12 0a2 2 0 01-2 2H8a2 2 0 01-2-2m12 0V9a2 2 0 00-2-2H8a2 2 0 00-2 2v7m4-10H8m4 0h2m-4 4h4m-4 4h4"/>
+            </svg>
+            Scanner Devices
+            @if(isset($scanners_count))
+            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(236,72,153,0.2);color:#f472b6">{{ $scanners_count }}</span>
+            @endif
+        </a>
+
+
         <p class="nav-section-label">Account</p>
 
         <a href="{{ route('super_admin.profile') }}" class="nav-item {{ request()->routeIs('super_admin.profile') ? 'active' : '' }}">

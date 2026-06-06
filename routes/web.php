@@ -43,6 +43,11 @@ Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' =>
     Route::post('/division', [SuperAdminController::class, 'storeDivision'])->name('store_division');
     Route::post('/division/{id}', [SuperAdminController::class, 'updateDivision'])->name('update_division');
     Route::delete('/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('delete_division');
+
+    Route::get('/scanners', [SuperAdminController::class, 'scanners'])->name('scanners');
+    Route::post('/scanner', [SuperAdminController::class, 'storeScanner'])->name('store_scanner');
+    Route::post('/scanner/{id}', [SuperAdminController::class, 'updateScanner'])->name('update_scanner');
+    Route::delete('/scanner/{id}', [SuperAdminController::class, 'deleteScanner'])->name('delete_scanner');
 });
 
 // Admin HR

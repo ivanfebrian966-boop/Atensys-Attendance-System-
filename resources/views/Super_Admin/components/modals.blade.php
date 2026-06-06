@@ -438,6 +438,70 @@
     </div>
 </div>
 
+<!-- Add Scanner Modal -->
+<div class="modal-overlay" id="modalAddScanner" onclick="closeModalOutside(event,'modalAddScanner')">
+    <div class="modal-box">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Add New Scanner</h3>
+                <p class="text-sm text-slate-400 mt-1">Add a new scanner device account</p>
+            </div>
+            <button onclick="closeModal('modalAddScanner')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
+        </div>
+        <form method="POST" action="{{ route('super_admin.store_scanner') }}">
+            @csrf
+            <div class="form-field mb-4">
+                <label class="form-label">Scanner ID</label>
+                <input type="text" name="scanner_id" class="form-input font-mono" placeholder="e.g.: SD-101 (Max 7 chars)" maxlength="7" required>
+                @error('scanner_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div class="form-field mb-4">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-input" placeholder="Min 8 characters" minlength="8" required>
+                @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalAddScanner')">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    Save Scanner
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Scanner Modal -->
+<div class="modal-overlay" id="modalEditScanner" onclick="closeModalOutside(event,'modalEditScanner')">
+    <div class="modal-box">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Edit Scanner</h3>
+                <p class="text-sm text-slate-400 mt-1">Update scanner device credentials</p>
+            </div>
+            <button onclick="closeModal('modalEditScanner')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
+        </div>
+        <form id="formEditScanner" method="POST">
+            @csrf
+            <div class="form-field mb-4">
+                <label class="form-label">Scanner ID (Cannot be changed)</label>
+                <input type="text" id="edit_scanner_id_display" class="form-input font-mono bg-slate-100 cursor-not-allowed" readonly>
+            </div>
+            <div class="form-field mb-4">
+                <label class="form-label">New Password</label>
+                <input type="password" name="password" class="form-input" placeholder="Leave blank to keep unchanged" minlength="8">
+                @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalEditScanner')">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <script>
     function nextStep(prefix, current, total) {
         const currentStepEl = document.getElementById(prefix + 'Step' + current);

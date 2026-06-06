@@ -164,9 +164,7 @@
             
             <!-- Left: Brand / Section Title + Realtime Date -->
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-900 to-indigo-700 flex items-center justify-center shadow-md">
-                    <span class="text-white font-black text-xs font-sora">AT</span>
-                </div>
+                <img src="{{ asset('images/LOGO.PNG') }}" alt="ATTENSYS Logo" class="h-10 w-auto object-contain" style="filter: invert(1);">
                 <div>
                     <h1 class="text-base md:text-lg font-bold text-slate-800 font-sora leading-tight tracking-tight">Attendance Scanner</h1>
                     <p class="text-[10px] md:text-xs text-slate-400 mt-0.5" id="realtime-date">Loading date & time...</p>

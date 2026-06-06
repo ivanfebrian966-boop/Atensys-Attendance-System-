@@ -17,6 +17,7 @@ class SuperAdminController extends Controller
             'employees_count' => Employee::where('role', 'Employee')->count(),
             'hr_admins_count' => Employee::where('role', 'Admin HR')->count(),
             'divisions_count' => Division::count(),
+            'scanners_count' => \App\Models\ScannerDevice::count(),
             'divisions' => Division::all(),
         ];
     }
@@ -295,5 +296,53 @@ class SuperAdminController extends Controller
         $user->update($data);
 
         return redirect()->back()->with('success', 'Profile Updated Successfully!');
+    }
+    public function scanners()
+    {
+        $user = Auth::user();
+        $commonData = $this->getCommonData();
+        $scanners = \App\Models\ScannerDevice::all();
+
+        return view('Super_Admin.scanners', array_merge($commonData, compact('user', 'scanners')));
+    }
+
+    public function storeScanner(Request $request)
+    {
+        $request->validate([
+            'scanner_id' => 'required|string|max:7|unique:scanner_devices,scanner_id',
+            'password' => 'required|string|min:8',
+        ]);
+
+        \App\Models\ScannerDevice::create([
+            'scanner_id' => $request->scanner_id,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->back()->with('success', 'Scanner Account Created Successfully!');
+    }
+
+    public function updateScanner(Request $request, $id)
+    {
+        $scanner = \App\Models\ScannerDevice::findOrFail($id);
+
+        $request->validate([
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if ($request->filled('password')) {
+            $scanner->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Scanner Account Updated Successfully!');
+    }
+
+    public function deleteScanner($id)
+    {
+        $scanner = \App\Models\ScannerDevice::findOrFail($id);
+        $scanner->delete();
+
+        return redirect()->back()->with('success', 'Scanner Account Deleted Successfully!');
     }
 }

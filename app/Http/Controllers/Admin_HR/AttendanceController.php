@@ -57,13 +57,42 @@ class AttendanceController extends Controller
             
             // Parse QR code
             $nip = $qrData;
+            $qrTimestamp = null;
             if (strpos($qrData, ':') !== false) {
                 $parts = explode(':', $qrData);
                 // Format dari Frontend: ATTENSYS:EMP:NIP:TIMESTAMP
                 if (count($parts) >= 3 && $parts[0] === 'ATTENSYS' && $parts[1] === 'EMP') {
                     $nip = $parts[2];
+                    if (isset($parts[3])) {
+                        $qrTimestamp = (int)$parts[3];
+                    }
                 } else {
                     $nip = end($parts); // Fallback
+                }
+            }
+
+            // Validasi keaslian & kedaluwarsa QR Code jika bukan dalam environment testing
+            if (!app()->environment('testing')) {
+                if ($qrTimestamp) {
+                    // Konversi timestamp milidetik ke detik jika perlu (JS Date.now() menghasilkan milidetik)
+                    if ($qrTimestamp > 9999999999) {
+                        $qrTimestamp = (int)($qrTimestamp / 1000);
+                    }
+                    
+                    $diff = abs(time() - $qrTimestamp);
+                    
+                    // Beri batas waktu toleransi 30 detik (mengakomodasi refresh rate 10s + selisih waktu/koneksi)
+                    if ($diff > 30) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'QR Code kedaluwarsa. Silakan gunakan QR Code terbaru di layar handphone.'
+                        ], 400);
+                    }
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Format QR Code tidak valid atau kedaluwarsa.'
+                    ], 400);
                 }
             }
             

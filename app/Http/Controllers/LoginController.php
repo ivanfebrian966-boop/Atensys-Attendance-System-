@@ -29,11 +29,10 @@ class LoginController extends Controller
 
         $loginValue = $request->input('login');
 
-        // ── Scanner Device Login: ID starts with 'SD-' ──────────────────
-        if (str_starts_with(strtoupper($loginValue), 'SD-')) {
-            $scanner = ScannerDevice::where('scanner_id', strtoupper($loginValue))->first();
-
-            if ($scanner && Hash::check($request->password, $scanner->password)) {
+        // ── Scanner Device Login ────────────────────────────────────────
+        $scanner = ScannerDevice::where('scanner_id', $loginValue)->first();
+        if ($scanner) {
+            if (Hash::check($request->password, $scanner->password)) {
                 $request->session()->regenerate();
                 session(['scanner_id' => $scanner->scanner_id]);
 
