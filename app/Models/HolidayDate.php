@@ -5,6 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property \Illuminate\Support\Carbon $date
+ * @property array|null $names
+ * @property string|null $description
+ * @property-read string $name
+ * @property-read string $names_label
+ */
 class HolidayDate extends Model
 {
     use HasFactory;
@@ -13,7 +21,7 @@ class HolidayDate extends Model
 
     protected $fillable = [
         'date',
-        'names',       // JSON array — mendukung lebih dari 1 nama hari libur per tanggal
+        'names',       // JSON array — supports multiple holidays per date
         'description',
     ];
 
@@ -23,16 +31,22 @@ class HolidayDate extends Model
     ];
 
     /**
-     * Ambil nama pertama (untuk kompatibilitas backward).
+     * Get the first name (for backward compatibility).
      */
     public function getNameAttribute(): string
     {
-        $names = $this->names ?? [];
-        return !empty($names) ? $names[0] : '';
+        $names = $this->names;
+
+        if (is_array($names) && count($names) > 0) {
+            $first = reset($names);
+            return (string) $first;
+        }
+
+        return '';
     }
 
     /**
-     * Gabungkan semua nama menjadi satu string (untuk display).
+     * Combine all names into one string (for display).
      */
     public function getNamesLabelAttribute(): string
     {

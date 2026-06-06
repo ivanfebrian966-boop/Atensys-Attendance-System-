@@ -114,7 +114,7 @@ function renderReports() {
 
 function updateSummaryCardsEmpty() {
     const ids = ['rTotal', 'rPresent', 'rAbsent', 'rLate', 'rSick', 'rPerm',
-                  'rPresentPct', 'rAbsentPct', 'rLatePct', 'rSickPct', 'rPermPct'];
+        'rPresentPct', 'rAbsentPct', 'rLatePct', 'rSickPct', 'rPermPct'];
     ids.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = id.includes('Pct') ? '—' : '0';
@@ -125,24 +125,24 @@ function updateSummaryCardsEmpty() {
 function renderSummaryCards() {
     const total = filteredData.length;
     const present = filteredData.filter(r => r.status === 'Present').length;
-    const absent  = filteredData.filter(r => r.status === 'Absent').length;
-    const late    = filteredData.filter(r => r.status === 'Late').length;
-    const sick    = filteredData.filter(r => r.status === 'Sick').length;
-    const perm    = filteredData.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
+    const absent = filteredData.filter(r => r.status === 'Absent').length;
+    const late = filteredData.filter(r => r.status === 'Late').length;
+    const sick = filteredData.filter(r => r.status === 'Sick').length;
+    const perm = filteredData.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
     const pct = v => total ? (v / total * 100).toFixed(1) + '%' : '—';
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set('rTotal',      total);
-    set('rPresent',    present);
-    set('rAbsent',     absent);
-    set('rLate',       late);
-    set('rSick',       sick);
-    set('rPerm',       perm);
+    set('rTotal', total);
+    set('rPresent', present);
+    set('rAbsent', absent);
+    set('rLate', late);
+    set('rSick', sick);
+    set('rPerm', perm);
     set('rPresentPct', pct(present));
-    set('rAbsentPct',  pct(absent));
-    set('rLatePct',    pct(late));
-    set('rSickPct',    pct(sick));
-    set('rPermPct',    pct(perm));
+    set('rAbsentPct', pct(absent));
+    set('rLatePct', pct(late));
+    set('rSickPct', pct(sick));
+    set('rPermPct', pct(perm));
 }
 
 /* ---- Bar chart ---- */
@@ -155,7 +155,7 @@ function renderBarChart() {
     const presentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Present').length);
     const absentData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Absent').length);
     const lateData = dates.map(d => filteredData.filter(r => r.date === d && r.status === 'Late').length);
-    
+
     const formatChartLabel = (dateStr) => {
         const d = new Date(dateStr);
         const month = d.toLocaleDateString('en-US', { month: 'long' });
@@ -282,7 +282,7 @@ function renderDivisionTable() {
                     <span class="rate-badge ${rCls}">${rate}%</span>
                 </div>
             </td>
-            <td><span class="text-xs ${rate >= 85 ? 'text-emerald-600' : rate >= 70 ? 'text-amber-500' : 'text-red-500'} font-semibold">${rate >= 85 ? '↑ Baik' : rate >= 70 ? '→ Cukup' : '↓ Perlu Perhatian'}</span></td>
+            <td><span class="text-xs ${rate >= 85 ? 'text-emerald-600' : rate >= 70 ? 'text-amber-500' : 'text-red-500'} font-semibold">${rate >= 85 ? '↑ Good' : rate >= 70 ? '→ Fair' : '↓ Needs Attention'}</span></td>
         </tr>`;
     }).join('');
 }
@@ -293,13 +293,13 @@ function renderDetailTable(data) {
     const names = [...new Set(data.map(r => r.name))];
     _detailFull = names.map(name => {
         const rows = data.filter(r => r.name === name);
-        const div  = rows[0]?.div || '—';
-        const total   = rows.length;
+        const div = rows[0]?.div || '—';
+        const total = rows.length;
         const present = rows.filter(r => r.status === 'Present').length;
-        const absent  = rows.filter(r => r.status === 'Absent').length;
-        const late    = rows.filter(r => r.status === 'Late').length;
-        const sick    = rows.filter(r => r.status === 'Sick').length;
-        const perm    = rows.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
+        const absent = rows.filter(r => r.status === 'Absent').length;
+        const late = rows.filter(r => r.status === 'Late').length;
+        const sick = rows.filter(r => r.status === 'Sick').length;
+        const perm = rows.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
         const rate = total ? Math.round(present / total * 100) : 0;
         const ciRows = rows.filter(r => r.ci && r.ci !== '-').map(r => r.ci);
         const avgCi = ciRows.length
@@ -401,10 +401,10 @@ function changeReportPage(page) {
 
 /* ---- Export ---- */
 function exportAllReport() {
-    const rows = [['Nama', 'Divisi', 'Total', 'Hadir', 'Absen', 'Telat', 'Izin', '% Hadir', 'Avg Check In']];
+    const rows = [['Name', 'Division', 'Total', 'Present', 'Absent', 'Late', 'Permission', '% Present', 'Avg Check In']];
     _detailFull.forEach(r => rows.push([r.name, r.div, r.total, r.present, r.absent, r.late, r.perm, r.rate + '%', r.avgCi]));
-    downloadCSV(`laporan_${new Date().toISOString().slice(0, 10)}.csv`, rows);
-    showToast('📥', 'Laporan diekspor ke CSV');
+    downloadCSV(`report_${new Date().toISOString().slice(0, 10)}.csv`, rows);
+    showToast('📥', 'Report exported to CSV');
 }
 function exportDetailCSV() { exportAllReport(); }
 

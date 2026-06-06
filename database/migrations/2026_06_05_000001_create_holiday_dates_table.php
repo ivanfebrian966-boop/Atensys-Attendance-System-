@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Migration: create_holiday_dates_table + add_holiday_status_to_attendances
- *
- * Digabung dalam satu file:
- *   1. Membuat tabel holiday_dates (mendukung multiple nama per tanggal via JSON)
- *   2. Menambahkan nilai 'Holiday' ke enum attendance_status pada tabel attendances
  */
 return new class extends Migration
 {

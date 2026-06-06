@@ -150,7 +150,7 @@ function calcDuration(ci, co) {
         const [h2,m2]=co.split(':').map(Number);
         const mins = (h2*60+m2)-(h1*60+m1);
         if(mins<=0) return '—';
-        return `${Math.floor(mins/60)}j ${mins%60}m`;
+        return `${Math.floor(mins/60)}h ${mins%60}m`;
     } catch { return '—'; }
 }
 

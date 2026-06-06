@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\DB;
 class HolidayController extends Controller
 {
     /**
-     * Tampilkan halaman kalender hari libur.
+     * Display the holiday calendar page.
      */
     public function index()
     {
         $holidays = HolidayDate::orderBy('date', 'asc')->get();
 
-        // Format untuk kalender JS: { "Y-m-d": ["Nama1","Nama2"] }
+        // Format for JS calendar: { "Y-m-d": ["Name1", "Name2"] }
         $holidayMap = [];
         foreach ($holidays as $h) {
             $holidayMap[$h->date->format('Y-m-d')] = $h->names ?? [];
@@ -30,8 +30,8 @@ class HolidayController extends Controller
     }
 
     /**
-     * Simpan hari libur baru.
-     * Mendukung lebih dari 1 nama hari libur dalam satu tanggal.
+     * Save a new holiday.
+     * Supports multiple holiday names in one date.
      */
     public function store(Request $request)
     {
@@ -56,7 +56,7 @@ class HolidayController extends Controller
                 'names' => $names,
             ]);
 
-            // Buat absensi Holiday untuk semua karyawan aktif
+            // Create Holiday attendance for all active employees
             $this->generateHolidayAttendances($holiday->date);
 
             DB::commit();
@@ -82,7 +82,7 @@ class HolidayController extends Controller
     }
 
     /**
-     * Update nama-nama hari libur pada tanggal tertentu.
+     * Update the name(s) of the holiday on a specific date.
      */
     public function update(Request $request, $id)
     {
@@ -120,7 +120,7 @@ class HolidayController extends Controller
     }
 
     /**
-     * Hapus hari libur beserta absensi Holiday yang di-generate otomatis.
+     * Delete a holiday along with its auto-generated Holiday attendance.
      */
     public function destroy($id)
     {
@@ -130,7 +130,7 @@ class HolidayController extends Controller
             $holiday = HolidayDate::findOrFail($id);
             $dateStr = $holiday->date->format('Y-m-d');
 
-            // Hapus hanya absensi auto-generated (qr_code = SYSTEM-HOLIDAY)
+            // Delete only auto-generated attendances (qr_code = SYSTEM-HOLIDAY)
             Attendance::whereDate('created_at', $dateStr)
                 ->where('qr_code', 'SYSTEM-HOLIDAY')
                 ->delete();
@@ -153,7 +153,7 @@ class HolidayController extends Controller
     }
 
     /**
-     * Endpoint JSON: cek apakah tanggal tertentu adalah hari libur.
+     * JSON Endpoint: check if a specific date is a holiday.
      */
     public function check(Request $request)
     {
@@ -169,9 +169,9 @@ class HolidayController extends Controller
     }
 
     /**
-     * Generate absensi 'Holiday' untuk semua karyawan aktif
-     * yang belum memiliki absensi atau izin disetujui pada tanggal tersebut.
-     * Melewati akhir pekan (Sabtu & Minggu).
+     * Generate 'Holiday' attendance for all active employees
+     * who do not have attendance or approved permission on that date.
+     * Skips weekends (Saturday & Sunday).
      */
     private function generateHolidayAttendances(Carbon $date): void
     {
@@ -202,7 +202,7 @@ class HolidayController extends Controller
                 'nip'               => $emp->nip,
                 'check_in'          => null,
                 'check_out'         => null,
-                'attendance_status' => 'Holiday',
+                'attendance_status' => 'Present',
                 'qr_code'           => 'SYSTEM-HOLIDAY',
                 'created_at'        => $attendanceDate,
                 'updated_at'        => $attendanceDate,

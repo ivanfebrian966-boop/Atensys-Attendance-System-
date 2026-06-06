@@ -83,11 +83,11 @@ function filterTable() {
 
 /* EXPORT (demo) */
 function exportTable() {
-    showToast('📥', 'Mengekspor data ke CSV...');
+    showToast('📥', 'Exporting data to CSV...');
 
     // Collect visible rows
     const rows   = document.querySelectorAll('#attendanceTable tbody .table-row');
-    const lines  = ['Karyawan,NIP,Divisi,Status,Check In,Check Out'];
+    const lines  = ['Employee,NIP,Division,Status,Check In,Check Out'];
 
     rows.forEach(row => {
         if (row.style.display === 'none') return;
@@ -106,7 +106,7 @@ function exportTable() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = `absensi_${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = `attendance_${new Date().toISOString().slice(0,10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
 }

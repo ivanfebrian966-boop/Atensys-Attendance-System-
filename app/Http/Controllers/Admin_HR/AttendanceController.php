@@ -124,7 +124,7 @@ class AttendanceController extends Controller
                 return response()->json([
                     'success' => true,
                     'type' => 'check_in',
-                    'message' => 'Check In berhasil',
+                    'message' => 'Check In successful',
                     'employee' => $employee->name,
                     'time' => $now->format('H:i:s'),
                     'status' => $attendance->attendance_status
@@ -257,7 +257,7 @@ class AttendanceController extends Controller
                 'updated_at' => $date,
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Data absensi berhasil ditambahkan']);
+            return response()->json(['success' => true, 'message' => 'Attendance data added successfully']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
@@ -350,8 +350,7 @@ class AttendanceController extends Controller
                 ->selectRaw('COUNT(*) as total, 
                             SUM(CASE WHEN attendance_status = "Present" THEN 1 ELSE 0 END) as present,
                             SUM(CASE WHEN attendance_status = "Absent" THEN 1 ELSE 0 END) as absent,
-                            SUM(CASE WHEN attendance_status = "Late" THEN 1 ELSE 0 END) as late,
-                            SUM(CASE WHEN attendance_status = "Holiday" THEN 1 ELSE 0 END) as holiday')
+                            SUM(CASE WHEN attendance_status = "Late" THEN 1 ELSE 0 END) as late')
                 ->first();
 
             $sickCount = Permission::where('type', 'Sick')
@@ -374,8 +373,7 @@ class AttendanceController extends Controller
                     'absent' => $stats->absent ?? 0,
                     'late' => $stats->late ?? 0,
                     'sick' => $sickCount,
-                    'permission' => $permCount,
-                    'holiday' => $stats->holiday ?? 0
+                    'permission' => $permCount
                 ]
             ]);
         } catch (\Exception $e) {

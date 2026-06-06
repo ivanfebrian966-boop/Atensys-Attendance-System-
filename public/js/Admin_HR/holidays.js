@@ -6,12 +6,12 @@
    - Click empty day to open Add modal
    ══════════════════════════════════════════════════════ */
 
-let calYear  = new Date().getFullYear();
+let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth(); // 0-indexed
 
 const MONTHS_ID = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 /* ──────────────────────────────────────────────────────
@@ -23,13 +23,13 @@ function renderCalendar() {
     grid.innerHTML = '';
 
     const selectMonth = document.getElementById('selectMonth');
-    const selectYear  = document.getElementById('selectYear');
+    const selectYear = document.getElementById('selectYear');
     if (selectMonth) selectMonth.value = calMonth;
-    if (selectYear)  selectYear.value  = calYear;
+    if (selectYear) selectYear.value = calYear;
 
-    const firstDay    = new Date(calYear, calMonth, 1).getDay(); // 0=Min
+    const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-    const today       = new Date().toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
 
     // Empty spaces before first day
     for (let i = 0; i < firstDay; i++) {
@@ -40,20 +40,20 @@ function renderCalendar() {
 
     // Days
     for (let d = 1; d <= daysInMonth; d++) {
-        const dateStr  = `${calYear}-${String(calMonth + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const names    = HOLIDAY_MAP[dateStr] || [];
-        const isHol    = names.length > 0;
-        const isTdy    = dateStr === today;
+        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const names = HOLIDAY_MAP[dateStr] || [];
+        const isHol = names.length > 0;
+        const isTdy = dateStr === today;
         const dayOfWeek = new Date(calYear, calMonth, d).getDay();
-        const isSun    = dayOfWeek === 0;
-        const isSat    = dayOfWeek === 6;
+        const isSun = dayOfWeek === 0;
+        const isSat = dayOfWeek === 6;
 
         const el = document.createElement('div');
         el.className = 'cal-day'
             + (isHol ? ' holiday' : '')
-            + (isTdy  ? ' today'   : '')
-            + (isSun  ? ' sunday'  : '')
-            + (isSat  ? ' saturday': '');
+            + (isTdy ? ' today' : '')
+            + (isSun ? ' sunday' : '')
+            + (isSat ? ' saturday' : '');
         el.dataset.date = dateStr;
 
         // Day number
@@ -101,7 +101,7 @@ function onMonthYearChange() {
     const sy = document.getElementById('selectYear');
     if (sm && sy) {
         calMonth = parseInt(sm.value);
-        calYear  = parseInt(sy.value);
+        calYear = parseInt(sy.value);
         renderCalendar();
     }
 }
@@ -117,20 +117,20 @@ function buildNameFields(names = ['']) {
 }
 
 function addNameField(value = '') {
-    const wrap  = document.getElementById('nameFieldsWrap');
+    const wrap = document.getElementById('nameFieldsWrap');
     if (!wrap) return;
-    const idx   = wrap.children.length;
-    const row   = document.createElement('div');
+    const idx = wrap.children.length;
+    const row = document.createElement('div');
     row.className = 'name-field-row';
     row.innerHTML = `
         <span class="name-field-badge">${idx + 1}</span>
         <input type="text"
                class="form-input hol-name-input"
-               placeholder="Nama hari libur ke-${idx + 1}"
+               placeholder="Holiday Name ${idx + 1}"
                value="${escHtml(value)}"
                style="font-size:13px;flex:1;">
         ${idx > 0
-            ? `<button type="button" onclick="removeNameField(this)" class="btn-remove-name" title="Hapus">✕</button>`
+            ? `<button type="button" onclick="removeNameField(this)" class="btn-remove-name" title="Delete">✕</button>`
             : `<span style="width:28px;"></span>`
         }`;
     wrap.appendChild(row);
@@ -149,7 +149,7 @@ function refreshBadges() {
         const badge = row.querySelector('.name-field-badge');
         const input = row.querySelector('.hol-name-input');
         if (badge) badge.textContent = idx + 1;
-        if (input) input.placeholder = `Nama hari libur ke-${idx + 1}`;
+        if (input) input.placeholder = `Holiday Name ${idx + 1}`;
         // show/hide remove button
         const removeBtn = row.querySelector('.btn-remove-name');
         if (idx === 0) {
@@ -168,26 +168,26 @@ function getNameValues() {
 
 function escHtml(str) {
     return String(str)
-        .replace(/&/g,'&amp;')
-        .replace(/"/g,'&quot;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;');
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
 }
 
 /* ──────────────────────────────────────────────────────
    MODAL OPEN / CLOSE
    ────────────────────────────────────────────────────── */
 function resetHolModal() {
-    document.getElementById('holDate').value   = '';
+    document.getElementById('holDate').value = '';
     document.getElementById('holEditId').value = '';
     document.getElementById('eHolNames').textContent = '';
     buildNameFields(['']);
 }
 
 function setDateDisplay(dateStr) {
-    const d   = new Date(dateStr + 'T00:00:00');
-    const fmt = d.toLocaleDateString('id-ID', {
-        weekday:'long', year:'numeric', month:'long', day:'numeric'
+    const d = new Date(dateStr + 'T00:00:00');
+    const fmt = d.toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
     document.getElementById('selectedDateDisplay').textContent = fmt;
 }
@@ -196,9 +196,9 @@ function setDateDisplay(dateStr) {
 function openAddHolidayModalWithDate(dateStr) {
     resetHolModal();
     document.getElementById('holDate').value = dateStr;
-    document.getElementById('modalHolTitle').textContent  = 'Tambah Hari Libur';
-    document.getElementById('btnSaveHolTxt').textContent  = 'Simpan';
-    document.getElementById('modalHolIcon').textContent   = '🔴';
+    document.getElementById('modalHolTitle').textContent = 'Add Holiday';
+    document.getElementById('btnSaveHolTxt').textContent = 'Save';
+    document.getElementById('modalHolIcon').textContent = '🔴';
     setDateDisplay(dateStr);
     openModal('modalHoliday');
 }
@@ -208,14 +208,14 @@ function openEditHoliday(id) {
     const row = document.getElementById(`hol-row-${id}`);
     if (!row) return;
     const dateStr = row.dataset.holDate;
-    const names   = JSON.parse(row.dataset.holNames || '[]');
+    const names = JSON.parse(row.dataset.holNames || '[]');
 
     resetHolModal();
-    document.getElementById('holDate').value   = dateStr;
+    document.getElementById('holDate').value = dateStr;
     document.getElementById('holEditId').value = id;
-    document.getElementById('modalHolTitle').textContent  = 'Edit Hari Libur';
-    document.getElementById('btnSaveHolTxt').textContent  = 'Perbarui';
-    document.getElementById('modalHolIcon').textContent   = '✏️';
+    document.getElementById('modalHolTitle').textContent = 'Edit Holiday';
+    document.getElementById('btnSaveHolTxt').textContent = 'Update';
+    document.getElementById('modalHolIcon').textContent = '✏️';
     setDateDisplay(dateStr);
     buildNameFields(names.length ? names : ['']);
     openModal('modalHoliday');
@@ -233,24 +233,24 @@ function openEditHolidayByDate(dateStr) {
    SAVE (Add or Edit)
    ────────────────────────────────────────────────────── */
 function saveHoliday() {
-    const date   = document.getElementById('holDate').value.trim();
+    const date = document.getElementById('holDate').value.trim();
     const editId = document.getElementById('holEditId').value.trim();
-    const names  = getNameValues();
-    const errEl  = document.getElementById('eHolNames');
+    const names = getNameValues();
+    const errEl = document.getElementById('eHolNames');
 
     errEl.textContent = '';
 
     if (!date) {
-        showToast('❌', 'Tanggal tidak ditemukan.', 3000);
+        showToast('❌', 'Date not found.', 3000);
         return;
     }
     if (names.length === 0) {
-        errEl.textContent = 'Minimal 1 nama hari libur harus diisi.';
+        errEl.textContent = 'At least 1 holiday name must be filled.';
         return;
     }
 
     const isEdit = editId !== '';
-    const url    = isEdit
+    const url = isEdit
         ? `${HOLIDAY_UPDATE_URL}/${editId}`
         : HOLIDAY_STORE_URL;
     const method = isEdit ? 'PUT' : 'POST';
@@ -263,32 +263,32 @@ function saveHoliday() {
         },
         body: JSON.stringify({ date, names }),
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            showToast('✅', data.message, 3500);
-            closeModal('modalHoliday');
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('✅', data.message, 3500);
+                closeModal('modalHoliday');
 
-            if (isEdit) {
-                updateHolidayInList(data.holiday);
-                HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
+                if (isEdit) {
+                    updateHolidayInList(data.holiday);
+                    HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
+                } else {
+                    addHolidayToList(data.holiday);
+                    HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
+                    updateTotalCount(1);
+                }
+                renderCalendar();
             } else {
-                addHolidayToList(data.holiday);
-                HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
-                updateTotalCount(1);
+                if (data.errors?.names) {
+                    errEl.textContent = data.errors.names[0];
+                } else if (data.errors?.date) {
+                    showToast('❌', data.errors.date[0], 3500);
+                } else {
+                    showToast('❌', data.message, 3500);
+                }
             }
-            renderCalendar();
-        } else {
-            if (data.errors?.names) {
-                errEl.textContent = data.errors.names[0];
-            } else if (data.errors?.date) {
-                showToast('❌', data.errors.date[0], 3500);
-            } else {
-                showToast('❌', data.message, 3500);
-            }
-        }
-    })
-    .catch(() => showToast('❌', 'Gagal terhubung ke server.', 3000));
+        })
+        .catch(() => showToast('❌', 'Failed to connect to the server.', 3000));
 }
 
 /* ──────────────────────────────────────────────────────
@@ -298,16 +298,16 @@ function addHolidayToList(hol) {
     const emptyEl = document.getElementById('emptyHolidays');
     if (emptyEl) emptyEl.remove();
 
-    const d   = new Date(hol.date + 'T00:00:00');
+    const d = new Date(hol.date + 'T00:00:00');
     const day = String(d.getDate()).padStart(2, '0');
-    const mon = d.toLocaleString('id-ID', { month: 'short' }) + ' ' + d.getFullYear();
+    const mon = d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getFullYear();
 
     const container = document.getElementById('holidayListContainer');
-    const row       = document.createElement('div');
-    row.className          = 'hol-row';
-    row.id                 = `hol-row-${hol.id}`;
-    row.dataset.holDate    = hol.date;
-    row.dataset.holNames   = JSON.stringify(hol.names);
+    const row = document.createElement('div');
+    row.className = 'hol-row';
+    row.id = `hol-row-${hol.id}`;
+    row.dataset.holDate = hol.date;
+    row.dataset.holNames = JSON.stringify(hol.names);
     row.innerHTML = buildRowInner(hol, day, mon);
 
     if (container) container.insertBefore(row, container.firstChild);
@@ -318,15 +318,15 @@ function updateHolidayInList(hol) {
     if (!row) return;
     row.dataset.holNames = JSON.stringify(hol.names);
 
-    const d   = new Date(hol.date + 'T00:00:00');
+    const d = new Date(hol.date + 'T00:00:00');
     const day = String(d.getDate()).padStart(2, '0');
-    const mon = d.toLocaleString('id-ID', { month: 'short' }) + ' ' + d.getFullYear();
+    const mon = d.toLocaleString('en-US', { month: 'short' }) + ' ' + d.getFullYear();
     row.innerHTML = buildRowInner(hol, day, mon);
 }
 
 function buildRowInner(hol, day, mon) {
     const namesHtml = hol.names.map((nm, idx) =>
-        `<p class="hol-name ${idx > 0 ? 'hol-name-secondary' : ''}">${idx > 0 ? '& ' : ''}${escHtml(nm)}</p>`
+        `<p class="hol-name">${escHtml(nm)}</p>`
     ).join('');
     const labelEsc = escHtml(hol.label || hol.names.join(' & '));
 
@@ -338,7 +338,7 @@ function buildRowInner(hol, day, mon) {
         <div class="hol-info">${namesHtml}</div>
         <div class="hol-actions">
             <button onclick="openEditHoliday(${hol.id})" class="btn-icon-edit" title="Edit">✏️</button>
-            <button onclick="deleteHoliday(${hol.id}, '${labelEsc.replace(/'/g,"\\'")}')" class="btn-icon-del" title="Hapus">🗑</button>
+            <button onclick="deleteHoliday(${hol.id}, '${labelEsc.replace(/'/g, "\\'")}')" class="btn-icon-del" title="Delete">🗑</button>
         </div>`;
 }
 
@@ -356,7 +356,7 @@ function deleteHoliday(id, label) {
     deleteTargetId = id;
     const msgEl = document.getElementById('delHolMsg');
     if (msgEl) {
-        msgEl.textContent = `Hapus "${label}"? Absensi Holiday yang di-generate otomatis juga akan dihapus.`;
+        msgEl.textContent = `Delete "${label}"? Auto-generated Holiday attendance will also be deleted.`;
     }
     openModal('modalDelHoliday');
 }
@@ -368,36 +368,36 @@ function execDelHoliday() {
         method: 'DELETE',
         headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
     })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            showToast('✅', data.message, 3000);
-            closeModal('modalDelHoliday');
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('✅', data.message, 3000);
+                closeModal('modalDelHoliday');
 
-            const row = document.getElementById(`hol-row-${deleteTargetId}`);
-            if (row) {
-                const dateStr = row.dataset?.holDate;
-                row.remove();
-                if (dateStr) delete HOLIDAY_MAP[dateStr];
-                renderCalendar();
-            }
-            updateTotalCount(-1);
+                const row = document.getElementById(`hol-row-${deleteTargetId}`);
+                if (row) {
+                    const dateStr = row.dataset?.holDate;
+                    row.remove();
+                    if (dateStr) delete HOLIDAY_MAP[dateStr];
+                    renderCalendar();
+                }
+                updateTotalCount(-1);
 
-            // Show empty state if no rows left
-            const container = document.getElementById('holidayListContainer');
-            if (container && document.querySelectorAll('.hol-row').length === 0) {
-                container.innerHTML = `
+                // Show empty state if no rows left
+                const container = document.getElementById('holidayListContainer');
+                if (container && document.querySelectorAll('.hol-row').length === 0) {
+                    container.innerHTML = `
                     <div id="emptyHolidays" class="text-center py-10">
                         <div style="font-size:40px;margin-bottom:8px;">🏖️</div>
-                        <p class="text-sm font-medium text-slate-500">Belum ada hari libur terdaftar</p>
-                        <p class="text-xs text-slate-400 mt-1">Klik tanggal pada kalender untuk menambah</p>
+                        <p class="text-sm font-medium text-slate-500">No holidays registered yet</p>
+                        <p class="text-xs text-slate-400 mt-1">Click a date on the calendar to add</p>
                     </div>`;
+                }
+            } else {
+                showToast('❌', data.message, 3000);
             }
-        } else {
-            showToast('❌', data.message, 3000);
-        }
-    })
-    .catch(() => showToast('❌', 'Gagal terhubung ke server.', 3000));
+        })
+        .catch(() => showToast('❌', 'Failed to connect to the server.', 3000));
 }
 
 /* ──────────────────────────────────────────────────────
@@ -422,3 +422,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCalendar();
 });
+

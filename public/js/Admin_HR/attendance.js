@@ -46,7 +46,6 @@ function updateStats() {
                 set('sLate',    s.late);
                 set('sSick',    s.sick);
                 set('sPerm',    s.permission);
-                set('sHoliday', s.holiday);
             }
         })
         .catch(err => console.error('updateStats error:', err));
@@ -205,8 +204,7 @@ function getStatusClass(status) {
         'Absent':     'status-absent',
         'Late':       'status-late',
         'Sick':       'status-sick',
-        'Permission': 'status-permission',
-        'Holiday':    'status-holiday'
+        'Permission': 'status-permission'
     };
     return map[status] || '';
 }
@@ -217,8 +215,7 @@ function getStatusIcon(status) {
         'Absent':     '❌',
         'Late':       '⏰',
         'Sick':       '🏥',
-        'Permission': '📋',
-        'Holiday':    '🎉'
+        'Permission': '📋'
     };
     return map[status] || '—';
 }
@@ -255,7 +252,7 @@ function filterEmployeeDropdown(inputId, hiddenId, dropdownId) {
 }
 
 function selectEmployee(name, nip, position, inputId, hiddenId, dropdownId) {
-    // Sembunyikan input teks, tampilkan preview card karyawan
+    // Hide text input, show employee preview card
     const input    = document.getElementById(inputId);
     const hidden   = document.getElementById(hiddenId);
     const dropdown = document.getElementById(dropdownId);
@@ -337,7 +334,7 @@ function openAddAttModal() {
     document.getElementById('aaCheckIn').value  = '';
     document.getElementById('aaCheckOut').value = '';
 
-    // Reset toggle ke Check In
+    // Reset toggle to Check In
     setTimeType('check_in');
 
     clearAllErrors();
@@ -352,21 +349,21 @@ function saveAtt() {
     const check_in  = timeType === 'check_in'  ? (document.getElementById('aaCheckIn')?.value  || '') : '';
     const check_out = timeType === 'check_out' ? (document.getElementById('aaCheckOut')?.value || '') : '';
 
-    // Validasi
+    // Validation
     if (!nip) {
-        setErr('aaName', 'eaaName', 'Pilih karyawan dari dropdown');
+        setErr('aaName', 'eaaName', 'Please select an employee from the dropdown');
         return;
     }
     if (!date) {
-        setErr('aaDate', 'eaaDate', 'Tanggal wajib diisi');
+        setErr('aaDate', 'eaaDate', 'Date is required');
         return;
     }
     if (timeType === 'check_in' && !check_in) {
-        setErr('aaCheckIn', 'eaaCheckIn', 'Jam masuk wajib diisi');
+        setErr('aaCheckIn', 'eaaCheckIn', 'Check In time is required');
         return;
     }
     if (timeType === 'check_out' && !check_out) {
-        setErr('aaCheckOut', 'eaaCheckOut', 'Jam keluar wajib diisi');
+        setErr('aaCheckOut', 'eaaCheckOut', 'Check Out time is required');
         return;
     }
 
@@ -386,10 +383,10 @@ function saveAtt() {
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Gagal menyimpan data', 3000);
+            showToast('❌', data.message || 'Failed to save data', 3000);
         }
     })
-    .catch(() => showToast('❌', 'Terjadi kesalahan sistem', 3000));
+    .catch(() => showToast('❌', 'System error occurred', 3000));
 }
 
 /* =========================================================
@@ -418,7 +415,7 @@ function updateAtt() {
 
     if (!id || !date) return;
 
-    // Sanitasi: nilai "—" dari tabel dikirim sebagai null agar tidak error di Carbon
+    // Sanitize: value "—" from table is sent as null to avoid Carbon error
     const sanitizeTime = v => (v && v !== '—' && v.trim() !== '') ? v : null;
 
     fetch(`${ATTENDANCE_UPDATE_URL}/${id}`, {
@@ -441,10 +438,10 @@ function updateAtt() {
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Gagal memperbarui data', 3000);
+            showToast('❌', data.message || 'Failed to update data', 3000);
         }
     })
-    .catch(() => showToast('❌', 'Terjadi kesalahan sistem', 3000));
+    .catch(() => showToast('❌', 'System error occurred', 3000));
 }
 
 /* =========================================================
@@ -457,7 +454,7 @@ function openDeleteModal(id) {
 
     const msgEl  = document.getElementById('delAttMsg');
     const eaIdEl = document.getElementById('eaId');
-    if (msgEl)  msgEl.textContent  = `Hapus data absensi ${r.name}?`;
+    if (msgEl)  msgEl.textContent  = `Delete attendance data for ${r.name}?`;
     if (eaIdEl) eaIdEl.value       = id;
 
     openModal('modalDelAtt');
@@ -481,10 +478,10 @@ function execDelAtt() {
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Gagal menghapus data', 3000);
+            showToast('❌', data.message || 'Failed to delete data', 3000);
         }
     })
-    .catch(() => showToast('❌', 'Terjadi kesalahan sistem', 3000));
+    .catch(() => showToast('❌', 'System error occurred', 3000));
 }
 
 /* =========================================================
@@ -492,7 +489,7 @@ function execDelAtt() {
    ========================================================= */
 
 function exportAtt() {
-    showToast('📥', 'Sedang memproses export...', 2000);
+    showToast('📥', 'Processing export...', 2000);
 }
 
 /* =========================================================
@@ -521,13 +518,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterDiv)    filterDiv.addEventListener('change', filterAtt);
     if (searchAtt)    searchAtt.addEventListener('input', filterAtt);
 
-    // Tutup dropdown employee saat klik di luar
+    // Close employee dropdown when clicking outside
     document.addEventListener('click', e => {
         if (!e.target.closest('.emp-dropdown') && !e.target.closest('#aaName')) {
             document.querySelectorAll('.emp-dropdown').forEach(d => d.style.display = 'none');
         }
     });
 
-    // Auto-refresh stats setiap 15 detik
+    // Auto-refresh stats every 15 seconds
     setInterval(updateStats, 15000);
 });

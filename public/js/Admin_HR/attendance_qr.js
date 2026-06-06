@@ -24,7 +24,7 @@ async function initQRScanner() {
 
         if (data.is_holiday) {
             // Tampilkan status libur, jangan nyalakan kamera
-            setQRStatus(`🎉 Hari Libur: ${data.name}. Scanner dinonaktifkan.`, 'holiday');
+            setQRStatus(`🎉 Holiday: ${data.name}. Scanner disabled.`, 'holiday');
             showHolidayOverlay(data.name);
             return;
         }
@@ -77,9 +77,9 @@ function showHolidayOverlay(holidayName) {
         ">
             <div style="font-size:48px;line-height:1;">🎉</div>
             <div style="text-align:center;">
-                <p style="font-size:16px;font-weight:700;color:#b91c1c;margin:0 0 6px;">Hari Libur Nasional</p>
+                <p style="font-size:16px;font-weight:700;color:#b91c1c;margin:0 0 6px;">National Holiday</p>
                 <p style="font-size:14px;font-weight:600;color:#ef4444;margin:0 0 8px;">${holidayName}</p>
-                <p style="font-size:12px;color:#f87171;margin:0;">Sistem scan absensi ditutup hari ini.<br>Semua karyawan dianggap hadir.</p>
+                <p style="font-size:12px;color:#f87171;margin:0;">The attendance scanning system is closed today.<br>All employees are marked as present.</p>
             </div>
         </div>`;
 }

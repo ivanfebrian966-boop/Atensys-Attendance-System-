@@ -14,7 +14,7 @@
 <div class="main-content">
     @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Holiday Calendar',
-        'pageSubtitle' => 'Kelola hari libur nasional & tanggal merah',
+        'pageSubtitle' => 'Manage national holidays & public holidays',
     ])
 
     <div class="p-4 md:p-6">
@@ -26,19 +26,19 @@
             <div class="panel fade-up d1 lg:col-span-3">
                 <div class="panel-header">
                     <div>
-                        <h3 class="panel-title">📅 Kalender Hari Libur</h3>
-                        <p class="panel-subtitle">Klik tanggal untuk menambah / mengedit hari libur</p>
+                        <h3 class="panel-title">📅 Holiday Calendar</h3>
+                        <p class="panel-subtitle">Click a date to add / edit a holiday</p>
                     </div>
                     <div class="cal-nav">
-                        <button onclick="calPrev()" title="Bulan Sebelumnya">‹</button>
+                        <button onclick="calPrev()" title="Previous Month">‹</button>
                         <select id="selectMonth" class="filter-select" onchange="onMonthYearChange()" style="font-size:12px;font-weight:600;padding:6px 10px;"></select>
                         <select id="selectYear"  class="filter-select" onchange="onMonthYearChange()" style="font-size:12px;font-weight:600;padding:6px 10px;"></select>
-                        <button onclick="calNext()" title="Bulan Berikutnya">›</button>
+                        <button onclick="calNext()" title="Next Month">›</button>
                     </div>
                 </div>
                 <div class="modal-body pt-4 pb-4">
                     <div class="holiday-calendar" id="calDayLabels">
-                        @foreach(['Min','Sen','Sel','Rab','Kam','Jum','Sab'] as $d)
+                        @foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $d)
                             <div class="cal-day-label">{{ $d }}</div>
                         @endforeach
                     </div>
@@ -47,10 +47,10 @@
 
                 {{-- Legend --}}
                 <div class="cal-legend">
-                    <span class="legend-item"><span class="legend-dot today-dot"></span>Hari Ini</span>
-                    <span class="legend-item"><span class="legend-dot holiday-dot"></span>Hari Libur</span>
-                    <span class="legend-item"><span class="legend-dot weekend-dot sun-dot"></span>Minggu</span>
-                    <span class="legend-item"><span class="legend-dot weekend-dot sat-dot"></span>Sabtu</span>
+                    <span class="legend-item"><span class="legend-dot today-dot"></span>Today</span>
+                    <span class="legend-item"><span class="legend-dot holiday-dot"></span>Holiday</span>
+                    <span class="legend-item"><span class="legend-dot weekend-dot sun-dot"></span>Sunday</span>
+                    <span class="legend-item"><span class="legend-dot weekend-dot sat-dot"></span>Saturday</span>
                 </div>
             </div>
 
@@ -58,8 +58,8 @@
             <div class="panel fade-up d2 lg:col-span-2">
                 <div class="panel-header">
                     <div>
-                        <h3 class="panel-title">🔴 Daftar Hari Libur</h3>
-                        <p class="panel-subtitle">Total: <span id="totalHolidays" class="font-semibold text-red-500">{{ $holidays->count() }}</span> tanggal</p>
+                        <h3 class="panel-title">🔴 Holiday List</h3>
+                        <p class="panel-subtitle">Total: <span id="totalHolidays" class="font-semibold text-red-500">{{ $holidays->count() }}</span> dates</p>
                     </div>
                 </div>
                 <div class="modal-body pb-2" style="max-height:440px;overflow-y:auto;" id="holidayListContainer">
@@ -73,8 +73,8 @@
                         </div>
                         <div class="hol-info">
                             @foreach($hol->names as $idx => $nm)
-                                <p class="hol-name {{ $idx > 0 ? 'hol-name-secondary' : '' }}">
-                                    {{ $idx > 0 ? '& ' : '' }}{{ $nm }}
+                                <p class="hol-name">
+                                    {{ $nm }}
                                 </p>
                             @endforeach
                         </div>
@@ -82,14 +82,14 @@
                             <button onclick="openEditHoliday({{ $hol->id }})"
                                 class="btn-icon-edit" title="Edit">✏️</button>
                             <button onclick="deleteHoliday({{ $hol->id }}, '{{ addslashes($hol->names_label) }}')"
-                                class="btn-icon-del" title="Hapus">🗑</button>
+                                class="btn-icon-del" title="Delete">🗑</button>
                         </div>
                     </div>
                     @empty
                     <div id="emptyHolidays" class="text-center py-10">
                         <div style="font-size:40px;margin-bottom:8px;">🏖️</div>
-                        <p class="text-sm font-medium text-slate-500">Belum ada hari libur terdaftar</p>
-                        <p class="text-xs text-slate-400 mt-1">Klik tanggal pada kalender untuk menambah</p>
+                        <p class="text-sm font-medium text-slate-500">No holidays registered yet</p>
+                        <p class="text-xs text-slate-400 mt-1">Click a date on the calendar to add</p>
                     </div>
                     @endforelse
                 </div>
@@ -114,8 +114,8 @@
                     <span id="modalHolIcon" style="font-size:16px;">🔴</span>
                 </div>
                 <div>
-                    <h3 class="modal-title" id="modalHolTitle" style="font-size:15px;margin:0;">Tambah Hari Libur</h3>
-                    <p class="modal-sub" style="font-size:12px;margin:0;">Tandai tanggal sebagai hari libur nasional</p>
+                    <h3 class="modal-title" id="modalHolTitle" style="font-size:15px;margin:0;">Add Holiday</h3>
+                    <p class="modal-sub" style="font-size:12px;margin:0;">Mark date as a national holiday</p>
                 </div>
             </div>
             <button class="modal-close" onclick="closeModal('modalHoliday')"
@@ -131,7 +131,7 @@
             <div style="margin-bottom:14px;background:#f8fafc;padding:10px 12px;border-radius:8px;border:1px solid #e2e8f0;display:flex;align-items:center;gap:8px;">
                 <span style="font-size:16px;">📅</span>
                 <div>
-                    <span style="font-size:10px;text-transform:uppercase;color:#94a3b8;font-weight:600;display:block;letter-spacing:0.02em;">Tanggal Dipilih</span>
+                    <span style="font-size:10px;text-transform:uppercase;color:#94a3b8;font-weight:600;display:block;letter-spacing:0.02em;">Selected Date</span>
                     <strong id="selectedDateDisplay" style="font-size:13px;color:#1e293b;">-</strong>
                 </div>
             </div>
@@ -139,8 +139,8 @@
             {{-- Names List --}}
             <div style="margin-bottom:6px;">
                 <label class="form-label" style="font-size:12px;font-weight:600;color:#374151;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
-                    <span>Nama Hari Libur <span style="color:#ef4444;">*</span></span>
-                    <button type="button" onclick="addNameField()" class="btn-add-name">+ Tambah Nama</button>
+                    <span>Holiday Name <span style="color:#ef4444;">*</span></span>
+                    <button type="button" onclick="addNameField()" class="btn-add-name">+ Add Name</button>
                 </label>
                 <div id="nameFieldsWrap">
                     {{-- Fields rendered by JS --}}
@@ -151,13 +151,13 @@
         </div>
 
         <div class="modal-footer" style="padding:12px 20px;gap:8px;">
-            <button class="btn-ghost" onclick="closeModal('modalHoliday')" style="font-size:13px;">Batal</button>
+            <button class="btn-ghost" onclick="closeModal('modalHoliday')" style="font-size:13px;">Cancel</button>
             <button class="btn-primary" onclick="saveHoliday()" id="btnSaveHol"
                 style="font-size:13px;display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ef4444,#dc2626);">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                <span id="btnSaveHolTxt">Simpan</span>
+                <span id="btnSaveHolTxt">Save</span>
             </button>
         </div>
     </div>
@@ -167,11 +167,11 @@
 <div class="modal-overlay" id="modalDelHoliday" onclick="closeModalOutside(event,'modalDelHoliday')">
     <div class="modal-box modal-sm" onclick="event.stopPropagation()">
         <div class="del-icon-wrap"><div class="del-icon">🗑</div></div>
-        <h3 class="del-title">Hapus Hari Libur?</h3>
-        <p class="del-sub" id="delHolMsg">Absensi Holiday yang di-generate otomatis juga akan dihapus.</p>
+        <h3 class="del-title">Delete Holiday?</h3>
+        <p class="del-sub" id="delHolMsg">Auto-generated Holiday attendance will also be deleted.</p>
         <div class="modal-footer" style="justify-content:center">
-            <button class="btn-ghost" onclick="closeModal('modalDelHoliday')">Batal</button>
-            <button class="btn-danger" onclick="execDelHoliday()">Ya, Hapus</button>
+            <button class="btn-ghost" onclick="closeModal('modalDelHoliday')">Cancel</button>
+            <button class="btn-danger" onclick="execDelHoliday()">Yes, Delete</button>
         </div>
     </div>
 </div>
