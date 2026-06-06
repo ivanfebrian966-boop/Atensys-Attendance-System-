@@ -7,7 +7,7 @@
 <div class="panel fade-up d1">
     <div class="panel-header">
         <div>
-            <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Scanner Device Management</h3>
+            <h3 class="font-bold text-slate-900 text-base" style="font-family:'Sora',sans-serif">Scanner Devices Accounts</h3>
             <p class="text-xs text-slate-400 mt-0.5">{{ count($scanners) }} active scanner devices in the system</p>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
