@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ScannerDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -26,16 +28,35 @@ class LoginController extends Controller
         );
 
         $loginValue = $request->input('login');
+
+        // ── Scanner Device Login: ID starts with 'SD-' ──────────────────
+        if (str_starts_with(strtoupper($loginValue), 'SD-')) {
+            $scanner = ScannerDevice::where('scanner_id', strtoupper($loginValue))->first();
+
+            if ($scanner && Hash::check($request->password, $scanner->password)) {
+                $request->session()->regenerate();
+                session(['scanner_id' => $scanner->scanner_id]);
+
+                return redirect()->route('scanner.index');
+            }
+
+            return back()->withErrors([
+                'login' => 'Scanner Device ID or password is incorrect.',
+            ]);
+        }
+        // ────────────────────────────────────────────────────────────────
+
+        // Normal Employee / HR / SuperAdmin Login
         $field = filter_var($loginValue, FILTER_VALIDATE_EMAIL) ? 'email' : 'nip';
 
         $credentials = [
-            $field => $loginValue,
+            $field     => $loginValue,
             'password' => $request->password,
         ];
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            
+
             // Check account status
             if ($user->role !== 'Super Admin' && $user->status !== 'Aktif') {
                 Auth::logout();
@@ -48,8 +69,6 @@ class LoginController extends Controller
                 return redirect()->route('super_admin.dashboard');
             } elseif ($user->role === 'Admin HR') {
                 return redirect()->route('admin-hr.dashboard');
-            } elseif ($user->role === 'Scanner Device') {
-                return redirect()->route('scanner.index');
             }
 
             return redirect()->route('employee.dashboard');

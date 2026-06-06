@@ -124,18 +124,5 @@ class DatabaseSeeder extends Seeder
             'status' => 'Aktif',
         ]);
 
-        // SCANNER DEVICE
-        Employee::create([
-            'nip' => '9999999',
-            'name' => 'Scanner Device Lobby 1',
-            'email' => 'scanner@attensys.com',
-            'password' => Hash::make('scanner123'),
-            'role' => 'Scanner Device',
-            'position' => 'Scanner Device',
-            'division_id' => $it->division_id,
-            'no_hp' => '081234567899',
-            'alamat' => 'Lobby Utama',
-            'status' => 'Aktif',
-        ]);
     }
 }

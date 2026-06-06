@@ -9,31 +9,31 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * Creates the scanner_devices table (separate entity from employees)
+     * and seeds the first device SD-09.
      */
     public function up(): void
     {
-        // Alter enum to add Scanner Device role
-        DB::statement("ALTER TABLE employees MODIFY COLUMN role ENUM('Super Admin', 'Admin HR', 'Employee', 'Scanner Device') NOT NULL");
+        // 1. Revert the employees role enum back to original (no Scanner Device)
+        DB::statement("ALTER TABLE employees MODIFY COLUMN role ENUM('Super Admin', 'Admin HR', 'Employee') NOT NULL");
 
-        // Seed the Scanner Device account
-        $it = \App\Models\Division::where('division_name', 'like', '%IT%')->first();
-        if (!$it) {
-            $it = \App\Models\Division::first();
-        }
-        
-        if ($it) {
-            \App\Models\Employee::firstOrCreate(['nip' => '9999999'], [
-                'name' => 'Scanner Device Lobby 1',
-                'email' => 'scanner@attensys.com',
-                'password' => \Illuminate\Support\Facades\Hash::make('scanner123'),
-                'role' => 'Scanner Device',
-                'position' => 'Scanner Device',
-                'division_id' => $it->division_id,
-                'no_hp' => '081234567899',
-                'alamat' => 'Lobby Utama',
-                'status' => 'Aktif',
-            ]);
-        }
+        // 2. Delete the wrongly-seeded scanner employee if it exists
+        DB::table('employees')->where('nip', '9999999')->delete();
+
+        // 3. Create scanner_devices table
+        Schema::create('scanner_devices', function (Blueprint $table) {
+            $table->string('scanner_id', 5)->primary();
+            $table->string('password', 60);
+            $table->timestamps();
+        });
+
+        // 4. Seed the first scanner device
+        DB::table('scanner_devices')->insert([
+            'scanner_id' => 'SD-09',
+            'password'   => \Illuminate\Support\Facades\Hash::make('scanner123'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**
@@ -41,10 +41,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Delete scanner device account first
-        \App\Models\Employee::where('nip', '9999999')->delete();
+        Schema::dropIfExists('scanner_devices');
 
-        // Revert enum
-        DB::statement("ALTER TABLE employees MODIFY COLUMN role ENUM('Super Admin', 'Admin HR', 'Employee') NOT NULL");
+        // Restore enum with Scanner Device (as it was before this migration)
+        DB::statement("ALTER TABLE employees MODIFY COLUMN role ENUM('Super Admin', 'Admin HR', 'Employee', 'Scanner Device') NOT NULL");
     }
 };
