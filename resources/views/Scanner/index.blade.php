@@ -48,47 +48,52 @@
             font-family: 'Sora', sans-serif;
         }
 
-        /* Tech Brackets for Camera Frame */
-        .bracket {
-            position: absolute;
-            width: 24px;
-            height: 24px;
-            border-color: #6366f1;
-            border-style: solid;
-            z-index: 12;
-            pointer-events: none;
-            transition: border-color 0.3s;
+        /* Panel style matching Admin HR attendance UI */
+        .panel {
+            background: #ffffff;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: box-shadow 0.25s ease;
         }
-        .state-success .bracket { border-color: #10b981; }
-        .state-error .bracket { border-color: #ef4444; }
-        
-        .bracket-tl { top: 16px; left: 16px; border-width: 4px 0 0 4px; border-top-left-radius: 8px; }
-        .bracket-tr { top: 16px; right: 16px; border-width: 4px 4px 0 0; border-top-right-radius: 8px; }
-        .bracket-bl { bottom: 16px; left: 16px; border-width: 0 0 4px 4px; border-bottom-left-radius: 8px; }
-        .bracket-br { bottom: 16px; right: 16px; border-width: 0 4px 4px 0; border-bottom-right-radius: 8px; }
-
-        /* Neon Sweep Scanner Line */
-        .scan-laser {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(to right, transparent, #6366f1, transparent);
-            box-shadow: 0 0 12px 2px #6366f1;
-            animation: scanLaser 2.2s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 10;
+        .panel:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
         }
-        .state-success .scan-laser {
-            background: linear-gradient(to right, transparent, #10b981, transparent);
-            box-shadow: 0 0 12px 2px #10b981;
-            animation-play-state: paused;
+        .panel-header {
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
         }
-        .state-error .scan-laser {
-            background: linear-gradient(to right, transparent, #ef4444, transparent);
-            box-shadow: 0 0 12px 2px #ef4444;
-            animation-play-state: paused;
+        .panel-title {
+            font-size: .925rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0;
+        }
+        .panel-subtitle {
+            font-size: .72rem;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+        .modal-body {
+            padding: 16px 20px 22px;
+        }
+        .viewport-wrap {
+            width: 100%;
+        }
+        #qr-reader {
+            width: 100% !important;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 320px;
+            background: #000;
         }
         
         @keyframes scanLaser {
@@ -97,33 +102,6 @@
             100% { top: 5%; opacity: 1; }
         }
 
-        /* Viewport Frame Box Glows */
-        .viewport-wrap {
-            position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            background: #0f172a;
-            border: 4px solid #e2e8f0;
-            transition: border-color 0.35s, box-shadow 0.35s;
-        }
-        .viewport-wrap.state-scanning {
-            border-color: #6366f1;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
-        }
-        .viewport-wrap.state-success {
-            border-color: #10b981;
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
-        }
-        .viewport-wrap.state-error {
-            border-color: #ef4444;
-            box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
-        }
-
-        /* Hide HTML5 Qrcode UI Defaults */
-        #qr-reader {
-            width: 100% !important;
-            border: none !important;
-        }
         #qr-reader video {
             width: 100% !important;
             object-fit: cover !important;
@@ -153,6 +131,32 @@
         }
         .pulse-active {
             animation: dotPulse 1.8s infinite;
+        }
+
+        /* Mobile friendly adjustments */
+        @media (max-width: 768px) {
+            body {
+                background-color: #f8fafc;
+            }
+            main {
+                padding-left: 1rem;
+                padding-right: 1rem;
+                padding-top: 1.25rem;
+                padding-bottom: 1.25rem;
+            }
+            .viewport-wrap {
+                border-radius: 12px;
+            }
+            #qr-reader video {
+                min-height: 240px !important;
+            }
+            .bg-white.rounded-3xl {
+                border: none;
+                box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+            }
+            .shadow-sm {
+                box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06) !important;
+            }
         }
     </style>
 </head>
@@ -208,13 +212,13 @@
             </div>
 
             <!-- Scanner Card (Centered Camera Frame) -->
-            <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md w-full">
+            <div class="panel w-full">
                 
                 <!-- Scanner Card Header -->
-                <div class="px-5 py-4 border-b border-slate-50 flex items-center justify-between gap-4 flex-wrap">
+                <div class="panel-header">
                     <div>
-                        <h3 class="text-sm md:text-base font-bold text-slate-800 font-sora">QR Attendance Scanner</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Position employee QR code within the camera frame</p>
+                        <h3 class="panel-title">QR Attendance Scanner</h3>
+                        <p class="panel-subtitle">Position employee QR code within the camera frame</p>
                     </div>
                     
                     <!-- Status Badge -->
@@ -225,14 +229,9 @@
                 </div>
 
                 <!-- Viewport & Scan Count Info -->
-                <div class="p-4 md:p-6 bg-white flex flex-col items-center">
+                <div class="modal-body flex flex-col items-center">
                     <!-- Camera Viewport Frame -->
                     <div class="viewport-wrap state-scanning w-full" id="viewportWrap">
-                        <div class="bracket bracket-tl"></div>
-                        <div class="bracket bracket-tr"></div>
-                        <div class="bracket bracket-bl"></div>
-                        <div class="bracket bracket-br"></div>
-                        <div class="scan-laser"></div>
                         <div id="qr-reader"></div>
                     </div>
 
