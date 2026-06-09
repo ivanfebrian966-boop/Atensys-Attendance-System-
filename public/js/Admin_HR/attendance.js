@@ -3,7 +3,20 @@
  * public/js/Admin_HR/attendance.js
  */
 
-let _attFull   = [];
+/**
+ * Cek apakah checkout hari ini sudah boleh diisi/diedit.
+ * Diperbolehkan jika: tanggal bukan hari ini, ATAU jam sudah >= 17:00
+ * @param {string|null} dateStr  - string tanggal 'YYYY-MM-DD', null = hari ini
+ * @returns {boolean}
+ */
+function isTodayCheckoutAllowed(dateStr) {
+    const today = new Date().toISOString().split('T')[0];
+    const targetDate = dateStr || today;
+    if (targetDate !== today) return true; // hari lain: bebas
+    const now = new Date();
+    return now.getHours() >= 17; // >= 17:00 boleh
+}
+
 let _employees = [];
 let currentAttPage = 1;
 const ATT_PAGE_SIZE = 10;
@@ -337,8 +350,37 @@ function openAddAttModal() {
     // Reset toggle to Check In
     setTimeType('check_in');
 
+    // Cek apakah checkout hari ini sudah boleh diisi
+    applyCheckoutRestriction();
+
     clearAllErrors();
     openModal('modalAddAtt');
+}
+
+/**
+ * Aktifkan / nonaktifkan tombol Check Out pada modal Add
+ * berdasarkan tanggal yang dipilih dan jam sekarang.
+ */
+function applyCheckoutRestriction() {
+    const dateVal = document.getElementById('aaDate')?.value || '';
+    const allowed = isTodayCheckoutAllowed(dateVal);
+    const btnOut  = document.getElementById('tglBtnOut');
+    const banner  = document.getElementById('aaCheckoutBanner');
+
+    if (btnOut) {
+        btnOut.disabled = !allowed;
+        btnOut.style.opacity = allowed ? '1' : '0.4';
+        btnOut.style.cursor  = allowed ? 'pointer' : 'not-allowed';
+        btnOut.title = allowed ? '' : 'Checkout hari ini hanya bisa diisi setelah jam 17:00';
+    }
+    if (banner) {
+        banner.style.display = allowed ? 'none' : 'flex';
+    }
+    // Jika tombol Check Out sedang aktif & sekarang tidak diizinkan → paksa ke Check In
+    if (!allowed) {
+        const currentType = document.getElementById('aaTimeType')?.value;
+        if (currentType === 'check_out') setTimeType('check_in');
+    }
 }
 
 function saveAtt() {
@@ -401,7 +443,21 @@ function editAtt(id) {
     document.getElementById('eaName').value     = r.name    || '';
     document.getElementById('eaDate').value     = r.date    || '';
     document.getElementById('eaCheckIn').value  = r.check_in  || '';
-    document.getElementById('eaCheckOut').value = r.check_out || '';
+    document.getElementById('eaCheckOut').value = r.check_out !== '—' ? (r.check_out || '') : '';
+
+    // Blokir field check_out jika hari ini & sebelum jam 17:00
+    const allowed = isTodayCheckoutAllowed(r.date);
+    const coInput  = document.getElementById('eaCheckOut');
+    const coBanner = document.getElementById('eaCheckoutBanner');
+    if (coInput) {
+        coInput.disabled = !allowed;
+        coInput.style.opacity = allowed ? '1' : '0.45';
+        coInput.style.cursor  = allowed ? '' : 'not-allowed';
+        coInput.title = allowed ? '' : 'Checkout hari ini hanya bisa diedit setelah jam 17:00';
+    }
+    if (coBanner) {
+        coBanner.style.display = allowed ? 'none' : 'flex';
+    }
 
     clearAllErrors();
     openModal('modalEditAtt');
@@ -517,6 +573,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filterStatus) filterStatus.addEventListener('change', filterAtt);
     if (filterDiv)    filterDiv.addEventListener('change', filterAtt);
     if (searchAtt)    searchAtt.addEventListener('input', filterAtt);
+
+    // Saat tanggal di modal Add berubah, terapkan pembatasan checkout
+    const aaDateInput = document.getElementById('aaDate');
+    if (aaDateInput) {
+        aaDateInput.addEventListener('change', applyCheckoutRestriction);
+    }
 
     // Close employee dropdown when clicking outside
     document.addEventListener('click', e => {

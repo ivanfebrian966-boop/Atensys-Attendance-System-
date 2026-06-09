@@ -12,9 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('scanner_devices', function (Blueprint $table) {
-            $table->string('scanner_id', 7)->primary();
+            $table->string('scanner_id', 5)->primary();
             $table->string('password', 70);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

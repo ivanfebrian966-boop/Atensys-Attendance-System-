@@ -81,8 +81,8 @@ class AttendanceController extends Controller
                     
                     $diff = abs(time() - $qrTimestamp);
                     
-                    // Beri batas waktu toleransi 30 detik (mengakomodasi refresh rate 10s + selisih waktu/koneksi)
-                    if ($diff > 30) {
+                    // Batas waktu 10 detik (QR di-refresh tiap 10 detik, toleransi minimal)
+                    if ($diff > 10) {
                         return response()->json([
                             'success' => false,
                             'message' => 'QR Code expired. Please use the latest QR Code on your phone screen.'
@@ -231,7 +231,18 @@ class AttendanceController extends Controller
             ]);
 
             $date = Carbon::parse($validated['date']);
-            
+            $isToday = $date->isToday();
+            $now = Carbon::now();
+            $cutoffTime = Carbon::today()->setTime(17, 0, 0);
+
+            // Blokir pengisian check_out hari ini sebelum jam 17:00
+            if ($isToday && !empty($validated['check_out']) && $now->lt($cutoffTime)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Checkout data for today cannot be added before 17:00. Please wait until the work day ends.'
+                ], 403);
+            }
+
             $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
             $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
 
@@ -277,7 +288,18 @@ class AttendanceController extends Controller
             ]);
 
             $date = Carbon::parse($validated['date']);
-            
+            $isToday = $date->isToday();
+            $now = Carbon::now();
+            $cutoffTime = Carbon::today()->setTime(17, 0, 0);
+
+            // Blokir pengeditan check_out hari ini sebelum jam 17:00
+            if ($isToday && !empty($validated['check_out']) && $now->lt($cutoffTime)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Checkout data for today cannot be edited before 17:00. Please wait until the work day ends.'
+                ], 403);
+            }
+
             $check_in = $validated['check_in'] ? $date->copy()->setTimeFromTimeString($validated['check_in']) : null;
             $check_out = $validated['check_out'] ? $date->copy()->setTimeFromTimeString($validated['check_out']) : null;
 

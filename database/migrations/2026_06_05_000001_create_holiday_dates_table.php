@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('date')->unique();
             // Nama-nama hari libur disimpan sebagai JSON array (mendukung > 1 nama per tanggal)
             $table->json('names');
-            $table->text('description')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
         });

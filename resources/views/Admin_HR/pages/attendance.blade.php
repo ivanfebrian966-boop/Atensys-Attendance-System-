@@ -214,6 +214,15 @@
                 <span class="form-error" id="eaaDate"></span>
             </div>
  
+            {{-- Checkout restriction banner (hidden by default, shown by JS) --}}
+            <div id="aaCheckoutBanner" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;margin-bottom:12px;">
+                <span style="font-size:18px;flex-shrink:0;">⏰</span>
+                <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">
+                    <strong>Checkout belum tersedia.</strong><br>
+                    Data checkout hari ini hanya dapat diisi setelah jam <strong>17:00</strong>.
+                </p>
+            </div>
+
             {{-- Time Type Toggle --}}
             <div style="margin-bottom:12px;">
                 <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;display:block;">Time Type *</label>
@@ -302,10 +311,19 @@
                     <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK IN</p>
                     <input type="time" id="eaCheckIn" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;position:relative;">
                     <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK OUT</p>
                     <input type="time" id="eaCheckOut" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
+            </div>
+
+            {{-- Checkout restriction banner for Edit modal (hidden by default) --}}
+            <div id="eaCheckoutBanner" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;margin-top:12px;">
+                <span style="font-size:18px;flex-shrink:0;">⏰</span>
+                <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">
+                    <strong>Checkout dikunci.</strong><br>
+                    Data checkout hari ini hanya dapat diedit setelah jam <strong>17:00</strong>.
+                </p>
             </div>
         </div>
         <div class="modal-footer" style="padding:12px 20px;gap:8px;">
