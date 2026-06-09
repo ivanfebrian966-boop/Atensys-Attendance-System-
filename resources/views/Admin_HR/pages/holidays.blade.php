@@ -59,7 +59,7 @@
                 <div class="panel-header">
                     <div>
                         <h3 class="panel-title">🔴 Holiday List</h3>
-                        <p class="panel-subtitle">Total: <span id="totalHolidays" class="font-semibold text-red-500">{{ $holidays->count() }}</span> dates</p>
+                        <p class="panel-subtitle">Total: <span id="totalHolidays" class="font-semibold text-red-500">{{ $holidays->count() }}</span> holiday entries</p>
                     </div>
                 </div>
                 <div class="modal-body pb-2" style="max-height:440px;overflow-y:auto;" id="holidayListContainer">

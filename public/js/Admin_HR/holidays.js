@@ -272,10 +272,19 @@ function saveHoliday() {
                 if (isEdit) {
                     updateHolidayInList(data.holiday);
                     HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
+                    if (Array.isArray(data.created)) {
+                        data.created.forEach((hol) => {
+                            addHolidayToList(hol);
+                        });
+                        const existingNames = HOLIDAY_MAP[data.holiday.date] || [];
+                        HOLIDAY_MAP[data.holiday.date] = Array.from(new Set([...(existingNames || []), ...data.created.flatMap(h => h.names)]));
+                    }
                 } else {
-                    addHolidayToList(data.holiday);
-                    HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
-                    updateTotalCount(1);
+                    const addedHolidays = data.holidays || [];
+                    addedHolidays.forEach(hol => addHolidayToList(hol));
+                    const existingNames = HOLIDAY_MAP[data.date] || [];
+                    HOLIDAY_MAP[data.date] = Array.from(new Set([...(existingNames || []), ...(data.names || [])]));
+                    updateTotalCount(addedHolidays.length);
                 }
                 renderCalendar();
             } else {
@@ -378,7 +387,15 @@ function execDelHoliday() {
                 if (row) {
                     const dateStr = row.dataset?.holDate;
                     row.remove();
-                    if (dateStr) delete HOLIDAY_MAP[dateStr];
+                    if (dateStr) {
+                        const remainingRows = Array.from(document.querySelectorAll(`[data-hol-date="${dateStr}"]`));
+                        const remainingNames = remainingRows.flatMap(r => JSON.parse(r.dataset.holNames || '[]'));
+                        if (remainingNames.length) {
+                            HOLIDAY_MAP[dateStr] = remainingNames;
+                        } else {
+                            delete HOLIDAY_MAP[dateStr];
+                        }
+                    }
                     renderCalendar();
                 }
                 updateTotalCount(-1);

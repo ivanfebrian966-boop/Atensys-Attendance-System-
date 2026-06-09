@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Employee;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use App\Models\Attendance;
+use App\Models\HolidayDate;
 use App\Models\Permission;
 use Carbon\Carbon;
 
@@ -47,6 +47,10 @@ class EmployeeController extends Controller
 
         $today = Carbon::today();
 
+        if (HolidayDate::where('date', $today->toDateString())->exists()) {
+            return back()->with('error', 'Cannot check in today because it is a holiday.');
+        }
+
         // Check if has permission/sick for today
         $hasPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
@@ -82,6 +86,10 @@ class EmployeeController extends Controller
         $user = Auth::user();
         $today = Carbon::today();
         if (!$user) return redirect()->route('login');
+
+        if (HolidayDate::where('date', $today->toDateString())->exists()) {
+            return back()->with('error', 'Cannot check out today because it is a holiday.');
+        }
 
         // Check if has permission/sick for today
         $hasPermission = Permission::where('nip', $user->nip)

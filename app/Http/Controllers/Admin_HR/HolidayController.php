@@ -23,7 +23,8 @@ class HolidayController extends Controller
         // Format for JS calendar: { "Y-m-d": ["Name1", "Name2"] }
         $holidayMap = [];
         foreach ($holidays as $h) {
-            $holidayMap[$h->date->format('Y-m-d')] = $h->names ?? [];
+            $dateKey = $h->date->format('Y-m-d');
+            $holidayMap[$dateKey] = array_merge($holidayMap[$dateKey] ?? [], $h->names ?? []);
         }
 
         return view('Admin_HR.pages.holidays', compact('holidays', 'holidayMap'));
@@ -36,11 +37,10 @@ class HolidayController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'date'    => 'required|date|unique:holiday_dates,date',
+            'date'    => 'required|date',
             'names'   => 'required|array|min:1',
             'names.*' => 'required|string|max:150',
         ], [
-            'date.unique'    => 'This date is already registered as a holiday.',
             'date.required'  => 'Holiday date is required.',
             'names.required' => 'Holiday name is required.',
             'names.*.required' => 'Holiday name cannot be empty.',
@@ -49,28 +49,34 @@ class HolidayController extends Controller
         try {
             DB::beginTransaction();
 
-            $names = array_values(array_filter(array_map('trim', $request->names)));
+            $names = array_values(array_filter(array_unique(array_map('trim', $request->names))));
+            $created = [];
 
-            $holiday = HolidayDate::create([
-                'date'  => $request->date,
-                'names' => $names,
-            ]);
-
-            // Create Holiday attendance for all active employees
-            $this->generateHolidayAttendances($holiday->date);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Holiday "' . implode(' & ', $names) . '" successfully saved.',
-                'holiday' => [
+            foreach ($names as $name) {
+                $holiday = HolidayDate::create([
+                    'date'  => $request->date,
+                    'names' => [$name],
+                ]);
+                $created[] = [
                     'id'        => $holiday->id,
                     'date'      => $holiday->date->format('Y-m-d'),
                     'names'     => $holiday->names,
                     'label'     => $holiday->names_label,
                     'formatted' => $holiday->date->translatedFormat('l, d F Y'),
-                ],
+                ];
+            }
+
+            // Create Holiday attendance for all active employees once per date
+            $this->generateHolidayAttendances(Carbon::parse($request->date));
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Holiday(s) successfully saved.',
+                'holidays' => $created,
+                'date' => Carbon::parse($request->date)->format('Y-m-d'),
+                'names' => $names,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -95,10 +101,32 @@ class HolidayController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
+
             $holiday = HolidayDate::findOrFail($id);
             $names   = array_values(array_filter(array_map('trim', $request->names)));
 
-            $holiday->update(['names' => $names]);
+            // Keep the first name on the existing row, and create a new row for each additional name.
+            $primaryName = array_shift($names);
+            $holiday->update(['names' => [$primaryName]]);
+
+            $createdRows = [];
+            foreach ($names as $name) {
+                $newHoliday = HolidayDate::create([
+                    'date'  => $holiday->date->toDateString(),
+                    'names' => [$name],
+                ]);
+
+                $createdRows[] = [
+                    'id'        => $newHoliday->id,
+                    'date'      => $newHoliday->date->format('Y-m-d'),
+                    'names'     => $newHoliday->names,
+                    'label'     => $newHoliday->names_label,
+                    'formatted' => $newHoliday->date->translatedFormat('l, d F Y'),
+                ];
+            }
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
@@ -110,8 +138,10 @@ class HolidayController extends Controller
                     'label'     => $holiday->names_label,
                     'formatted' => $holiday->date->translatedFormat('l, d F Y'),
                 ],
+                'created' => $createdRows,
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update: ' . $e->getMessage(),
@@ -129,13 +159,14 @@ class HolidayController extends Controller
 
             $holiday = HolidayDate::findOrFail($id);
             $dateStr = $holiday->date->format('Y-m-d');
-
-            // Delete only auto-generated attendances (qr_code = SYSTEM-HOLIDAY)
-            Attendance::whereDate('created_at', $dateStr)
-                ->where('qr_code', 'SYSTEM-HOLIDAY')
-                ->delete();
-
             $holiday->delete();
+
+            $remaining = HolidayDate::where('date', $dateStr)->exists();
+            if (!$remaining) {
+                Attendance::whereDate('created_at', $dateStr)
+                    ->where('qr_code', 'SYSTEM-HOLIDAY')
+                    ->delete();
+            }
 
             DB::commit();
 
@@ -158,12 +189,17 @@ class HolidayController extends Controller
     public function check(Request $request)
     {
         $date    = $request->input('date', Carbon::today()->toDateString());
-        $holiday = HolidayDate::whereDate('date', $date)->first();
+        $holidays = HolidayDate::where('date', $date)->get();
+        $names = [];
+
+        foreach ($holidays as $holiday) {
+            $names = array_merge($names, $holiday->names ?? []);
+        }
 
         return response()->json([
-            'is_holiday' => (bool) $holiday,
-            'names'      => $holiday ? ($holiday->names ?? []) : [],
-            'name'       => $holiday ? $holiday->names_label : null,
+            'is_holiday' => $holidays->isNotEmpty(),
+            'names'      => $names,
+            'name'       => $holidays->isNotEmpty() ? implode(' & ', $names) : null,
             'date'       => $date,
         ]);
     }

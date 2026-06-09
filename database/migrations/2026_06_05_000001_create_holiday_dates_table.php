@@ -14,8 +14,8 @@ return new class extends Migration
     {
         // 1. Buat tabel holiday_dates
         Schema::create('holiday_dates', function (Blueprint $table) {
-            $table->id();
-            $table->date('date')->unique();
+            $table->id('holiday_id');
+            $table->date('date');
             // Nama-nama hari libur disimpan sebagai JSON array (mendukung > 1 nama per tanggal)
             $table->json('names');
             $table->timestamp('created_at')->useCurrent();

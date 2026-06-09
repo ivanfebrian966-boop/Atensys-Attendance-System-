@@ -20,7 +20,7 @@
     <div class="p-4 md:p-6">
 
         @php
-            $todayHolidayObj = \App\Models\HolidayDate::whereDate('date', today())->first();
+            $todayHolidayObj = \App\Models\HolidayDate::where('date', today()->toDateString())->first();
         @endphp
 
         {{-- ── HOLIDAY BANNER (shown only if today is a holiday) ── --}}
@@ -218,8 +218,8 @@
             <div id="aaCheckoutBanner" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;margin-bottom:12px;">
                 <span style="font-size:18px;flex-shrink:0;">⏰</span>
                 <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">
-                    <strong>Checkout belum tersedia.</strong><br>
-                    Data checkout hari ini hanya dapat diisi setelah jam <strong>17:00</strong>.
+                    <strong>Checkout is not available yet.</strong><br>
+                    Today's checkout data can only be entered after <strong>17:00</strong>.
                 </p>
             </div>
 
@@ -321,8 +321,8 @@
             <div id="eaCheckoutBanner" style="display:none;align-items:center;gap:10px;padding:10px 14px;background:#fffbeb;border:1.5px solid #fcd34d;border-radius:10px;margin-top:12px;">
                 <span style="font-size:18px;flex-shrink:0;">⏰</span>
                 <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">
-                    <strong>Checkout dikunci.</strong><br>
-                    Data checkout hari ini hanya dapat diedit setelah jam <strong>17:00</strong>.
+                    <strong>Check-out is locked.</strong><br>
+                    Today's checkout data can only be edited after <strong>17:00</strong>.
                 </p>
             </div>
         </div>

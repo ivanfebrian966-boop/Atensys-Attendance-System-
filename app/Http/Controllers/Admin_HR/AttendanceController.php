@@ -35,19 +35,43 @@ class AttendanceController extends Controller
     public function processQr(Request $request)
     {
         try {
-            // ── Blokir scan saat hari libur nasional ──────────────────────
+            // ── Block scans during holiday dates ─────────────────────────
             $today = Carbon::today();
-            $holiday = HolidayDate::whereDate('date', $today)->first();
-            if ($holiday) {
+            $holidays = HolidayDate::where('date', $today->toDateString())->get();
+            if ($holidays->isNotEmpty()) {
+                $names = $holidays->flatMap(fn($item) => $item->names ?: [])->toArray();
                 return response()->json([
                     'success' => false,
-                    'message' => '🎉 Today is a holiday: ' . $holiday->name . '. Attendance system is closed.'
+                    'message' => '🎉 Today is a holiday: ' . implode(' & ', array_unique($names)) . '. Attendance system is closed.'
                 ], 403);
             }
-            // ─────────────────────────────────────────────────────────────
 
+            // ── Block scans for employees with approved leave or sick status ─
             $qrData = $request->input('qr_data');
-            
+            $nipForPermission = null;
+            if ($qrData && strpos($qrData, ':') !== false) {
+                $parts = explode(':', $qrData);
+                if (count($parts) >= 3 && $parts[0] === 'ATTENSYS' && $parts[1] === 'EMP') {
+                    $nipForPermission = $parts[2];
+                }
+            }
+
+            if ($nipForPermission) {
+                $hasApprovedLeave = Permission::where('nip', $nipForPermission)
+                    ->where('permission_status', 'Approved')
+                    ->whereDate('start_date', '<=', $today)
+                    ->whereDate('completion_date', '>=', $today)
+                    ->exists();
+
+                if ($hasApprovedLeave) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Scan denied. Your approved leave or sick request prevents attendance scanning today.'
+                    ], 403);
+                }
+            }
+
+            // ─────────────────────────────────────────────────────────────
             if (!$qrData) {
                 return response()->json([
                     'success' => false,
