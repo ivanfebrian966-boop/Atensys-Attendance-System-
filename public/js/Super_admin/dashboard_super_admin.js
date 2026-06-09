@@ -175,7 +175,7 @@ function openEditDivision(id, name) {
 // ===== Actions =====
 function confirmDelete(btn, type) {
     closeAllDropdowns();
-    if (confirm('Apakah Anda yakin ingin menghapus akun ini? Tindakan ini tidak dapat dibatalkan.')) {
+    if (confirm('Are you sure you want to delete this ' + type + '? This action cannot be undone.')) {
         const row = btn.closest('tr');
         const id = row.dataset.id;
         const form = document.getElementById('formDelete');
