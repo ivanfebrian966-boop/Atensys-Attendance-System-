@@ -452,7 +452,7 @@
             @csrf
             <div class="form-field mb-4">
                 <label class="form-label">Scanner ID</label>
-                <input type="text" name="scanner_id" class="form-input font-mono" placeholder="e.g.: SD-101 (Max 7 chars)" maxlength="7" required>
+                <input type="text" name="scanner_id" class="form-input font-mono" placeholder="e.g.: SD-101 (Max 5 chars)" maxlength="5" required>
                 @error('scanner_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div class="form-field mb-4">

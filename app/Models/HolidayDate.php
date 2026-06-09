@@ -19,6 +19,8 @@ class HolidayDate extends Model
 
     protected $table = 'holiday_dates';
 
+    protected $primaryKey = 'holiday_id'; // migration uses id('holiday_id')
+
     protected $fillable = [
         'date',
         'names',       // JSON array — supports multiple holidays per date
@@ -29,6 +31,15 @@ class HolidayDate extends Model
         'date'  => 'date',
         'names' => 'array',   // auto encode/decode JSON
     ];
+
+    /**
+     * Make $model->id transparently return the holiday_id value.
+     * This is needed because the PK column is named 'holiday_id', not 'id'.
+     */
+    public function getIdAttribute(): ?int
+    {
+        return $this->holiday_id ?? null;
+    }
 
     /**
      * Get the first name (for backward compatibility).

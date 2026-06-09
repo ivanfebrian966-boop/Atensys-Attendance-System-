@@ -241,7 +241,7 @@ function saveHoliday() {
     errEl.textContent = '';
 
     if (!date) {
-        showToast('❌', 'Date not found.', 3000);
+        showToast('Date not found.', 'error', 3000);
         return;
     }
     if (names.length === 0) {
@@ -259,6 +259,7 @@ function saveHoliday() {
         method,
         headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRF-TOKEN': CSRF_TOKEN,
         },
         body: JSON.stringify({ date, names }),
@@ -266,7 +267,7 @@ function saveHoliday() {
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                showToast('✅', data.message, 3500);
+                showToast(data.message, 'success', 3500);
                 closeModal('modalHoliday');
 
                 if (isEdit) {
@@ -291,13 +292,13 @@ function saveHoliday() {
                 if (data.errors?.names) {
                     errEl.textContent = data.errors.names[0];
                 } else if (data.errors?.date) {
-                    showToast('❌', data.errors.date[0], 3500);
+                    showToast(data.errors.date[0], 'error', 3500);
                 } else {
-                    showToast('❌', data.message, 3500);
+                    showToast(data.message || 'Failed to save holiday.', 'error', 3500);
                 }
             }
         })
-        .catch(() => showToast('❌', 'Failed to connect to the server.', 3000));
+        .catch(() => showToast('Failed to connect to the server.', 'error', 3000));
 }
 
 /* ──────────────────────────────────────────────────────
@@ -375,12 +376,12 @@ function execDelHoliday() {
 
     fetch(`${HOLIDAY_DESTROY_URL}/${deleteTargetId}`, {
         method: 'DELETE',
-        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN },
+        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
     })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                showToast('✅', data.message, 3000);
+                showToast(data.message, 'success', 3000);
                 closeModal('modalDelHoliday');
 
                 const row = document.getElementById(`hol-row-${deleteTargetId}`);
@@ -411,10 +412,10 @@ function execDelHoliday() {
                     </div>`;
                 }
             } else {
-                showToast('❌', data.message, 3000);
+                showToast(data.message || 'Failed to delete holiday.', 'error', 3000);
             }
         })
-        .catch(() => showToast('❌', 'Failed to connect to the server.', 3000));
+        .catch(() => showToast('Failed to connect to the server.', 'error', 3000));
 }
 
 /* ──────────────────────────────────────────────────────
