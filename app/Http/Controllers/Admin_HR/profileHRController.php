@@ -29,6 +29,7 @@ class ProfileHRController extends Controller
         $rules = [
             'no_hp'            => 'nullable|string|max:20',
             'alamat'           => 'nullable|string|max:500',
+            'gender_id'        => 'nullable|exists:genders,gender_id',
             'current_password' => 'nullable|string',
             'new_password'     => ['nullable', 'string', 'min:8', 'confirmed'],
         ];
@@ -37,8 +38,9 @@ class ProfileHRController extends Controller
 
         // Update basic info
         $user->update([
-            'no_hp'  => $validated['no_hp']  ?? $user->no_hp,
-            'alamat' => $validated['alamat'] ?? $user->alamat,
+            'no_hp'     => $validated['no_hp']     ?? $user->no_hp,
+            'alamat'    => $validated['alamat']    ?? $user->alamat,
+            'gender_id' => $validated['gender_id'] ?? $user->gender_id,
         ]);
 
         // Handle optional password change

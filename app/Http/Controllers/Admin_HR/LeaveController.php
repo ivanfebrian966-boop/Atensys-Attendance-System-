@@ -74,6 +74,7 @@ class LeaveController extends Controller
                     'days'        => $days,
                     'status'          => $perm->permission_status,
                     'reject_reason'   => $perm->reject_reason,
+                    'approval_reason' => $perm->approval_reason,
                     'file'            => $perm->file ? asset('storage/' . $perm->file) : null,
                     'submitted'   => Carbon::parse($perm->created_at)->format('d M Y, H:i'),
                     'overdue'     => $perm->permission_status === 'Approved' && Carbon::parse($perm->completion_date)->isPast(),
@@ -96,7 +97,10 @@ class LeaveController extends Controller
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
 
-            $permission->update(['permission_status' => 'Approved']);
+            $permission->update([
+                'permission_status' => 'Approved',
+                'approval_reason'   => request()->input('approval_reason'),
+            ]);
 
             // Create attendance records for each day of the approved leave
             $start = Carbon::parse($permission->start_date);
@@ -185,6 +189,7 @@ class LeaveController extends Controller
                 'completion_date' => $request->completion_date,
                 'permission_status'          => $request->status,
                 'reject_reason'   => $request->status === 'Rejected' ? $request->reject_reason : null,
+                'approval_reason' => $request->status === 'Approved' ? $request->approval_reason : null,
             ]);
 
             // If it was accepted previously, we delete the SYSTEM attendance records for the old date range.

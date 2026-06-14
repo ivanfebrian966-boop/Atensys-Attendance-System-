@@ -44,6 +44,11 @@ Route::group(['prefix' => 'super-admin', 'as' => 'super_admin.', 'middleware' =>
     Route::post('/division/{id}', [SuperAdminController::class, 'updateDivision'])->name('update_division');
     Route::delete('/division/{id}', [SuperAdminController::class, 'deleteDivision'])->name('delete_division');
 
+    Route::get('/genders', [SuperAdminController::class, 'genders'])->name('genders');
+    Route::post('/gender', [SuperAdminController::class, 'storeGender'])->name('store_gender');
+    Route::post('/gender/{id}', [SuperAdminController::class, 'updateGender'])->name('update_gender');
+    Route::delete('/gender/{id}', [SuperAdminController::class, 'deleteGender'])->name('delete_gender');
+
     Route::get('/scanners', [SuperAdminController::class, 'scanners'])->name('scanners');
     Route::post('/scanner', [SuperAdminController::class, 'storeScanner'])->name('store_scanner');
     Route::post('/scanner/{id}', [SuperAdminController::class, 'updateScanner'])->name('update_scanner');

@@ -19,6 +19,7 @@ class Permission extends Model
         'sick_category',
         'permission_status',
         'reject_reason',
+        'approval_reason',
         'information',
         'file',
         'start_date',

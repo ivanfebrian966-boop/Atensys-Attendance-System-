@@ -172,6 +172,13 @@ function openEditDivision(id, name) {
     openModal('modalEditDivision');
 }
 
+function openEditGender(id, name) {
+    const form = document.getElementById('formEditGender');
+    form.action = `/super-admin/gender/${id}`;
+    document.getElementById('edit_gender_name').value = name;
+    openModal('modalEditGender');
+}
+
 // ===== Actions =====
 function confirmDelete(btn, type) {
     closeAllDropdowns();
@@ -217,10 +224,11 @@ function updateRealtimeDate() {
 document.addEventListener('DOMContentLoaded', () => {
     updateRealtimeDate();
     setInterval(updateRealtimeDate, 1000);
-    
+
     // Initialize Pagination for > 10 items
     initPagination('employee-table', 10);
     initPagination('division-table', 10);
+    initPagination('gender-table', 10);
 });
 
 function initPagination(tableId, limit) {

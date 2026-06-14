@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
 use App\Models\Division;
+use App\Models\Gender;
 
 class SuperAdminController extends Controller
 {
@@ -17,8 +18,10 @@ class SuperAdminController extends Controller
             'employees_count' => Employee::where('role', 'Employee')->count(),
             'hr_admins_count' => Employee::where('role', 'Admin HR')->count(),
             'divisions_count' => Division::count(),
+            'genders_count' => Gender::count(),
             'scanners_count' => \App\Models\ScannerDevice::count(),
             'divisions' => Division::all(),
+            'genders' => Gender::all(),
         ];
     }
 
@@ -82,6 +85,7 @@ class SuperAdminController extends Controller
                 'alamat' => 'required|string|max:500',
                 'password' => 'required|string|min:8',
                 'status' => 'required|in:Aktif,Tidak Aktif',
+                'gender_id' => 'nullable|exists:genders,gender_id',
             ]);
 
             Employee::create([
@@ -95,6 +99,7 @@ class SuperAdminController extends Controller
                 'position' => $request->jabatan,
                 'division_id' => $request->division_id,
                 'status' => $request->status,
+                'gender_id' => $request->gender_id ?? 1,
             ]);
 
             return redirect()->back()->with('success', 'Employee Added Successfully!');
@@ -118,6 +123,7 @@ class SuperAdminController extends Controller
                 'status' => 'required|in:Aktif,Tidak Aktif',
                 'division_id' => 'required|exists:divisions,division_id',
                 'position' => 'required|string|max:30',
+                'gender_id' => 'nullable|exists:genders,gender_id',
             ]);
 
             Employee::create([
@@ -131,6 +137,7 @@ class SuperAdminController extends Controller
                 'status' => $request->status,
                 'division_id' => $request->division_id,
                 'position' => $request->position,
+                'gender_id' => $request->gender_id ?? 1,
             ]);
 
             return redirect()->back()->with('success', 'HR Admin Account Created Successfully!');
@@ -144,7 +151,7 @@ class SuperAdminController extends Controller
     public function updateEmployee(Request $request, $nip)
     {
         $employee = Employee::findOrFail($nip);
-        
+
         $request->validate([
             'name' => 'required|string|max:75',
             'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
@@ -153,6 +160,7 @@ class SuperAdminController extends Controller
             'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Tidak Aktif',
+            'gender_id' => 'nullable|exists:genders,gender_id',
         ]);
 
         $data = [
@@ -163,6 +171,7 @@ class SuperAdminController extends Controller
             'position' => $request->jabatan,
             'division_id' => $request->division_id,
             'status' => $request->status,
+            'gender_id' => $request->gender_id ?? $employee->gender_id,
         ];
 
         if ($request->filled('password')) {
@@ -193,6 +202,7 @@ class SuperAdminController extends Controller
             'status' => 'required|in:Aktif,Tidak Aktif',
             'division_id' => 'required|exists:divisions,division_id',
             'position' => 'required|string|max:30',
+            'gender_id' => 'nullable|exists:genders,gender_id',
         ]);
 
         $data = [
@@ -203,6 +213,7 @@ class SuperAdminController extends Controller
             'status' => $request->status,
             'division_id' => $request->division_id,
             'position' => $request->position,
+            'gender_id' => $request->gender_id ?? $employee->gender_id,
         ];
 
         if ($request->filled('password')) {
@@ -251,13 +262,61 @@ class SuperAdminController extends Controller
     public function deleteDivision($id)
     {
         $division = Division::findOrFail($id);
-        
+
         if ($division->employees()->count() > 0) {
             return redirect()->back()->with('error', 'Can\'t delete this division because it has employees!');
         }
 
         $division->delete();
         return redirect()->back()->with('success', 'Division Deleted Successfully!');
+    }
+
+    public function genders()
+    {
+        $user = Auth::user();
+        $commonData = $this->getCommonData();
+        $genders = Gender::all();
+
+        return view('Super_Admin.genders', array_merge($commonData, compact('user', 'genders')));
+    }
+
+    public function storeGender(Request $request)
+    {
+        $request->validate([
+            'gender_name' => 'required|string|max:30|unique:genders',
+        ]);
+
+        Gender::create([
+            'gender_name' => $request->gender_name,
+        ]);
+
+        return redirect()->back()->with('success', 'Gender added successfully!');
+    }
+
+    public function updateGender(Request $request, $id)
+    {
+        $request->validate([
+            'gender_name' => 'required|string|max:30|unique:genders,gender_name,' . $id . ',gender_id',
+        ]);
+
+        $gender = Gender::findOrFail($id);
+        $gender->update([
+            'gender_name' => $request->gender_name,
+        ]);
+
+        return redirect()->back()->with('success', 'Gender Updated Successfully!');
+    }
+
+    public function deleteGender($id)
+    {
+        $gender = Gender::findOrFail($id);
+
+        if ($gender->employees()->count() > 0) {
+            return redirect()->back()->with('error', 'Can\'t delete this gender because it has employees!');
+        }
+
+        $gender->delete();
+        return redirect()->back()->with('success', 'Gender Deleted Successfully!');
     }
 
     public function profile()
@@ -279,6 +338,7 @@ class SuperAdminController extends Controller
             'email' => 'required|string|email|max:255|unique:employees,email,' . $user->nip . ',nip',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'gender_id' => 'nullable|exists:genders,gender_id',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -287,6 +347,7 @@ class SuperAdminController extends Controller
             'email' => $request->email,
             'no_hp' => $request->phone,
             'alamat' => $request->address,
+            'gender_id' => $request->gender_id ?? $user->gender_id,
         ];
 
         if ($request->filled('password')) {

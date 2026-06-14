@@ -302,6 +302,61 @@
     </div>
 </div>
 
+<!-- ===== MODAL: Add Gender ===== -->
+<div class="modal-overlay" id="modalAddGender" onclick="closeModalOutside(event,'modalAddGender')">
+    <div class="modal-box max-w-md" onclick="event.stopPropagation()">
+        <div class="flex items-start justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Add New Gender</h3>
+                <p class="text-sm text-slate-400 mt-1">Add a new gender category to the system</p>
+            </div>
+            <button onclick="closeModal('modalAddGender')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
+        </div>
+        <form method="POST" action="{{ route('super_admin.store_gender') }}">
+            @csrf
+            <div class="form-field">
+                <label class="form-label">Gender Name</label>
+                <input type="text" name="gender_name" class="form-input" placeholder="e.g.: Man, Woman" required>
+                @error('gender_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalAddGender')">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Save Gender
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL: Edit Gender ===== -->
+<div class="modal-overlay" id="modalEditGender" onclick="closeModalOutside(event,'modalEditGender')">
+    <div class="modal-box max-w-md" onclick="event.stopPropagation()">
+        <div class="flex items-start justify-between mb-6">
+            <div>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Edit Gender</h3>
+                <p class="text-sm text-slate-400 mt-1">Update gender name</p>
+            </div>
+            <button onclick="closeModal('modalEditGender')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
+        </div>
+        <form id="formEditGender" method="POST">
+            @csrf
+            <div class="form-field">
+                <label class="form-label">Gender Name</label>
+                <input type="text" name="gender_name" id="edit_gender_name" class="form-input" required>
+                @error('gender_name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-100">
+                <button type="button" class="btn-ghost" onclick="closeModal('modalEditGender')">Cancel</button>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- ===== MODAL: Edit Karyawan ===== -->
 <div class="modal-overlay" id="modalEditEmployee" onclick="closeModalOutside(event,'modalEditEmployee')">
     <div class="modal-box" onclick="event.stopPropagation()">

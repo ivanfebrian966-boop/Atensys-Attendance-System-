@@ -135,7 +135,9 @@ function renderLeaves() {
                 <td class="py-3 px-4">
                     ${row.status === 'Rejected' && row.reject_reason 
                         ? `<p class="text-[10px] text-red-400 font-semibold italic" title="${row.reject_reason}">${row.reject_reason}</p>` 
-                        : '<span class="text-slate-300">—</span>'}
+                        : (row.status === 'Approved' && row.approval_reason
+                            ? `<p class="text-[10px] text-emerald-500 font-semibold italic" title="${row.approval_reason}">${row.approval_reason}</p>`
+                            : '<span class="text-slate-300">—</span>')}
                 </td>
                 <td class="py-3 px-4">
                     <div class="flex justify-end items-center gap-2 flex-wrap">
@@ -171,6 +173,7 @@ let approveTargetId = null;
 
 function doApprove(id) {
     approveTargetId = id;
+    document.getElementById('approvalReason').value = '';
     document.getElementById('approveConfirmModal').style.display = 'flex';
 }
 
@@ -178,27 +181,31 @@ function closeApproveModal() {
     document.getElementById('approveConfirmModal').style.display = 'none';
 }
 
-async function execApprove() {
+async function submitApproveForm(e) {
+    e.preventDefault();
     if (!approveTargetId) return;
+    const reason = document.getElementById('approvalReason').value;
     const btn = document.getElementById('confirmApproveBtn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="animate-spin mr-2">⏳</span> Approving...';
+    btn.textContent = 'Processing...';
 
     try {
-        const res  = await fetch(LEAVE_APPROVE(approveTargetId), { method:'POST', headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'} });
+        const res  = await fetch(LEAVE_APPROVE(approveTargetId), {
+            method:'POST',
+            headers:{'X-CSRF-TOKEN':CSRF,'Content-Type':'application/json'},
+            body: JSON.stringify({ approval_reason: reason })
+        });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');
         if (json.success) {
             closeApproveModal();
             setTimeout(() => window.location.reload(), 800);
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = 'Yes, Approve';
         }
     } catch(e) { 
         showToast('Network error: ' + e.message, 'error');
+    } finally {
         btn.disabled = false;
-        btn.innerHTML = 'Yes, Approve';
+        btn.textContent = 'Confirm Approve';
     }
 }
 
@@ -250,14 +257,17 @@ function openManageModal(row) {
     document.getElementById('manageEnd').value = row.end_raw;
     document.getElementById('manageStatus').value = row.status;
     document.getElementById('manageRejectReason').value = row.reject_reason || '';
+    document.getElementById('manageApprovalReason').value = row.approval_reason || '';
     
     toggleManageRejectReason();
     document.getElementById('manageModal').style.display = 'flex';
 }
 function toggleManageRejectReason() {
     const status = document.getElementById('manageStatus').value;
-    const group = document.getElementById('manageRejectReasonGroup');
-    group.style.display = status === 'Rejected' ? 'block' : 'none';
+    const rejectGroup = document.getElementById('manageRejectReasonGroup');
+    const approveGroup = document.getElementById('manageApprovalReasonGroup');
+    rejectGroup.style.display = status === 'Rejected' ? 'block' : 'none';
+    approveGroup.style.display = status === 'Approved' ? 'block' : 'none';
 }
 function closeManageModal() {
     document.getElementById('manageModal').style.display = 'none';
@@ -274,13 +284,14 @@ async function submitManageForm(e) {
     const completion_date = document.getElementById('manageEnd').value;
     const status = document.getElementById('manageStatus').value;
     const reject_reason = status === 'Rejected' ? document.getElementById('manageRejectReason').value : null;
+    const approval_reason = status === 'Approved' ? document.getElementById('manageApprovalReason').value : null;
 
     try {
         const url = `${LEAVE_BASE_URL}/${id}`;
         const res = await fetch(url, {
             method: 'PUT',
             headers: { 'X-CSRF-TOKEN': CSRF, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ start_date, completion_date, status, reject_reason })
+            body: JSON.stringify({ start_date, completion_date, status, reject_reason, approval_reason })
         });
         const json = await res.json();
         showToast(json.message, json.success ? 'success' : 'error');

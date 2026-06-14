@@ -56,6 +56,16 @@
             @endif
         </a>
 
+        <a href="{{ route('super_admin.genders') }}" class="nav-item {{ request()->routeIs('super_admin.genders') ? 'active' : '' }}">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.673"/>
+            </svg>
+            Gender Data
+            @if(isset($genders_count))
+            <span class="ml-auto text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(244,114,182,0.2);color:#f472b6">{{ $genders_count }}</span>
+            @endif
+        </a>
+
         <a href="{{ route('super_admin.scanners') }}" class="nav-item {{ request()->routeIs('super_admin.scanners') ? 'active' : '' }}">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2a2 2 0 002-2v-5a2 2 0 00-2-2H4a2 2 0 00-2 2v5a2 2 0 002 2h2m12 0a2 2 0 01-2 2H8a2 2 0 01-2-2m12 0V9a2 2 0 00-2-2H8a2 2 0 00-2 2v7m4-10H8m4 0h2m-4 4h4m-4 4h4"/>

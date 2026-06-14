@@ -22,6 +22,8 @@ return new class extends Migration
                 'Bereavement Leave',
                 'Personal Leave',
                 'Family Event',
+                'Hajj/Umrah Leave',
+                'Official Duty Leave',
                 'Others',
             ])->nullable();
             $table->enum('sick_category', [
@@ -35,6 +37,7 @@ return new class extends Migration
             ])->nullable();
             $table->enum('permission_status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
             $table->text('reject_reason')->nullable();
+            $table->text('approval_reason')->nullable();
             $table->text('information');
             $table->string('file')->nullable();
             $table->date('start_date');

@@ -208,7 +208,7 @@
                             <th>Attachment</th>
                             <th>Submitted</th>
                             <th>Status</th>
-                            <th>Reject Reason</th>
+                            <th>Reason</th>
                             <th class="text-right">Actions</th>
                         </tr>
                     </thead>
@@ -280,6 +280,11 @@
                 <textarea id="manageRejectReason" class="form-input" rows="3" placeholder="Enter reason for rejection..."></textarea>
             </div>
 
+            <div class="form-group" id="manageApprovalReasonGroup" style="display:none;">
+                <label class="form-label">Approval Reason</label>
+                <textarea id="manageApprovalReason" class="form-input" rows="3" placeholder="Enter reason for approval..."></textarea>
+            </div>
+
             <div class="flex gap-2 justify-end mt-6">
                 <button type="button" class="btn-ghost" onclick="closeManageModal()">Cancel</button>
                 <button type="submit" class="btn-primary" id="manageSubmitBtn">Save Changes</button>
@@ -312,14 +317,21 @@
 
 {{-- APPROVE CONFIRM MODAL --}}
 <div id="approveConfirmModal" onclick="closeApproveModal()" style="position:fixed; inset:0; background:rgba(15,23,42,0.5); display:none; align-items:center; justify-content:center; z-index:9998; backdrop-filter:blur(4px);">
-    <div class="del-box" onclick="event.stopPropagation()">
-        <div class="del-icon-big" style="background:#ecfdf5;color:#10b981">✓</div>
-        <p class="del-title">Approve Leave Request?</p>
-        <p class="del-sub">This will approve the request and automatically create attendance records for the selected dates.</p>
-        <div class="del-actions">
-            <button class="btn-ghost" onclick="closeApproveModal()">Cancel</button>
-            <button class="btn-primary" id="confirmApproveBtn" onclick="execApprove()" style="background:linear-gradient(135deg,#10b981,#059669); border:none; color:white; padding:10px 20px; border-radius:12px; font-weight:600; cursor:pointer;">Yes, Approve</button>
-        </div>
+    <div class="manage-box" onclick="event.stopPropagation()">
+        <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Approve Leave Request</h3>
+        <p class="text-sm text-slate-500 mb-4">Please provide a reason for approving this request.</p>
+
+        <form id="approveForm" onsubmit="submitApproveForm(event)">
+            <div class="form-group">
+                <label class="form-label">Approval Reason</label>
+                <textarea id="approvalReason" class="form-input" rows="3" required placeholder="Enter reason for approval..."></textarea>
+            </div>
+
+            <div class="flex gap-2 justify-end mt-6">
+                <button type="button" class="btn-ghost" onclick="closeApproveModal()">Cancel</button>
+                <button type="submit" class="btn-primary" id="confirmApproveBtn" style="background:linear-gradient(135deg,#10b981,#059669); border:none; color:white;">Confirm Approve</button>
+            </div>
+        </form>
     </div>
 </div>
 

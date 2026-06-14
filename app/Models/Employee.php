@@ -19,6 +19,7 @@ class Employee extends Authenticatable
         'nip',
         'password',
         'name',
+        'gender_id',
         'role',
         'position',
         'email',
@@ -43,6 +44,11 @@ class Employee extends Authenticatable
     public function division()
     {
         return $this->belongsTo(Division::class, 'division_id', 'division_id');
+    }
+
+    public function gender()
+    {
+        return $this->belongsTo(Gender::class, 'gender_id', 'gender_id');
     }
 
     public function attendances()
