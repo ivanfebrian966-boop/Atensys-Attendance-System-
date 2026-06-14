@@ -104,6 +104,11 @@ class DatabaseSeeder extends Seeder
                     'no_hp' => '08' . rand(1000000000, 9999999999),
                     'alamat' => 'Kantor ' . $divisionName,
                     'status' => 'Aktif',
+                    'gender' => in_array($emp['nama'], [
+                        'Siti Nurhaliza', 'Dewi Lestari', 'Lina Marlina', 'Rina Sari',
+                        'Maya Putri', 'Intan Permata', 'Putri Ayu', 'Nina Oktaviani',
+                        'Dina Safitri', 'Vina Oktavia', 'Sari Dewi', 'Claudia Angel'
+                    ]) ? 'Female' : 'Male',
                 ]);
             }
         }

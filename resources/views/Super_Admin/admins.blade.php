@@ -46,6 +46,7 @@
                     data-email="{{ $admin->email }}"
                     data-phone="{{ $admin->no_hp }}"
                     data-address="{{ $admin->alamat }}"
+                    data-gender="{{ $admin->gender }}"
                     data-status="{{ $admin->status }}"
                     data-division="{{ $admin->division_id }}"
                     data-position="{{ $admin->position }}">

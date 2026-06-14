@@ -160,6 +160,10 @@
      background: #10b981;
  }
 
+ .stat-card.emerald::before {
+     background: #10b981;
+ }
+
  .stat-icon {
      width: 48px;
      height: 48px;

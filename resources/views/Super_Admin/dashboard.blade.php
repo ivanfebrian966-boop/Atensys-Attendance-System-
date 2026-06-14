@@ -5,7 +5,7 @@
 
 @section('content')
 <!-- Stat Cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
     <!-- Total Karyawan -->
     <div class="stat-card indigo fade-up d1">
         <div class="stat-icon" style="background:#eef2ff">📋</div>
@@ -26,6 +26,13 @@
         <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ count($divisions) }}</p>
         <p class="text-sm text-slate-500 mt-1">Total Divisions</p>
         <p class="text-xs text-emerald-600 font-semibold mt-2">Added</p>
+    </div>
+    <!-- Scanner Devices -->
+    <div class="stat-card emerald fade-up d5">
+        <div class="stat-icon" style="background:#ecfdf5">📷</div>
+        <p class="text-2xl font-bold text-slate-900" style="font-family:'Sora',sans-serif">{{ $scanners_count ?? 0 }}</p>
+        <p class="text-sm text-slate-500 mt-1">Scanner Devices</p>
+        <p class="text-xs text-emerald-600 font-semibold mt-2">Registered</p>
     </div>
     <!-- Status Akun -->
     <div class="panel p-5 fade-up d4">
