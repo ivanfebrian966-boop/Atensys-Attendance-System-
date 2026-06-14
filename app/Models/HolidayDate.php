@@ -8,10 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @property int $id
  * @property \Illuminate\Support\Carbon $date
- * @property array|null $names
+ * @property string $name
  * @property string|null $description
- * @property-read string $name
- * @property-read string $names_label
  */
 class HolidayDate extends Model
 {
@@ -23,13 +21,12 @@ class HolidayDate extends Model
 
     protected $fillable = [
         'date',
-        'names',       // JSON array — supports multiple holidays per date
+        'name',
         'description',
     ];
 
     protected $casts = [
         'date'  => 'date',
-        'names' => 'array',   // auto encode/decode JSON
     ];
 
     /**
@@ -41,26 +38,4 @@ class HolidayDate extends Model
         return $this->holiday_id ?? null;
     }
 
-    /**
-     * Get the first name (for backward compatibility).
-     */
-    public function getNameAttribute(): string
-    {
-        $names = $this->names;
-
-        if (is_array($names) && count($names) > 0) {
-            $first = reset($names);
-            return (string) $first;
-        }
-
-        return '';
-    }
-
-    /**
-     * Combine all names into one string (for display).
-     */
-    public function getNamesLabelAttribute(): string
-    {
-        return implode(' & ', $this->names ?? []);
-    }
 }

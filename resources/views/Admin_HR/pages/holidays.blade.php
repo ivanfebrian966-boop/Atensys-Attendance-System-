@@ -66,22 +66,20 @@
                     @forelse($holidays as $hol)
                     <div class="hol-row" id="hol-row-{{ $hol->id }}"
                          data-hol-date="{{ $hol->date->format('Y-m-d') }}"
-                         data-hol-names="{{ json_encode($hol->names) }}">
+                         data-hol-names="{{ json_encode([$hol->name]) }}">
                         <div class="hol-date-badge">
                             <span class="day-num">{{ $hol->date->format('d') }}</span>
                             <span class="month-txt">{{ $hol->date->format('M Y') }}</span>
                         </div>
                         <div class="hol-info">
-                            @foreach($hol->names as $idx => $nm)
-                                <p class="hol-name">
-                                    {{ $nm }}
-                                </p>
-                            @endforeach
+                            <p class="hol-name">
+                                {{ $hol->name }}
+                            </p>
                         </div>
                         <div class="hol-actions">
                             <button onclick="openEditHoliday({{ $hol->id }})"
                                 class="btn-icon-edit" title="Edit">✏️</button>
-                            <button onclick="deleteHoliday({{ $hol->id }}, '{{ addslashes($hol->names_label) }}')"
+                            <button onclick="deleteHoliday({{ $hol->id }}, '{{ addslashes($hol->name) }}')"
                                 class="btn-icon-del" title="Delete">🗑</button>
                         </div>
                     </div>

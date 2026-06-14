@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -15,6 +16,7 @@ return new class extends Migration
             $table->string('nip', 7)->primary();
             $table->string('password', 60);
             $table->string('name', 75);
+            $table->enum('gender', ['Male', 'Female'])->default('Male');
             $table->enum('role', ['Super Admin', 'Admin HR', 'Employee']);
             $table->string('position', 30);
             $table->string('email', 50)->unique();

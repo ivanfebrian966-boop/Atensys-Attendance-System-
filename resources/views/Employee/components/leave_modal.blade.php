@@ -213,6 +213,7 @@
         <div class="leave-modal-body">
             <form id="leaveForm" action="{{ route('employee.attendance.permission') }}" method="POST" enctype="multipart/form-data" novalidate>
                 @csrf
+                <input type="hidden" id="userGender" value="{{ Auth::user()->gender ?? 'Male' }}">
 
                 <!-- Type Selector -->
                 <div class="leave-form-field">
@@ -417,13 +418,17 @@
         window.closeLeaveModalOutside = function(e) {
             if (e.target === document.getElementById('leaveModal')) closeLeaveModal();
         };
+        const userGender = document.getElementById('userGender')?.value || 'Male';
+        
         const permissionOptions = [
             { text: "Marriage Leave", requireUpload: true },
-            { text: "Maternity Leave", requireUpload: true },
+            ...(userGender === 'Female' ? [{ text: "Maternity Leave", requireUpload: true }] : []),
             { text: "Annual Leave", requireUpload: false },
             { text: "Bereavement Leave", requireUpload: false },
             { text: "Personal Leave", requireUpload: false },
             { text: "Family Event", requireUpload: false },
+            { text: "Hajj/Umrah Leave", requireUpload: true },
+            { text: "Official Duty Leave", requireUpload: true },
             { text: "Others", requireUpload: false }
         ];
         

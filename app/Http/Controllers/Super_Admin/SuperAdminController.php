@@ -82,6 +82,7 @@ class SuperAdminController extends Controller
                 'alamat' => 'required|string|max:500',
                 'password' => 'required|string|min:8',
                 'status' => 'required|in:Aktif,Tidak Aktif',
+                'gender' => 'nullable|in:Male,Female',
             ]);
 
             Employee::create([
@@ -95,6 +96,7 @@ class SuperAdminController extends Controller
                 'position' => $request->jabatan,
                 'division_id' => $request->division_id,
                 'status' => $request->status,
+                'gender' => $request->gender ?? 'Male',
             ]);
 
             return redirect()->back()->with('success', 'Employee Added Successfully!');
@@ -118,6 +120,7 @@ class SuperAdminController extends Controller
                 'status' => 'required|in:Aktif,Tidak Aktif',
                 'division_id' => 'required|exists:divisions,division_id',
                 'position' => 'required|string|max:30',
+                'gender' => 'nullable|in:Male,Female',
             ]);
 
             Employee::create([
@@ -131,6 +134,7 @@ class SuperAdminController extends Controller
                 'status' => $request->status,
                 'division_id' => $request->division_id,
                 'position' => $request->position,
+                'gender' => $request->gender ?? 'Male',
             ]);
 
             return redirect()->back()->with('success', 'HR Admin Account Created Successfully!');
@@ -144,7 +148,7 @@ class SuperAdminController extends Controller
     public function updateEmployee(Request $request, $nip)
     {
         $employee = Employee::findOrFail($nip);
-        
+
         $request->validate([
             'name' => 'required|string|max:75',
             'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
@@ -153,6 +157,7 @@ class SuperAdminController extends Controller
             'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Tidak Aktif',
+            'gender' => 'nullable|in:Male,Female',
         ]);
 
         $data = [
@@ -163,6 +168,7 @@ class SuperAdminController extends Controller
             'position' => $request->jabatan,
             'division_id' => $request->division_id,
             'status' => $request->status,
+            'gender' => $request->gender ?? $employee->gender,
         ];
 
         if ($request->filled('password')) {
@@ -193,6 +199,7 @@ class SuperAdminController extends Controller
             'status' => 'required|in:Aktif,Tidak Aktif',
             'division_id' => 'required|exists:divisions,division_id',
             'position' => 'required|string|max:30',
+            'gender' => 'nullable|in:Male,Female',
         ]);
 
         $data = [
@@ -203,6 +210,7 @@ class SuperAdminController extends Controller
             'status' => $request->status,
             'division_id' => $request->division_id,
             'position' => $request->position,
+            'gender' => $request->gender ?? $employee->gender,
         ];
 
         if ($request->filled('password')) {
@@ -251,7 +259,7 @@ class SuperAdminController extends Controller
     public function deleteDivision($id)
     {
         $division = Division::findOrFail($id);
-        
+
         if ($division->employees()->count() > 0) {
             return redirect()->back()->with('error', 'Can\'t delete this division because it has employees!');
         }
@@ -279,6 +287,7 @@ class SuperAdminController extends Controller
             'email' => 'required|string|email|max:255|unique:employees,email,' . $user->nip . ',nip',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
+            'gender' => 'nullable|in:Male,Female',
             'password' => 'nullable|string|min:8|confirmed',
         ]);
 
@@ -287,6 +296,7 @@ class SuperAdminController extends Controller
             'email' => $request->email,
             'no_hp' => $request->phone,
             'alamat' => $request->address,
+            'gender' => $request->gender ?? $user->gender,
         ];
 
         if ($request->filled('password')) {

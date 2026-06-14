@@ -122,6 +122,7 @@ function openEditEmployee(btn) {
     const no_hp = row.dataset.no_hp;
     const alamat = row.dataset.alamat;
     const status = row.dataset.status;
+    const gender = row.dataset.gender;
 
     const form = document.getElementById('formEditEmployee');
     form.action = `/super-admin/employee/${id}`;
@@ -134,6 +135,7 @@ function openEditEmployee(btn) {
     document.getElementById('edit_emp_no_hp').value = no_hp;
     document.getElementById('edit_emp_alamat').value = alamat;
     document.getElementById('edit_emp_status').value = status;
+    if (document.getElementById('edit_emp_gender')) document.getElementById('edit_emp_gender').value = gender || 'Male';
 
     openModal('modalEditEmployee');
 }
@@ -149,6 +151,7 @@ function openEditAdmin(btn) {
     const status = row.dataset.status;
     const division = row.dataset.division;
     const position = row.dataset.position;
+    const gender = row.dataset.gender;
 
     const form = document.getElementById('formEditAdmin');
     form.action = `/super-admin/hr-admin/${id}`;
@@ -161,6 +164,7 @@ function openEditAdmin(btn) {
     document.getElementById('edit_admin_status').value = status || 'Aktif';
     document.getElementById('edit_admin_division').value = division || '';
     document.getElementById('edit_admin_position').value = position || '';
+    if (document.getElementById('edit_admin_gender')) document.getElementById('edit_admin_gender').value = gender || 'Male';
 
     openModal('modalEditAdmin');
 }
@@ -170,6 +174,13 @@ function openEditDivision(id, name) {
     form.action = `/super-admin/division/${id}`;
     document.getElementById('edit_division_name').value = name;
     openModal('modalEditDivision');
+}
+
+function openEditGender(id, name) {
+    const form = document.getElementById('formEditGender');
+    form.action = `/super-admin/gender/${id}`;
+    document.getElementById('edit_gender_name').value = name;
+    openModal('modalEditGender');
 }
 
 // ===== Actions =====
@@ -217,10 +228,11 @@ function updateRealtimeDate() {
 document.addEventListener('DOMContentLoaded', () => {
     updateRealtimeDate();
     setInterval(updateRealtimeDate, 1000);
-    
+
     // Initialize Pagination for > 10 items
     initPagination('employee-table', 10);
     initPagination('division-table', 10);
+    initPagination('gender-table', 10);
 });
 
 function initPagination(tableId, limit) {

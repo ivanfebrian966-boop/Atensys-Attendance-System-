@@ -203,6 +203,11 @@
                             };
                         @endphp
                         <span class="px-3 py-1 rounded-full text-xs font-bold {{ $sc }}">{{ $perm->permission_status }}</span>
+                        @if($perm->permission_status === 'Rejected' && $perm->reject_reason)
+                            <p class="text-[10px] text-red-400 mt-1.5 font-semibold italic truncate max-w-[150px]" title="{{ $perm->reject_reason }}">{{ $perm->reject_reason }}</p>
+                        @elseif($perm->permission_status === 'Approved' && $perm->approval_reason)
+                            <p class="text-[10px] text-emerald-500 mt-1.5 font-semibold italic truncate max-w-[150px]" title="{{ $perm->approval_reason }}">{{ $perm->approval_reason }}</p>
+                        @endif
                     </td>
                     <td class="py-3 px-4 max-w-[180px] truncate text-xs text-slate-500" title="{{ $perm->information }}">
                         {{ $perm->information }}

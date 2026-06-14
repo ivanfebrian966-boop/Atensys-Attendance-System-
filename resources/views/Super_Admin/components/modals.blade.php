@@ -63,7 +63,7 @@
             <!-- Step 2 -->
             <div id="addEmpStep2" class="step-container hidden flex flex-col" style="min-height: 300px;">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="form-field col-span-2">
+                    <div class="form-field">
                         <label class="form-label">Email</label>
                         <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -80,6 +80,14 @@
                             <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select" required>
+                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                        @error('gender') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-field col-span-2">
                         <label class="form-label">Address</label>
@@ -187,7 +195,7 @@
             <!-- Step 2 -->
             <div id="addAdminStep2" class="step-container hidden flex flex-col" style="min-height: 300px;">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="form-field col-span-2">
+                    <div class="form-field">
                         <label class="form-label">Email</label>
                         <input type="email" name="email" class="form-input" placeholder="email@attensys.id" value="{{ old('email') }}" required>
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -204,6 +212,14 @@
                             <option value="Tidak Aktif" {{ old('status') == 'Tidak Aktif' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select" required>
+                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                        @error('gender') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div class="form-field col-span-2">
                         <label class="form-label">Address</label>
@@ -302,6 +318,8 @@
     </div>
 </div>
 
+
+
 <!-- ===== MODAL: Edit Karyawan ===== -->
 <div class="modal-overlay" id="modalEditEmployee" onclick="closeModalOutside(event,'modalEditEmployee')">
     <div class="modal-box" onclick="event.stopPropagation()">
@@ -344,6 +362,13 @@
                 <div class="form-field">
                     <label class="form-label">Phone Number</label>
                     <input type="text" name="no_hp" id="edit_emp_no_hp" class="form-input" required>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" id="edit_emp_gender" class="form-select" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
                 </div>
                 <div class="form-field col-span-2">
                     <label class="form-label">Address</label>
@@ -419,6 +444,13 @@
                     <select name="status" id="edit_admin_status" class="form-select" required>
                         <option value="Aktif">Active</option>
                         <option value="Tidak Aktif">Inactive</option>
+                    </select>
+                </div>
+                <div class="form-field col-span-2">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" id="edit_admin_gender" class="form-select" required>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
                 </div>
                 <div class="form-field col-span-2">

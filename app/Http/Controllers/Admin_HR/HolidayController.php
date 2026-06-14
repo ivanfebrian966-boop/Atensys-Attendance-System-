@@ -24,7 +24,7 @@ class HolidayController extends Controller
         $holidayMap = [];
         foreach ($holidays as $h) {
             $dateKey = $h->date->format('Y-m-d');
-            $holidayMap[$dateKey] = array_merge($holidayMap[$dateKey] ?? [], $h->names ?? []);
+            $holidayMap[$dateKey][] = $h->name;
         }
 
         return view('Admin_HR.pages.holidays', compact('holidays', 'holidayMap'));
@@ -55,13 +55,13 @@ class HolidayController extends Controller
             foreach ($names as $name) {
                 $holiday = HolidayDate::create([
                     'date'  => $request->date,
-                    'names' => [$name],
+                    'name'  => $name,
                 ]);
                 $created[] = [
                     'id'        => $holiday->id,
                     'date'      => $holiday->date->format('Y-m-d'),
-                    'names'     => $holiday->names,
-                    'label'     => $holiday->names_label,
+                    'names'     => [$holiday->name],
+                    'label'     => $holiday->name,
                     'formatted' => $holiday->date->translatedFormat('l, d F Y'),
                 ];
             }
@@ -108,20 +108,20 @@ class HolidayController extends Controller
 
             // Keep the first name on the existing row, and create a new row for each additional name.
             $primaryName = array_shift($names);
-            $holiday->update(['names' => [$primaryName]]);
+            $holiday->update(['name' => $primaryName]);
 
             $createdRows = [];
             foreach ($names as $name) {
                 $newHoliday = HolidayDate::create([
                     'date'  => $holiday->date->toDateString(),
-                    'names' => [$name],
+                    'name'  => $name,
                 ]);
 
                 $createdRows[] = [
                     'id'        => $newHoliday->id,
                     'date'      => $newHoliday->date->format('Y-m-d'),
-                    'names'     => $newHoliday->names,
-                    'label'     => $newHoliday->names_label,
+                    'names'     => [$newHoliday->name],
+                    'label'     => $newHoliday->name,
                     'formatted' => $newHoliday->date->translatedFormat('l, d F Y'),
                 ];
             }
@@ -134,8 +134,8 @@ class HolidayController extends Controller
                 'holiday' => [
                     'id'        => $holiday->id,
                     'date'      => $holiday->date->format('Y-m-d'),
-                    'names'     => $holiday->names,
-                    'label'     => $holiday->names_label,
+                    'names'     => [$holiday->name],
+                    'label'     => $holiday->name,
                     'formatted' => $holiday->date->translatedFormat('l, d F Y'),
                 ],
                 'created' => $createdRows,
@@ -193,7 +193,7 @@ class HolidayController extends Controller
         $names = [];
 
         foreach ($holidays as $holiday) {
-            $names = array_merge($names, $holiday->names ?? []);
+            $names[] = $holiday->name;
         }
 
         return response()->json([

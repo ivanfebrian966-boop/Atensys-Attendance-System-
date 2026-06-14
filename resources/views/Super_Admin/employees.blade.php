@@ -55,7 +55,8 @@
                     data-division="{{ $emp->division_id }}"
                     data-jabatan="{{ $emp->position }}"
                     data-no_hp="{{ $emp->no_hp }}"
-                    data-alamat="{{ $emp->alamat }}">
+                    data-alamat="{{ $emp->alamat }}"
+                    data-gender="{{ $emp->gender }}">
                     <td>
                         <div class="flex items-center gap-3">
                             <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#818cf8)">

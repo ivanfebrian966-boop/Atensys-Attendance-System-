@@ -52,6 +52,7 @@
                     $infoItems = [
                         ['label'=>'Full Name',  'value'=>$user->name,          'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', 'clr'=>'indigo'],
                         ['label'=>'Email',      'value'=>$user->email,          'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'clr'=>'blue'],
+                        ['label'=>'Gender',     'value'=>$user->gender ?? 'Not set', 'icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z', 'clr'=>($user->gender === 'Female' ? 'pink' : 'sky')],
                         ['label'=>'Phone',      'value'=>$user->no_hp ?? 'Not set', 'icon'=>'M3 5a2 2 0 012-2h3.28a1 1 0 00.948.684l1.498 4.493a1 1 0 00.502.756l2.048 1.029a2.42 2.42 0 10-2.897 2.897l-1.029-2.048a1 1 0 00-.756-.502L7.177 6.73A1 1 0 006.28 6H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2', 'clr'=>'pink'],
                         ['label'=>'Address',    'value'=>$user->alamat ?? 'Not set', 'icon'=>'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', 'clr'=>'emerald'],
                     ];
@@ -107,6 +108,14 @@
                     <div class="form-field">
                         <label class="form-label">Address</label>
                         <input type="text" name="address" class="form-input" value="{{ old('alamat', $user->alamat) }}" placeholder="Full address">
+                    </div>
+                    <div class="form-field md:col-span-2">
+                        <label class="form-label">Gender</label>
+                        <select name="gender" class="form-select">
+                            <option value="">Select Gender</option>
+                            <option value="Male" {{ old('gender', $user->gender) === 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ old('gender', $user->gender) === 'Female' ? 'selected' : '' }}>Female</option>
+                        </select>
                     </div>
                 </div>
 
