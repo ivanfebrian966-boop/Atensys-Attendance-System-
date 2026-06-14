@@ -39,7 +39,7 @@ class AttendanceController extends Controller
             $today = Carbon::today();
             $holidays = HolidayDate::where('date', $today->toDateString())->get();
             if ($holidays->isNotEmpty()) {
-                $names = $holidays->flatMap(fn($item) => $item->names ?: [])->toArray();
+                $names = $holidays->map(fn($item) => $item->name)->toArray();
                 return response()->json([
                     'success' => false,
                     'message' => '🎉 Today is a holiday: ' . implode(' & ', array_unique($names)) . '. Attendance system is closed.'
@@ -348,8 +348,6 @@ class AttendanceController extends Controller
                 'attendance_status' => $status,
                 'check_in' => $check_in,
                 'check_out' => $check_out,
-                'created_at' => $date->setTime(7,0,0),
-                'updated_at' => Carbon::now(),
             ]);
 
             // Jika status adalah Sick atau Permission, update keterangan di tabel permissions

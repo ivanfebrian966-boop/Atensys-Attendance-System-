@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('holiday_dates', function (Blueprint $table) {
             $table->id('holiday_id');
             $table->date('date');
-            // Nama-nama hari libur disimpan sebagai JSON array (mendukung > 1 nama per tanggal)
-            $table->json('names');
+            // Nama hari libur disimpan sebagai string (jika > 1 nama per tanggal, akan menjadi baris baru)
+            $table->string('name', 60);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
         });
