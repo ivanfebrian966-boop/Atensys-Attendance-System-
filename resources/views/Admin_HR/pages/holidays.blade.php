@@ -62,7 +62,7 @@
                         <p class="panel-subtitle">Total: <span id="totalHolidays" class="font-semibold text-red-500">{{ $holidays->count() }}</span> holiday entries</p>
                     </div>
                 </div>
-                <div class="modal-body pb-2" style="max-height:440px;overflow-y:auto;" id="holidayListContainer">
+                <div class="modal-body pb-2" style="max-height:auto;overflow-y:auto;" id="holidayListContainer">
                     @forelse($holidays as $hol)
                     <div class="hol-row" id="hol-row-{{ $hol->id }}"
                          data-hol-date="{{ $hol->date->format('Y-m-d') }}"

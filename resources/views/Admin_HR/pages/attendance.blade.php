@@ -32,7 +32,7 @@
                 <p style="font-size:12px;color:#ef4444;margin:0;">The attendance scanning system is <strong>closed</strong>. All employees without leave are marked as present.</p>
             </div>
             <a href="{{ route('admin-hr.holidays') }}" style="flex-shrink:0;font-size:12px;font-weight:600;color:#b91c1c;text-decoration:none;background:#fff;border:1px solid #fca5a5;border-radius:8px;padding:6px 12px;white-space:nowrap;">
-                Manage Holidays →
+                Manage Holidays
             </a>
         </div>
         @endif
@@ -189,7 +189,7 @@
  
             {{-- Employee Search --}}
             <div style="position:relative;margin-bottom:14px;">
-                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Employee *</label>
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Employee</label>
                 {{-- Employee preview (shown after select) --}}
                 <div id="aaEmpPreview" style="display:none;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;">
                     <div id="aaEmpAvatar" style="width:28px;height:28px;border-radius:50%;background:#eef2ff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#4f46e5;flex-shrink:0;"></div>
@@ -209,7 +209,7 @@
  
             {{-- Date (Full Width) --}}
             <div style="margin-bottom:14px;">
-                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date *</label>
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date</label>
                 <input type="date" id="aaDate" class="form-input" style="font-size:13px;">
                 <span class="form-error" id="eaaDate"></span>
             </div>
@@ -220,12 +220,12 @@
                 <p style="font-size:12px;color:#92400e;margin:0;line-height:1.5;">
                     <strong>Checkout is not available yet.</strong><br>
                     Today's checkout data can only be entered after <strong>17:00</strong>.
-                </p>
+                </p> 
             </div>
 
             {{-- Time Type Toggle --}}
             <div style="margin-bottom:12px;">
-                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;display:block;">Time Type *</label>
+                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;display:block;">Time Type</label>
                 <div style="display:flex;gap:8px;">
                     <button type="button" id="tglBtnIn" onclick="setTimeType('check_in')"
                         style="flex:1;height:38px;border-radius:8px;border:1.5px solid #c7d2fe;background:#eef2ff;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">

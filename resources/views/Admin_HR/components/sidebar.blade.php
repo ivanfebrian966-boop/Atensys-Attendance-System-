@@ -55,7 +55,7 @@
             Holiday Calendar
             @php $todayHoliday = \App\Models\HolidayDate::whereDate('date', today())->exists(); @endphp
             @if($todayHoliday)
-                <span style="margin-left:auto;background:#ef4444;color:white;font-size:9px;font-weight:700;border-radius:999px;padding:1px 6px;line-height:16px;">LIBUR</span>
+                <span style="margin-left:auto;background:#ef4444;color:white;font-size:9px;font-weight:700;border-radius:999px;padding:1px 6px;line-height:16px;">HOLIDAY</span>
             @endif
         </a>
 

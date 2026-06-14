@@ -15,7 +15,7 @@ use App\Http\Controllers\Employee\EmployeeController;
 use App\Http\Controllers\ScannerController;
 use Illuminate\Support\Facades\Route;
 
-// hakaman awal
+// halaman awal
 Route::get('/', [HomeController::class, 'home'])->name('home');
 Route::get('/home', [HomeController::class, 'home']);
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
