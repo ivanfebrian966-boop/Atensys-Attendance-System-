@@ -24,6 +24,23 @@
     @yield('modals')
 
     <script src="{{ asset('js/Admin_HR/shared.js') }}"></script>
+
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('Berhasil!', "{!! addslashes(session('success')) !!}", 'success');
+        });
+    </script>
+    @endif
+
+    @if(session('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            showToast('Gagal!', "{!! addslashes(session('error')) !!}", 'error');
+        });
+    </script>
+    @endif
+
     @yield('scripts')
 
 </body>

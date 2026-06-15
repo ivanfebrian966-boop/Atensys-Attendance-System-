@@ -35,8 +35,16 @@ class AttendanceController extends Controller
     public function processQr(Request $request)
     {
         try {
-            // ── Block scans during holiday dates ─────────────────────────
+            // ── Block scans on weekends ──────────────────────────────────
             $today = Carbon::today();
+            if ($today->isWeekend()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attendance scanning is closed on weekends (Saturday & Sunday).'
+                ], 403);
+            }
+
+            // ── Block scans during holiday dates ─────────────────────────
             $holidays = HolidayDate::where('date', $today->toDateString())->get();
             if ($holidays->isNotEmpty()) {
                 $names = $holidays->map(fn($item) => $item->name)->toArray();

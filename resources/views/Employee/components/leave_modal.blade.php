@@ -291,6 +291,15 @@
                     <select id="leave_category" name="leave_category" class="leave-form-select" onchange="updateInformation()">
                         <!-- Options populated via JS -->
                     </select>
+                    <!-- Category detail box shown below dropdown -->
+                    <div id="category_detail_box" class="mt-2 p-3 bg-indigo-50 border border-indigo-100 rounded-xl flex items-start gap-3 hidden">
+                        <div class="text-indigo-500 mt-0.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                        <div>
+                            <p id="cat_detail_text" class="text-xs text-slate-600 leading-relaxed font-medium font-dm-sans"></p>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Reason (Additional details) -->
@@ -331,9 +340,6 @@
                 <span id="leaveSubmitText">Submit Request</span>
             </button>
         </div>
-
-    </div>
-</div>
 
 <script>
     if (typeof window.openLeaveModal !== 'function') {
@@ -421,25 +427,24 @@
         const userGender = document.getElementById('userGender')?.value || 'Male';
         
         const permissionOptions = [
-            { text: "Marriage Leave", requireUpload: true },
-            ...(userGender === 'Female' ? [{ text: "Maternity Leave", requireUpload: true }] : []),
-            { text: "Annual Leave", requireUpload: false },
-            { text: "Bereavement Leave", requireUpload: false },
-            { text: "Personal Leave", requireUpload: false },
-            { text: "Family Event", requireUpload: false },
-            { text: "Hajj/Umrah Leave", requireUpload: true },
-            { text: "Official Duty Leave", requireUpload: true },
-            { text: "Others", requireUpload: false }
+            { text: "Marriage Leave", requireUpload: true, min: 1, max: 3 },
+            ...(userGender === 'Female' ? [{ text: "Maternity Leave", requireUpload: true, min: 1, max: 90 }] : []),
+            { text: "Annual Leave", requireUpload: false, min: 1, max: 12 },
+            { text: "Bereavement Leave", requireUpload: false, min: 1, max: 3 },
+            { text: "Personal Leave", requireUpload: false, min: 1, max: 1 },
+            { text: "Family Event", requireUpload: false, min: 1, max: 2 },
+            { text: "Hajj Leave", requireUpload: true, min: 1, max: 40 },
+            { text: "Umrah Leave", requireUpload: true, min: 1, max: 15 },
+            { text: "Official Duty Leave", requireUpload: true, min: 1, max: 'Unlimited' }
         ];
         
         const sickOptions = [
-            { text: "Sick Leave with Medical Certificate", requireUpload: true },
-            { text: "Hospitalization", requireUpload: true },
-            { text: "Accident", requireUpload: true },
-            { text: "Mild Illness (Flu / Fever)", requireUpload: false },
-            { text: "Outpatient Care", requireUpload: false },
-            { text: "Medical Checkup", requireUpload: false },
-            { text: "Others", requireUpload: false }
+            { text: "Sick Leave with Medical Certificate", requireUpload: true, min: 1, max: 14 },
+            { text: "Hospitalization", requireUpload: true, min: 1, max: 'Unlimited' },
+            { text: "Accident", requireUpload: true, min: 1, max: 'Unlimited' },
+            { text: "Mild Illness (Flu / Fever)", requireUpload: false, min: 1, max: 2 },
+            { text: "Outpatient Care", requireUpload: false, min: 1, max: 1 },
+            { text: "Medical Checkup", requireUpload: false, min: 1, max: 1 }
         ];
 
         let isEditing = false;
@@ -461,6 +466,7 @@
                     opt.value = o.text;
                     opt.textContent = o.text;
                     opt.dataset.requireUpload = o.requireUpload;
+                    opt.dataset.maxDays = o.max;
                     catSelect.appendChild(opt);
                 });
                 updateInformation();
@@ -505,6 +511,17 @@
             const selectedOption = catSelect.options[catSelect.selectedIndex];
             const isRequired = selectedOption.dataset.requireUpload === 'true';
             
+            // Show details below dropdown
+            const detailBox = document.getElementById('category_detail_box');
+            const detailText = document.getElementById('cat_detail_text');
+            if (detailBox && detailText) {
+                const maxDays = selectedOption.dataset.maxDays;
+                const reqText = isRequired ? "Requires a supporting document (PDF)." : "No document required.";
+                const maxText = maxDays === 'Unlimited' ? "No maximum day limit." : `Maximum of <b>${maxDays} days</b>.`;
+                detailText.innerHTML = `${maxText} ${reqText}`;
+                detailBox.classList.remove('hidden');
+            }
+
             const fileInput = document.getElementById('file_upload');
             const labelEl = document.getElementById('attachment_label');
             const uploadZone = document.getElementById('uploadZone');

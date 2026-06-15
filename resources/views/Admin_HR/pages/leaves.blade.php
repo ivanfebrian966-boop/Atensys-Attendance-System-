@@ -139,9 +139,6 @@
                                 <div class="flex justify-end gap-2">
                                     <button class="btn-approve" onclick="doApprove({{ $perm->permission_id }})">✓ Approve</button>
                                     <button class="btn-reject" onclick="doReject({{ $perm->permission_id }})">✕ Reject</button>
-                                    <button class="bg-red-50 text-red-500 hover:bg-red-100 p-2 rounded-lg transition" onclick="openDeleteModal({{ $perm->permission_id }})" title="Delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -332,19 +329,6 @@
                 <button type="submit" class="btn-primary" id="confirmApproveBtn" style="background:linear-gradient(135deg,#10b981,#059669); border:none; color:white;">Confirm Approve</button>
             </div>
         </form>
-    </div>
-</div>
-
-{{-- DELETE CONFIRM MODAL --}}
-<div id="deleteConfirmModal" onclick="closeDeleteModal()">
-    <div class="del-box" onclick="event.stopPropagation()">
-        <div class="del-icon-big">🗑️</div>
-        <p class="del-title">Delete Leave Request?</p>
-        <p class="del-sub">This action cannot be undone. The request will be permanently removed.</p>
-        <div class="del-actions">
-            <button class="btn-ghost" onclick="closeDeleteModal()">Cancel</button>
-            <button class="btn-danger" id="confirmDeleteBtn" onclick="execDelete()">Yes, Delete</button>
-        </div>
     </div>
 </div>
 

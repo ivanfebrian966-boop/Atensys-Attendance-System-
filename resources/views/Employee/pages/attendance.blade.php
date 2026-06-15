@@ -173,6 +173,7 @@
                     <th>Type</th>
                     <th>Date Range</th>
                     <th>Status</th>
+                    <th>Reason</th>
                     <th>Information</th>
                     <th>Attachment</th>
                     <th>Actions</th>
@@ -203,10 +204,14 @@
                             };
                         @endphp
                         <span class="px-3 py-1 rounded-full text-xs font-bold {{ $sc }}">{{ $perm->permission_status }}</span>
+                    </td>
+                    <td class="py-3 px-4 max-w-[180px] text-xs">
                         @if($perm->permission_status === 'Rejected' && $perm->reject_reason)
-                            <p class="text-[10px] text-red-400 mt-1.5 font-semibold italic truncate max-w-[150px]" title="{{ $perm->reject_reason }}">{{ $perm->reject_reason }}</p>
+                            <p class="text-[11px] text-red-500 font-medium leading-tight" title="{{ $perm->reject_reason }}">{{ $perm->reject_reason }}</p>
                         @elseif($perm->permission_status === 'Approved' && $perm->approval_reason)
-                            <p class="text-[10px] text-emerald-500 mt-1.5 font-semibold italic truncate max-w-[150px]" title="{{ $perm->approval_reason }}">{{ $perm->approval_reason }}</p>
+                            <p class="text-[11px] text-emerald-600 font-medium leading-tight" title="{{ $perm->approval_reason }}">{{ $perm->approval_reason }}</p>
+                        @else
+                            <span class="text-slate-300">—</span>
                         @endif
                     </td>
                     <td class="py-3 px-4 max-w-[180px] truncate text-xs text-slate-500" title="{{ $perm->information }}">
@@ -252,7 +257,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center text-slate-400 py-8 text-sm">No leave requests yet. Click <strong>New Request</strong> to submit one.</td>
+                    <td colspan="7" class="text-center text-slate-400 py-8 text-sm">No leave requests yet. Click <strong>New Request</strong> to submit one.</td>
                 </tr>
                 @endforelse
             </tbody>

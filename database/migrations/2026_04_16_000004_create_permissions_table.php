@@ -22,9 +22,9 @@ return new class extends Migration
                 'Bereavement Leave',
                 'Personal Leave',
                 'Family Event',
-                'Hajj/Umrah Leave',
+                'Hajj Leave',
+                'Umrah Leave',
                 'Official Duty Leave',
-                'Others',
             ])->nullable();
             $table->enum('sick_category', [
                 'Sick Leave with Medical Certificate',
@@ -33,7 +33,6 @@ return new class extends Migration
                 'Mild Illness (Flu / Fever)',
                 'Outpatient Care',
                 'Medical Checkup',
-                'Others',
             ])->nullable();
             $table->enum('permission_status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
             $table->text('reject_reason')->nullable();

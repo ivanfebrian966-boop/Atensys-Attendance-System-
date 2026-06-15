@@ -84,6 +84,8 @@ function renderCalendar() {
 
         grid.appendChild(el);
     }
+    
+    filterHolidayList();
 }
 
 function calPrev() {
@@ -103,6 +105,52 @@ function onMonthYearChange() {
         calMonth = parseInt(sm.value);
         calYear = parseInt(sy.value);
         renderCalendar();
+    }
+}
+
+function filterHolidayList() {
+    const rows = document.querySelectorAll('.hol-row');
+    let visibleCount = 0;
+    const targetMonth = String(calMonth + 1).padStart(2, '0');
+    const targetYear = String(calYear);
+
+    rows.forEach(row => {
+        const d = row.dataset.holDate; // "YYYY-MM-DD"
+        if (d && d.startsWith(`${targetYear}-${targetMonth}`)) {
+            row.style.display = 'flex';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    let emptyEl = document.getElementById('emptyHolidays');
+    if (visibleCount === 0) {
+        if (!emptyEl) {
+            const container = document.getElementById('holidayListContainer');
+            if (container) {
+                const div = document.createElement('div');
+                div.id = 'emptyHolidays';
+                div.className = 'text-center py-10';
+                div.innerHTML = `
+                    <div style="font-size:40px;margin-bottom:8px;">🏖️</div>
+                    <p class="text-sm font-medium text-slate-500">No holidays registered for this month</p>
+                    <p class="text-xs text-slate-400 mt-1">Click a date on the calendar to add</p>
+                `;
+                container.appendChild(div);
+            }
+        } else {
+            emptyEl.style.display = 'block';
+        }
+    } else {
+        if (emptyEl) {
+            emptyEl.style.display = 'none';
+        }
+    }
+
+    const totalEl = document.getElementById('totalHolidays');
+    if (totalEl) {
+        totalEl.textContent = visibleCount;
     }
 }
 

@@ -208,6 +208,46 @@ class EmployeeController extends Controller
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
 
+        // Maternity leave limit: 1 per year
+        if ($category === 'Maternity Leave') {
+            $year = Carbon::parse($request->start_date)->year;
+            $hasMaternity = Permission::where('nip', $user->nip)
+                ->where('leave_category', 'Maternity Leave')
+                ->whereIn('permission_status', ['Pending', 'Approved'])
+                ->whereYear('start_date', $year)
+                ->exists();
+
+            if ($hasMaternity) {
+                return back()->with('error', 'Failed: Maternity Leave can only be taken once per year.');
+            }
+        }
+
+        // Annual leave limit: 12 days per year
+        if ($category === 'Annual Leave') {
+            $year = Carbon::parse($request->start_date)->year;
+            $annualLeaves = Permission::where('nip', $user->nip)
+                ->where('leave_category', 'Annual Leave')
+                ->whereIn('permission_status', ['Pending', 'Approved'])
+                ->whereYear('start_date', $year)
+                ->get();
+
+            $totalDaysTaken = 0;
+            foreach ($annualLeaves as $leave) {
+                $start = Carbon::parse($leave->start_date);
+                $end = Carbon::parse($leave->completion_date);
+                $totalDaysTaken += $start->diffInDays($end) + 1;
+            }
+
+            $currentStart = Carbon::parse($request->start_date);
+            $currentEnd = Carbon::parse($request->completion_date);
+            $currentDays = $currentStart->diffInDays($currentEnd) + 1;
+
+            if (($totalDaysTaken + $currentDays) > 12) {
+                $remaining = max(0, 12 - $totalDaysTaken);
+                return back()->with('error', "Failed: Annual Leave limit is 12 days per year. You only have {$remaining} days left.");
+            }
+        }
+
         // Check if has attendance for these dates
         $hasAttendance = Attendance::where('nip', $user->nip)
             ->whereDate('check_in', '>=', $request->start_date)
@@ -270,6 +310,48 @@ class EmployeeController extends Controller
             'information' => 'nullable|string|max:255',
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
+
+        // Maternity leave limit: 1 per year (excluding this current request)
+        if ($category === 'Maternity Leave') {
+            $year = Carbon::parse($request->start_date)->year;
+            $hasMaternity = Permission::where('nip', $user->nip)
+                ->where('permission_id', '!=', $id)
+                ->where('leave_category', 'Maternity Leave')
+                ->whereIn('permission_status', ['Pending', 'Approved'])
+                ->whereYear('start_date', $year)
+                ->exists();
+
+            if ($hasMaternity) {
+                return back()->with('error', 'Failed: Maternity Leave can only be taken once per year.');
+            }
+        }
+
+        // Annual leave limit: 12 days per year (excluding this current request)
+        if ($category === 'Annual Leave') {
+            $year = Carbon::parse($request->start_date)->year;
+            $annualLeaves = Permission::where('nip', $user->nip)
+                ->where('permission_id', '!=', $id)
+                ->where('leave_category', 'Annual Leave')
+                ->whereIn('permission_status', ['Pending', 'Approved'])
+                ->whereYear('start_date', $year)
+                ->get();
+
+            $totalDaysTaken = 0;
+            foreach ($annualLeaves as $leave) {
+                $start = Carbon::parse($leave->start_date);
+                $end = Carbon::parse($leave->completion_date);
+                $totalDaysTaken += $start->diffInDays($end) + 1;
+            }
+
+            $currentStart = Carbon::parse($request->start_date);
+            $currentEnd = Carbon::parse($request->completion_date);
+            $currentDays = $currentStart->diffInDays($currentEnd) + 1;
+
+            if (($totalDaysTaken + $currentDays) > 12) {
+                $remaining = max(0, 12 - $totalDaysTaken);
+                return back()->with('error', "Failed: Annual Leave limit is 12 days per year. You only have {$remaining} days left.");
+            }
+        }
 
         $filePath = $permission->file;
         if ($request->hasFile('file')) {

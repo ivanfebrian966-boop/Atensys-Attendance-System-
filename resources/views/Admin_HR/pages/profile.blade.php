@@ -32,12 +32,6 @@
 
     <div class="p-4 md:p-6 space-y-6">
 
-        @if(session('success'))
-        <div class="px-4 py-3 bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl flex items-center gap-3 fade-slide-up">
-            <span class="text-xl">✅</span>
-            <p class="text-sm font-semibold">{{ session('success') }}</p>
-        </div>
-        @endif
 
         {{-- ===== HERO BANNER ===== --}}
         <div class="relative overflow-hidden rounded-3xl shadow-2xl fade-up d1"
