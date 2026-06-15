@@ -33,6 +33,7 @@
                     <th>NIP</th>
                     <th>Division</th>
                     <th>Position</th>
+                    <th>Gender</th>
                     <th>Status</th>
                     <th>Joined</th>
                     <th>Actions</th>
@@ -64,6 +65,7 @@
                     <td><span class="text-slate-500 text-xs font-mono">{{ $admin->nip }}</span></td>
                     <td><span class="text-slate-600 text-sm">{{ $admin->division->division_name ?? 'All Divisions' }}</span></td>
                     <td><span class="text-slate-600 text-sm font-medium">{{ $admin->position }}</span></td>
+                    <td><span class="text-slate-600 text-sm">{{ $admin->gender }}</span></td>
                     <td>
                         @if($admin->status === 'Aktif')
                             <span class="badge badge-active">● Active</span>
