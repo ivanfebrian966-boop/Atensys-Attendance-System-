@@ -113,14 +113,15 @@ class LeaveController extends Controller
 
                 if (!$exists) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                    Attendance::create([
+                    $attendance = new Attendance([
                         'nip'        => $permission->nip,
                         'check_in'   => null,
-                        'attendance_status'     => 'Permission',
+                        'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Permission',
                         'qr_code'    => 'SYSTEM',
-                        'created_at' => $attendanceDate,
-                        'updated_at' => $attendanceDate,
                     ]);
+                    $attendance->created_at = $attendanceDate;
+                    $attendance->updated_at = $attendanceDate;
+                    $attendance->save();
                 }
             }
 
@@ -158,13 +159,14 @@ class LeaveController extends Controller
 
                 if (!$exists) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                    Attendance::create([
+                    $attendance = new Attendance([
                         'nip'        => $permission->nip,
                         'attendance_status'     => 'Absent',
                         'qr_code'    => 'SYSTEM',
-                        'created_at' => $attendanceDate,
-                        'updated_at' => $attendanceDate,
                     ]);
+                    $attendance->created_at = $attendanceDate;
+                    $attendance->updated_at = $attendanceDate;
+                    $attendance->save();
                 }
             }
 
@@ -212,20 +214,24 @@ class LeaveController extends Controller
 
                     if (!$exists) {
                         $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                        Attendance::create([
+                        $attendance = new Attendance([
                             'nip'        => $permission->nip,
                             'check_in'   => $attendanceDate,
-                            'attendance_status'     => 'Permission',
+                            'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Permission',
                             'qr_code'    => 'SYSTEM',
-                            'created_at' => $attendanceDate,
-                            'updated_at' => $attendanceDate,
                         ]);
+                        $attendance->created_at = $attendanceDate;
+                        $attendance->updated_at = $attendanceDate;
+                        $attendance->save();
                     } else {
                         // Update to leave type if it was marked as Absent
                         Attendance::where('nip', $permission->nip)
                             ->whereDate('created_at', $date->toDateString())
                             ->where('attendance_status', 'Absent')
-                            ->update(['attendance_status' => 'Permission', 'check_in' => $date->copy()->setTime(7, 0, 0)]);
+                            ->update([
+                                'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Permission',
+                                'check_in' => $date->copy()->setTime(7, 0, 0)
+                            ]);
                     }
                 }
             } elseif ($request->status === 'Rejected') {
@@ -241,13 +247,14 @@ class LeaveController extends Controller
 
                     if (!$exists) {
                         $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                        Attendance::create([
+                        $attendance = new Attendance([
                             'nip'        => $permission->nip,
                             'attendance_status'     => 'Absent',
                             'qr_code'    => 'SYSTEM',
-                            'created_at' => $attendanceDate,
-                            'updated_at' => $attendanceDate,
                         ]);
+                        $attendance->created_at = $attendanceDate;
+                        $attendance->updated_at = $attendanceDate;
+                        $attendance->save();
                     }
                 }
             }
@@ -330,13 +337,14 @@ class LeaveController extends Controller
 
                 if (!$hasRecord) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                    Attendance::create([
-                        'nip'        => $perm->nip,
-                        'attendance_status'     => 'Absent',
-                        'qr_code'    => 'SYSTEM',
-                        'created_at' => $attendanceDate,
-                        'updated_at' => $attendanceDate,
-                    ]);
+                        $attendance = new Attendance([
+                            'nip'        => $perm->nip,
+                            'attendance_status'     => 'Absent',
+                            'qr_code'    => 'SYSTEM',
+                        ]);
+                        $attendance->created_at = $attendanceDate;
+                        $attendance->updated_at = $attendanceDate;
+                        $attendance->save();
                     $marked++;
                 }
             }

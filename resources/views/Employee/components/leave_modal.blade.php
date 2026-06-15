@@ -709,11 +709,11 @@
             // Try multiple notification systems
             if (typeof showToast === 'function') {
                 if (type === 'success') {
-                    showToast('✅', message, 3000);
+                    showToast(message, 'success');
                 } else if (type === 'error') {
-                    showToast('❌', message, 3000);
+                    showToast(message, 'error');
                 } else {
-                    showToast('ℹ️', message, 3000);
+                    showToast(message, 'info');
                 }
             } else if (window.Toastify) {
                 const bgColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6';

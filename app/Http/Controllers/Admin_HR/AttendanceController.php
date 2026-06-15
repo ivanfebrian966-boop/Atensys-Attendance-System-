@@ -290,15 +290,16 @@ class AttendanceController extends Controller
                 }
             }
 
-            Attendance::create([
+            $attendance = new Attendance([
                 'nip' => $validated['nip'],
                 'attendance_status' => $status,
                 'check_in' => $check_in,
                 'check_out' => $check_out,
                 'qr_code' => 'MANUAL',
-                'created_at' => $date->setTime(7,0,0),
-                'updated_at' => $date,
             ]);
+            $attendance->created_at = clone $date->setTime(7,0,0);
+            $attendance->updated_at = clone $date;
+            $attendance->save();
 
             return response()->json(['success' => true, 'message' => 'Attendance data added successfully']);
         } catch (\Exception $e) {
@@ -478,21 +479,22 @@ class AttendanceController extends Controller
             $start = Carbon::parse($permission->start_date);
             $end = Carbon::parse($permission->completion_date);
 
-            for ($date = $start; $date->lte($end); $date->addDay()) {
+            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
                 $exists = Attendance::where('nip', $permission->nip)
                     ->whereDate('created_at', $date->toDateString())
                     ->exists();
 
                 if (!$exists) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
-                    Attendance::create([
+                    $attendance = new Attendance([
                         'nip' => $permission->nip,
                         'check_in' => $attendanceDate,
-                        'attendance_status' => 'Permission',
+                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Permission',
                         'qr_code' => 'SYSTEM',
-                        'created_at' => $attendanceDate,
-                        'updated_at' => $attendanceDate,
                     ]);
+                    $attendance->created_at = $attendanceDate;
+                    $attendance->updated_at = $attendanceDate;
+                    $attendance->save();
                 }
             }
 
