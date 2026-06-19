@@ -35,7 +35,7 @@ return new class extends Migration
                 DB::statement(
                     "ALTER TABLE `attendances`
                      MODIFY COLUMN `attendance_status`
-                     ENUM('Present','Late','Permission','Absent','Holiday') NOT NULL"
+                     ENUM('Present','Late','Leave','Sick','Absent','Holiday') NOT NULL"
                 );
             }
         }
@@ -43,7 +43,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        // 2. Kembalikan enum (hapus Holiday)
         if (DB::getDriverName() === 'mysql') {
             DB::statement(
                 "UPDATE `attendances` SET `attendance_status` = 'Absent'
@@ -52,7 +51,7 @@ return new class extends Migration
             DB::statement(
                 "ALTER TABLE `attendances`
                  MODIFY COLUMN `attendance_status`
-                 ENUM('Present','Late','Permission','Absent') NOT NULL"
+                 ENUM('Present','Late','Leave','Sick','Absent') NOT NULL"
             );
         }
 

@@ -38,7 +38,7 @@ class PermissionSeeder extends Seeder
 
                     Attendance::create([
                         'nip' => $emp->nip,
-                        'attendance_status' => 'Permission',
+                        'attendance_status' => 'Sick',
                         'check_in' => null,
                         'qr_code' => 'SYSTEM',
                         'created_at' => $date->copy()->setTime(7, 0, 0),
@@ -59,7 +59,7 @@ class PermissionSeeder extends Seeder
 
                     Attendance::create([
                         'nip' => $emp->nip,
-                        'attendance_status' => 'Permission',
+                        'attendance_status' => 'Leave',
                         'check_in' => null,
                         'qr_code' => 'SYSTEM',
                         'created_at' => $date->copy()->setTime(7, 0, 0),
