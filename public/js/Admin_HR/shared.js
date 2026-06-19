@@ -86,10 +86,10 @@ function setErr(fid, eid, msg) {
 
 /* ---- Custom Beautiful Toast Notification ---- */
 function showToast(message, type = 'success', duration = 4000) {
-    let title = 'Berhasil!';
-    if (type === 'error') title = 'Gagal!';
-    else if (type === 'warning') title = 'Peringatan!';
-    else if (type === 'info') title = 'Informasi!';
+    let title = 'Success!';
+    if (type === 'error') title = 'Failed!';
+    else if (type === 'warning') title = 'Warning!';
+    else if (type === 'info') title = 'Information!';
 
     // Compatibility for any remaining calls passing emoji as first arg
     if (['❌', '✅', '📥'].includes(message)) {
@@ -97,7 +97,7 @@ function showToast(message, type = 'success', duration = 4000) {
         if (arguments[0] === '❌') type = 'error';
         else if (arguments[0] === '✅') type = 'success';
         else if (arguments[0] === '📥') type = 'info';
-        title = type === 'error' ? 'Gagal!' : (type === 'info' ? 'Informasi!' : 'Berhasil!');
+        title = type === 'error' ? 'Failed!' : (type === 'info' ? 'Information!' : 'Success!');
     }
 
     let container = document.getElementById('attensys-toast-container');

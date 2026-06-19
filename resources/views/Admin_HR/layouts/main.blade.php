@@ -28,7 +28,7 @@
     @if(session('success'))
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            showToast('Berhasil!', "{!! addslashes(session('success')) !!}", 'success');
+            showToast('Success!', "{!! addslashes(session('success')) !!}", 'success');
         });
     </script>
     @endif
@@ -36,7 +36,7 @@
     @if(session('error'))
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            showToast('Gagal!', "{!! addslashes(session('error')) !!}", 'error');
+            showToast('Failed!', "{!! addslashes(session('error')) !!}", 'error');
         });
     </script>
     @endif

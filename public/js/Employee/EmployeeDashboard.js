@@ -26,8 +26,8 @@ function updateCurrentDate() {
     const dateElement = document.getElementById('currentDate');
     const clockElement = document.getElementById('realtime-clock');
     
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     
     const now = new Date();
     
@@ -153,17 +153,17 @@ function showLoadingState() {
 }
 
 function showToast(message, type = 'success', duration = 4000) {
-    let title = 'Berhasil!';
-    if (type === 'error') title = 'Gagal!';
-    else if (type === 'warning') title = 'Peringatan!';
-    else if (type === 'info') title = 'Informasi!';
+    let title = 'Success!';
+    if (type === 'error') title = 'Failed!';
+    else if (type === 'warning') title = 'Warning!';
+    else if (type === 'info') title = 'Information!';
 
     if (['❌', '✅', '📥'].includes(message)) {
         message = type;
         if (arguments[0] === '❌') type = 'error';
         else if (arguments[0] === '✅') type = 'success';
         else if (arguments[0] === '📥') type = 'info';
-        title = type === 'error' ? 'Gagal!' : (type === 'info' ? 'Informasi!' : 'Berhasil!');
+        title = type === 'error' ? 'Failed!' : (type === 'info' ? 'Information!' : 'Success!');
     }
 
     let container = document.getElementById('attensys-toast-container');

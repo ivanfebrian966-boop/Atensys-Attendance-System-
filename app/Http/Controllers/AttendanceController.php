@@ -65,7 +65,7 @@ class AttendanceController extends Controller
                 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Check In berhasil',
+                    'message' => 'Check In successful',
                     'type' => 'check_in',
                     'time' => $currentTime,
                     'employee' => $employee->name,
