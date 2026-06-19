@@ -113,7 +113,7 @@ function onScanSuccess(decodedText) {
                 : `Check Out: ${data.employee} (${data.duration})`;
 
             setQRStatus(message, 'success');
-            if (typeof showToast === 'function') showToast(icon, message, 3000);
+            if (typeof showToast === 'function') showToast(message, type, 3000);
 
             setTimeout(() => {
                 if (typeof loadAttendanceData === 'function') loadAttendanceData();
@@ -128,14 +128,14 @@ function onScanSuccess(decodedText) {
             }, 2000);
         } else {
             setQRStatus(data.message, 'error');
-            if (typeof showToast === 'function') showToast('❌', data.message, 3000);
+            if (typeof showToast === 'function') showToast(data.message, 'error', 3000);
             isProcessing = false;
         }
     })
     .catch(err => {
         console.error('QR scan error:', err);
         setQRStatus('Connection error', 'error');
-        if (typeof showToast === 'function') showToast('❌', 'Failed to connect to server', 3000);
+        if (typeof showToast === 'function') showToast('Failed to connect to server', 'error', 3000);
         isProcessing = false;
     });
 }

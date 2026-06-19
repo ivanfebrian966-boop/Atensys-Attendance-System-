@@ -436,8 +436,8 @@
         // Holiday Check
         async function checkHolidayAndInit() {
             try {
-                const today = new Date().toISOString().slice(0, 10);
-                const res   = await fetch(`/admin-hr/holidays/check?date=${today}`);
+                const today = new Date().toLocaleDateString('en-CA');
+                const res   = await fetch(`/scanner/holidays/check?date=${today}`);
                 const data  = await res.json();
                 if (data.is_holiday) {
                     setStatus(`🎉 Holiday: ${data.name}`, 'holiday');

@@ -193,15 +193,9 @@
     background: #dbeafe;
     color: #0c4a6e;
 }
-
-.status-permission {
+.status-leave {
     background: #f3e8ff;
-    color: #6b21a8;
-}
-
-.status-holiday {
-    background: #ffe4e6;
-    color: #9f1239;
+    color: #7c3aed;
 }
 
 /* Leave Request Buttons */

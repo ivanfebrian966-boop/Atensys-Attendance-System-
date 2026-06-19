@@ -217,7 +217,7 @@ function getStatusClass(status) {
         'Absent':     'status-absent',
         'Late':       'status-late',
         'Sick':       'status-sick',
-        'Permission': 'status-permission'
+        'Leave':      'status-leave'
     };
     return map[status] || '';
 }
@@ -228,7 +228,7 @@ function getStatusIcon(status) {
         'Absent':     '❌',
         'Late':       '⏰',
         'Sick':       '🏥',
-        'Permission': '📋'
+        'Leave':      '🏖️'
     };
     return map[status] || '—';
 }
@@ -420,15 +420,15 @@ function saveAtt() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showToast('✅', data.message, 3000);
+            showToast(data.message, 'success', 3000);
             closeModal('modalAddAtt');
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Failed to save data', 3000);
+            showToast(data.message || 'Failed to save data', 'error', 3000);
         }
     })
-    .catch(() => showToast('❌', 'System error occurred', 3000));
+    .catch(() => showToast('System error occurred', 'error', 3000));
 }
 
 /* =========================================================
@@ -489,15 +489,15 @@ function updateAtt() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showToast('✅', data.message, 3000);
+            showToast(data.message, 'success', 3000);
             closeModal('modalEditAtt');
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Failed to update data', 3000);
+            showToast(data.message || 'Failed to update data', 'error', 3000);
         }
     })
-    .catch(() => showToast('❌', 'System error occurred', 3000));
+    .catch(() => showToast('System error occurred', 'error', 3000));
 }
 
 /* =========================================================
@@ -529,15 +529,15 @@ function execDelAtt() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            showToast('✅', data.message, 3000);
+            showToast(data.message, 'success', 3000);
             closeModal('modalDelAtt');
             loadAttendanceData();
             updateStats();
         } else {
-            showToast('❌', data.message || 'Failed to delete data', 3000);
+            showToast(data.message || 'Failed to delete data', 'error', 3000);
         }
     })
-    .catch(() => showToast('❌', 'System error occurred', 3000));
+    .catch(() => showToast('System error occurred', 'error', 3000));
 }
 
 /* =========================================================
@@ -545,7 +545,7 @@ function execDelAtt() {
    ========================================================= */
 
 function exportAtt() {
-    showToast('📥', 'Processing export...', 2000);
+    showToast('Processing export...', 'info', 2000);
 }
 
 /* =========================================================

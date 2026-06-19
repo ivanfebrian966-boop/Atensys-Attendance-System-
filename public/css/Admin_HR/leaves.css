@@ -30,7 +30,7 @@
 
 /* ─── Type Badge ─── */
 .type-sick       { background: #eff6ff; color: #3b82f6; }
-.type-permission { background: #faf5ff; color: #8b5cf6; }
+.type-leave      { background: #f3e8ff; color: #7c3aed; }
 
 /* ─── Status Badges ─── */
 .badge-pending  { background: #fffbeb; color: #d97706; }

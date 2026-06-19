@@ -14,7 +14,7 @@
 <div class="main-content">
     @include('Admin_HR.components.topbar', [
         'pageTitle'    => 'Leave Management',
-        'pageSubtitle' => 'Review & manage all employee leave, sick, and permission requests',
+        'pageSubtitle' => 'Review & manage all employee leave, and sick requests',
     ])
 
     <div class="p-4 md:p-6">
@@ -102,8 +102,8 @@
                                 </div>
                             </td>
                             <td class="py-3 px-4">
-                                <span class="status-badge {{ $perm->type === 'Sick' ? 'type-sick' : 'type-permission' }}">
-                                    {{ $perm->type === 'Sick' ? '🏥 Sick' : '🏖️ Permission' }}
+                                <span class="status-badge {{ $perm->type === 'Sick' ? 'type-sick' : 'type-leave' }}">
+                                    {{ $perm->type === 'Sick' ? '🏥 Sick' : '🏖️ Leave' }}
                                 </span>
                             </td>
                             <td class="py-3 px-4">
@@ -173,7 +173,7 @@
                     <select id="filterType" class="filter-select" onchange="loadLeaves()">
                         <option value="all">All Types</option>
                         <option value="Sick">🏥 Sick</option>
-                        <option value="Leave">🏖️ Permission</option>
+                        <option value="Leave">🏖️ Leave</option>
                     </select>
                 </div>
                 <div class="filter-group">

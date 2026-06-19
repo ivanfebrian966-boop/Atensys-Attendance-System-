@@ -57,7 +57,7 @@
                 <option value="Present">Present</option>
                 <option value="Late">Late</option>
                 <option value="Absent">Absent</option>
-                <option value="Permission">Permission</option>
+                <option value="Leave">Leave</option>
             </select>
 <style>
     /* Premium custom dropdown styles */

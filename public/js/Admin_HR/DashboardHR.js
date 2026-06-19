@@ -83,7 +83,7 @@ function filterTable() {
 
 /* EXPORT (demo) */
 function exportTable() {
-    showToast('📥', 'Exporting data to CSV...');
+    showToast('Exporting data to CSV...', 'info');
 
     // Collect visible rows
     const rows   = document.querySelectorAll('#attendanceTable tbody .table-row');
@@ -125,19 +125,7 @@ function changePage(dir) {
 }
 
 /* TOAST NOTIFICATION */
-let toastTimer = null;
-
-function showToast(icon, msg, duration = 3000) {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-
-    document.getElementById('toastIcon').textContent = icon;
-    document.getElementById('toastMsg').textContent  = msg;
-    toast.classList.add('show');
-
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
-}
+// Use shared.js showToast implementation
 
 /* CHART BAR TOOLTIPS (hover) */
 function initChartTooltips() {

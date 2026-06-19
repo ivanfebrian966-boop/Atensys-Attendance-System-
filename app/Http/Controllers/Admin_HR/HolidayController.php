@@ -234,15 +234,16 @@ class HolidayController extends Controller
             if ($existsPermission) continue;
 
             $attendanceDate = $date->copy()->setTime(7, 0, 0);
-            Attendance::create([
+            $attendance = new Attendance([
                 'nip'               => $emp->nip,
                 'check_in'          => null,
                 'check_out'         => null,
                 'attendance_status' => 'Present',
                 'qr_code'           => 'SYSTEM-HOLIDAY',
-                'created_at'        => $attendanceDate,
-                'updated_at'        => $attendanceDate,
             ]);
+            $attendance->created_at = $attendanceDate;
+            $attendance->updated_at = $attendanceDate;
+            $attendance->save();
         }
     }
 }

@@ -404,7 +404,7 @@ function exportAllReport() {
     const rows = [['Name', 'Division', 'Total', 'Present', 'Absent', 'Late', 'Permission', '% Present', 'Avg Check In']];
     _detailFull.forEach(r => rows.push([r.name, r.div, r.total, r.present, r.absent, r.late, r.perm, r.rate + '%', r.avgCi]));
     downloadCSV(`report_${new Date().toISOString().slice(0, 10)}.csv`, rows);
-    showToast('📥', 'Report exported to CSV');
+    showToast('Report exported to CSV', 'info');
 }
 function exportDetailCSV() { exportAllReport(); }
 

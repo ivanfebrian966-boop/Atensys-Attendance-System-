@@ -85,27 +85,19 @@ function setErr(fid, eid, msg) {
 }
 
 /* ---- Custom Beautiful Toast Notification ---- */
-function showToast(title, descOrType = 'success', typeOrMs = null, msFallback = 4000) {
-    let desc = '';
-    let type = 'success';
-    let ms = 4000;
+function showToast(message, type = 'success', duration = 4000) {
+    let title = 'Berhasil!';
+    if (type === 'error') title = 'Gagal!';
+    else if (type === 'warning') title = 'Peringatan!';
+    else if (type === 'info') title = 'Informasi!';
 
-    if (['success', 'error', 'warning', 'info'].includes(descOrType)) {
-        type = descOrType;
-        ms = typeof typeOrMs === 'number' ? typeOrMs : 4000;
-        desc = title;
-        if (type === 'success') title = 'Berhasil!';
-        else if (type === 'error') title = 'Gagal!';
-        else if (type === 'warning') title = 'Peringatan!';
-        else if (type === 'info') title = 'Informasi!';
-    } else {
-        desc = descOrType;
-        type = typeof typeOrMs === 'string' ? typeOrMs : 'success';
-        ms = typeof msFallback === 'number' ? msFallback : 4000;
-    }
-
-    if (!title && desc) {
-        title = type === 'success' ? 'Berhasil!' : 'Gagal!';
+    // Compatibility for any remaining calls passing emoji as first arg
+    if (['❌', '✅', '📥'].includes(message)) {
+        message = type; // The real message was likely passed as the second argument
+        if (arguments[0] === '❌') type = 'error';
+        else if (arguments[0] === '✅') type = 'success';
+        else if (arguments[0] === '📥') type = 'info';
+        title = type === 'error' ? 'Gagal!' : (type === 'info' ? 'Informasi!' : 'Berhasil!');
     }
 
     let container = document.getElementById('attensys-toast-container');
@@ -133,12 +125,12 @@ function showToast(title, descOrType = 'success', typeOrMs = null, msFallback = 
     let html = '<div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:' + t.iconBg + ';display:flex;align-items:center;justify-content:center;color:' + t.iconText + ';font-weight:800;font-size:14px;margin-top:2px;">' + t.icon + '</div>';
     html += '<div style="flex:1;min-width:0;">';
     html += '<h4 style="margin:0;font-size:15px;font-weight:700;color:' + t.text + ';font-family:\'Sora\',sans-serif;">' + title + '</h4>';
-    if (desc) {
-        html += '<p style="margin:4px 0 0 0;font-size:13px;color:#475569;line-height:1.5;font-family:\'DM Sans\',sans-serif;">' + desc + '</p>';
+    if (message) {
+        html += '<p style="margin:4px 0 0 0;font-size:13px;color:#475569;line-height:1.5;font-family:\'DM Sans\',sans-serif;">' + message + '</p>';
     }
     html += '</div>';
     html += '<button onclick="document.getElementById(\'' + toastId + '\').remove()" style="background:transparent;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:2px;flex-shrink:0;margin-left:auto;">✕</button>';
-    html += '<div style="position:absolute;bottom:0;left:0;height:3px;background:' + t.iconText + ';width:100%;transform-origin:left;animation:toast-progress ' + ms + 'ms linear forwards;"></div>';
+    html += '<div style="position:absolute;bottom:0;left:0;height:3px;background:' + t.iconText + ';width:100%;transform-origin:left;animation:toast-progress ' + duration + 'ms linear forwards;"></div>';
 
     toast.innerHTML = html;
 
@@ -163,7 +155,7 @@ function showToast(title, descOrType = 'success', typeOrMs = null, msFallback = 
             const el = document.getElementById(toastId);
             if (el) el.remove();
         }, 400);
-    }, ms);
+    }, duration);
 }
 
 /* ---- Realtime Date + Clock ---- */

@@ -295,14 +295,74 @@ function initPagination(tableId, limit) {
     update();
 }
 
-function showToast(icon, msg) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastIcon').textContent = icon;
-    document.getElementById('toastMsg').textContent = msg;
-    toast.style.opacity = '1';
-    toast.style.pointerEvents = 'all';
+function showToast(message, type = 'success', duration = 4000) {
+    let title = 'Berhasil!';
+    if (type === 'error') title = 'Gagal!';
+    else if (type === 'warning') title = 'Peringatan!';
+    else if (type === 'info') title = 'Informasi!';
+
+    if (['❌', '✅', '📥'].includes(message)) {
+        message = type;
+        if (arguments[0] === '❌') type = 'error';
+        else if (arguments[0] === '✅') type = 'success';
+        else if (arguments[0] === '📥') type = 'info';
+        title = type === 'error' ? 'Gagal!' : (type === 'info' ? 'Informasi!' : 'Berhasil!');
+    }
+
+    let container = document.getElementById('attensys-toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'attensys-toast-container';
+        container.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:12px;pointer-events:none;';
+        document.body.appendChild(container);
+    }
+
+    const toastId = 'toast-' + Date.now() + Math.random().toString(36).substr(2, 9);
+    const toast = document.createElement('div');
+    toast.id = toastId;
+
+    const themes = {
+        success: { bg: 'rgba(236, 253, 245, 0.95)', border: '#34d399', text: '#065f46', iconText: '#10b981', iconBg: '#d1fae5', icon: '✓' },
+        error: { bg: 'rgba(254, 242, 242, 0.95)', border: '#f87171', text: '#991b1b', iconText: '#ef4444', iconBg: '#fee2e2', icon: '✕' },
+        warning: { bg: 'rgba(255, 251, 235, 0.95)', border: '#fbbf24', text: '#92400e', iconText: '#f59e0b', iconBg: '#fef3c7', icon: '!' },
+        info: { bg: 'rgba(239, 246, 255, 0.95)', border: '#60a5fa', text: '#1e40af', iconText: '#3b82f6', iconBg: '#dbeafe', icon: 'i' }
+    };
+    const t = themes[type] || themes.success;
+
+    toast.style.cssText = 'width:380px;background:' + t.bg + ';backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.8);border-left:5px solid ' + t.border + ';border-radius:12px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.1),0 8px 10px -6px rgba(0,0,0,0.05);padding:16px;display:flex;align-items:flex-start;gap:14px;transform:translateX(120%);opacity:0;transition:transform 0.4s cubic-bezier(0.2,0.8,0.2,1),opacity 0.4s ease;pointer-events:auto;position:relative;overflow:hidden;';
+
+    let html = '<div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:' + t.iconBg + ';display:flex;align-items:center;justify-content:center;color:' + t.iconText + ';font-weight:800;font-size:14px;margin-top:2px;">' + t.icon + '</div>';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<h4 style="margin:0;font-size:15px;font-weight:700;color:' + t.text + ';font-family:\'Sora\',sans-serif;">' + title + '</h4>';
+    if (message) {
+        html += '<p style="margin:4px 0 0 0;font-size:13px;color:#475569;line-height:1.5;font-family:\'DM Sans\',sans-serif;">' + message + '</p>';
+    }
+    html += '</div>';
+    html += '<button onclick="document.getElementById(\'' + toastId + '\').remove()" style="background:transparent;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:2px;flex-shrink:0;margin-left:auto;">✕</button>';
+    html += '<div style="position:absolute;bottom:0;left:0;height:3px;background:' + t.iconText + ';width:100%;transform-origin:left;animation:toast-progress ' + duration + 'ms linear forwards;"></div>';
+
+    toast.innerHTML = html;
+
+    if (!document.getElementById('attensys-toast-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'attensys-toast-keyframes';
+        style.textContent = '@keyframes toast-progress { 0% { transform: scaleX(1); } 100% { transform: scaleX(0); } }';
+        document.head.appendChild(style);
+    }
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+        toast.style.opacity = '1';
+    });
+
     setTimeout(() => {
+        toast.style.transform = 'translateX(120%)';
         toast.style.opacity = '0';
-        toast.style.pointerEvents = 'none';
-    }, 3000);
+        setTimeout(() => {
+            const el = document.getElementById(toastId);
+            if (el) el.remove();
+        }, 400);
+    }, duration);
 }

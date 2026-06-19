@@ -107,21 +107,28 @@ class LeaveController extends Controller
             $end   = Carbon::parse($permission->completion_date);
 
             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                $exists = Attendance::where('nip', $permission->nip)
+                $existingAttendance = Attendance::where('nip', $permission->nip)
                     ->whereDate('created_at', $date->toDateString())
-                    ->exists();
+                    ->first();
 
-                if (!$exists) {
+                if (!$existingAttendance) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     $attendance = new Attendance([
                         'nip'        => $permission->nip,
                         'check_in'   => null,
-                        'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Permission',
+                        'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Leave',
                         'qr_code'    => 'SYSTEM',
                     ]);
                     $attendance->created_at = $attendanceDate;
                     $attendance->updated_at = $attendanceDate;
                     $attendance->save();
+                } else if ($existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
+                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
+                    $existingAttendance->update([
+                        'check_in' => $attendanceDate,
+                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                        'qr_code' => 'SYSTEM',
+                    ]);
                 }
             }
 
@@ -208,30 +215,27 @@ class LeaveController extends Controller
                 $end   = Carbon::parse($request->completion_date);
 
                 for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                    $exists = Attendance::where('nip', $permission->nip)
+                    $existingAttendance = Attendance::where('nip', $permission->nip)
                         ->whereDate('created_at', $date->toDateString())
-                        ->exists();
+                        ->first();
 
-                    if (!$exists) {
+                    if (!$existingAttendance) {
                         $attendanceDate = $date->copy()->setTime(7, 0, 0);
                         $attendance = new Attendance([
                             'nip'        => $permission->nip,
                             'check_in'   => $attendanceDate,
-                            'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Permission',
+                            'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Leave',
                             'qr_code'    => 'SYSTEM',
                         ]);
                         $attendance->created_at = $attendanceDate;
                         $attendance->updated_at = $attendanceDate;
                         $attendance->save();
-                    } else {
-                        // Update to leave type if it was marked as Absent
-                        Attendance::where('nip', $permission->nip)
-                            ->whereDate('created_at', $date->toDateString())
-                            ->where('attendance_status', 'Absent')
-                            ->update([
-                                'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Permission',
-                                'check_in' => $date->copy()->setTime(7, 0, 0)
-                            ]);
+                    } else if ($existingAttendance->attendance_status === 'Absent' || $existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
+                        $existingAttendance->update([
+                            'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                            'check_in' => $date->copy()->setTime(7, 0, 0),
+                            'qr_code' => 'SYSTEM',
+                        ]);
                     }
                 }
             } elseif ($request->status === 'Rejected') {
@@ -283,7 +287,7 @@ class LeaveController extends Controller
                         $start->startOfDay()->toDateTimeString(),
                         $end->endOfDay()->toDateTimeString()
                     ])
-                    ->where('attendance_status', 'Permission')
+                    ->whereIn('attendance_status', ['Leave', 'Sick'])
                     ->delete();
             }
 

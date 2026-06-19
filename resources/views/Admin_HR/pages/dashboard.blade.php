@@ -221,8 +221,8 @@
                                 @elseif($att->attendance_status === 'Late')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-600">⏰ Late</span>
 
-                                @elseif($att->attendance_status === 'Permission')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Permission</span>
+                                @elseif($att->attendance_status === 'Leave')
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-600">📋 Leave</span>
                                 @elseif($att->attendance_status === 'Absent')
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-600">❌ Absent</span>
                                 @else

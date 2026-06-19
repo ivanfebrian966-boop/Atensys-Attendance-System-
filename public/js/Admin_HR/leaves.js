@@ -102,8 +102,8 @@ function renderLeaves() {
                     </div>
                 </td>
                 <td class="py-3 px-4">
-                    <span class="status-badge ${row.type === 'Sick' ? 'type-sick' : 'type-permission'}">
-                        ${row.type === 'Sick' ? '🏥 Sick' : '🏖️ Permission'}
+                    <span class="status-badge ${row.type === 'Sick' ? 'type-sick' : 'type-leave'}">
+                        ${row.type === 'Sick' ? '🏥 Sick' : '🏖️ Leave'}
                     </span>
                 </td>
                 <td class="py-3 px-4">

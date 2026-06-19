@@ -113,5 +113,6 @@ Route::get('/employee', [EmployeeController::class, 'dashboard'])->name('employe
 Route::group(['prefix' => 'scanner', 'as' => 'scanner.', 'middleware' => ['role:Scanner']], function () {
     Route::get('/', [ScannerController::class, 'index'])->name('index');
     Route::post('/process-qr', [\App\Http\Controllers\Admin_HR\AttendanceController::class, 'processQr'])->name('process-qr');
+    Route::get('/holidays/check', [\App\Http\Controllers\Admin_HR\HolidayController::class, 'check'])->name('holidays.check');
     Route::get('/logout', [ScannerController::class, 'logout'])->name('logout');
 });

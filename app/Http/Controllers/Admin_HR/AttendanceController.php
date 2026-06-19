@@ -263,6 +263,15 @@ class AttendanceController extends Controller
             ]);
 
             $date = Carbon::parse($validated['date']);
+
+            $isHoliday = HolidayDate::where('date', $date->toDateString())->exists();
+            if ($isHoliday) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attendance on holidays cannot be added manually.'
+                ], 403);
+            }
+
             $isToday = $date->isToday();
             $now = Carbon::now();
             $cutoffTime = Carbon::today()->setTime(17, 0, 0);
@@ -321,6 +330,15 @@ class AttendanceController extends Controller
             ]);
 
             $date = Carbon::parse($validated['date']);
+
+            $isHoliday = HolidayDate::where('date', $date->toDateString())->exists();
+            if ($isHoliday) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attendance on holidays cannot be edited.'
+                ], 403);
+            }
+
             $isToday = $date->isToday();
             $now = Carbon::now();
             $cutoffTime = Carbon::today()->setTime(17, 0, 0);
@@ -345,7 +363,7 @@ class AttendanceController extends Controller
                     $status = 'Present';
                 } else {
                     $originalStatus = $attendance->attendance_status;
-                    if (in_array($originalStatus, ['Sick', 'Permission'])) {
+                    if (in_array($originalStatus, ['Sick', 'Leave'])) {
                         $status = $originalStatus;
                     } else {
                         $status = 'Absent';
@@ -359,8 +377,8 @@ class AttendanceController extends Controller
                 'check_out' => $check_out,
             ]);
 
-            // Jika status adalah Sick atau Permission, update keterangan di tabel permissions
-            if (in_array($status, ['Sick', 'Permission'])) {
+            // Jika status adalah Sick atau Leave, update keterangan di tabel permissions
+            if (in_array($status, ['Sick', 'Leave'])) {
                 Permission::updateOrCreate(
                     [
                         'nip' => $attendance->nip,
@@ -385,6 +403,16 @@ class AttendanceController extends Controller
     {
         try {
             $attendance = Attendance::findOrFail($id);
+
+            $date = Carbon::parse($attendance->created_at)->toDateString();
+            $isHoliday = HolidayDate::where('date', $date)->exists();
+            if ($isHoliday) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attendance on holidays cannot be deleted.'
+                ], 403);
+            }
+
             $attendance->delete();
             return response()->json(['success' => true, 'message' => 'Attendance data deleted successfully']);
         } catch (\Exception $e) {
@@ -446,7 +474,7 @@ class AttendanceController extends Controller
 
     private function getPermissionInfo($nip, $status, $date)
     {
-        if ($status !== 'Permission') return '—';
+        if ($status !== 'Leave') return '—';
 
         $perm = Permission::where('nip', $nip)
             ->whereDate('start_date', '<=', $date)
@@ -480,21 +508,28 @@ class AttendanceController extends Controller
             $end = Carbon::parse($permission->completion_date);
 
             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                $exists = Attendance::where('nip', $permission->nip)
+                $existingAttendance = Attendance::where('nip', $permission->nip)
                     ->whereDate('created_at', $date->toDateString())
-                    ->exists();
+                    ->first();
 
-                if (!$exists) {
+                if (!$existingAttendance) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     $attendance = new Attendance([
                         'nip' => $permission->nip,
                         'check_in' => $attendanceDate,
-                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Permission',
+                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
                         'qr_code' => 'SYSTEM',
                     ]);
                     $attendance->created_at = $attendanceDate;
                     $attendance->updated_at = $attendanceDate;
                     $attendance->save();
+                } else if ($existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
+                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
+                    $existingAttendance->update([
+                        'check_in' => $attendanceDate,
+                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                        'qr_code' => 'SYSTEM',
+                    ]);
                 }
             }
 

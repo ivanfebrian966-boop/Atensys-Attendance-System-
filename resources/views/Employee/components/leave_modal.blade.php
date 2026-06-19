@@ -223,7 +223,7 @@
                             <input type="radio" name="type" value="Leave" checked onchange="setPill('leave')">
                             <div class="pill-icon">🏖️</div>
                             <div>
-                                <div class="pill-label">Permission</div>
+                                <div class="pill-label">Leave</div>
                                 <div class="pill-desc">Personal leave</div>
                             </div>
                         </label>
