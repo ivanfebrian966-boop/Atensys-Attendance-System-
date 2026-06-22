@@ -166,7 +166,7 @@
                         <p class="panel-subtitle">Main menu shortcuts</p>
                     </div>
                 </div>
-                <div class="p-5 flex-grow grid grid-cols-1 sm:grid-cols-3 gap-3 items-stretch">
+                <div class="p-5 flex-grow grid grid-cols-2 gap-3 items-stretch">
                     <a href="{{ route('admin-hr.attendance') }}" class="quick-action-card flex-grow" style="--qa-color:#6366f1;--qa-bg:#eef2ff">
                         <span class="text-2xl">📷</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Scan QR</span>
@@ -178,6 +178,10 @@
                     <a href="{{ route('admin-hr.reports') }}" class="quick-action-card flex-grow" style="--qa-color:#06b6d4;--qa-bg:#ecfeff">
                         <span class="text-2xl">📊</span>
                         <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Reports</span>
+                    </a>
+                    <a href="{{ route('admin-hr.holidays') }}" class="quick-action-card flex-grow" style="--qa-color:#ef4444;--qa-bg:#fef2f2">
+                        <span class="text-2xl">🗓️</span>
+                        <span class="text-xs font-semibold text-slate-700 mt-1" style="font-family:'Sora',sans-serif">Holidays</span>
                     </a>
                 </div>
             </div>

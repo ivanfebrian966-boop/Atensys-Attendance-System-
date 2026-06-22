@@ -233,21 +233,24 @@
                     <td class="py-3 px-4">
                         <div class="flex items-center gap-2">
                             @if($perm->permission_status === 'Pending')
-                                <button onclick='editLeave({
-                                    id: {{ $perm->permission_id }},
-                                    type: "{{ $perm->type }}",
-                                    start_raw: "{{ $perm->start_date }}",
-                                    end_raw: "{{ $perm->completion_date }}",
-                                    start_time: "{{ $perm->start_time ? \Carbon\Carbon::parse($perm->start_time)->format('H:i') : '' }}",
-                                    end_time: "{{ $perm->end_time ? \Carbon\Carbon::parse($perm->end_time)->format('H:i') : '' }}",
-                                    category: "{{ $perm->leave_category ?: $perm->sick_category }}",
-                                    information: "{{ addslashes($perm->information) }}",
-                                    hasFile: {{ $perm->file ? "true" : "false" }}
-                                })' class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" title="Edit Request">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <button type="button"
+                                    onclick="event.stopPropagation(); editLeave(this);"
+                                    data-id="{{ $perm->permission_id }}"
+                                    data-type="{{ $perm->type }}"
+                                    data-start-raw="{{ $perm->start_date }}"
+                                    data-end-raw="{{ $perm->completion_date }}"
+                                    data-start-time="{{ $perm->start_time ? \Carbon\Carbon::parse($perm->start_time)->format('H:i') : '' }}"
+                                    data-end-time="{{ $perm->end_time ? \Carbon\Carbon::parse($perm->end_time)->format('H:i') : '' }}"
+                                    data-category="{{ $perm->leave_category ?: $perm->sick_category }}"
+                                    data-information="{{ $perm->information }}"
+                                    data-hasfile="{{ $perm->file ? 'true' : 'false' }}"
+                                    class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" title="Edit Request">
+                                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 </button>
-                                <button onclick="openDeleteModal({{ $perm->permission_id }})" class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Delete Request">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <button type="button"
+                                    onclick="event.stopPropagation(); openDeleteModal({{ $perm->permission_id }});"
+                                    class="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Delete Request">
+                                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 </button>
                             @else
                                 <span class="text-[10px] text-slate-400 font-medium italic">Locked</span>
@@ -265,10 +268,14 @@
     </div>
 </div>
 
+@endsection
+
+@section('modals')
+{{-- LEAVE REQUEST MODAL --}}
 @include('Employee.components.leave_modal')
 
 {{-- DELETE CONFIRM MODAL --}}
-<div id="deletePermissionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-[60]" onclick="closeDeleteModal()">
+<div id="deletePermissionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm items-center justify-center z-[9999]" style="display:none;" onclick="closeDeleteModal()">
     <div class="bg-white rounded-3xl w-[400px] max-w-[90vw] p-6 shadow-2xl transform transition-all" onclick="event.stopPropagation()">
         <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">⚠️</div>
         <h3 class="text-xl font-bold text-slate-800 text-center font-sora mb-2">Delete Request?</h3>
@@ -284,9 +291,7 @@
         </form>
     </div>
 </div>
-
 @endsection
-
 
 
 @section('scripts')
@@ -337,26 +342,90 @@
         if (filterSelect) filterSelect.addEventListener('change', filterTable);
     });
 
+    /* ---- Delete Modal ---- */
     function openDeleteModal(id) {
         const modal = document.getElementById('deletePermissionModal');
-        const form = document.getElementById('deleteForm');
+        const form  = document.getElementById('deleteForm');
+        if (!modal || !form) { console.error('[ATTENSYS] deletePermissionModal or deleteForm not found'); return; }
         form.action = `{{ url('employee/attendance/permission') }}/${id}/delete`;
         modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        modal.style.display = 'flex';
     }
 
     function closeDeleteModal() {
         const modal = document.getElementById('deletePermissionModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        if (!modal) return;
+        modal.style.display = 'none';
     }
 
+    /* ---- Edit Leave ---- */
+    window.editLeave = function(btn) {
+        const data = btn.dataset;
+
+        // Populate form action
+        const form = document.getElementById('leaveForm');
+        if (!form) { console.error('[ATTENSYS] leaveForm not found'); return; }
+        form.action = `{{ url('employee/attendance/permission') }}/${data.id}/update`;
+
+        // Update modal titles
+        const title   = document.getElementById('leaveModalTitle');
+        const sub     = document.getElementById('leaveModalSub');
+        const btnText = document.getElementById('leaveSubmitText');
+        const upText  = document.getElementById('uploadText');
+        if (title)   title.textContent   = 'Edit Leave Request';
+        if (sub)     sub.textContent     = 'Update your pending leave request details';
+        if (btnText) btnText.textContent = 'Save Changes';
+        if (upText)  upText.textContent  = (data.hasfile === 'true') ? '✅ Document already uploaded' : 'Click or drag to upload your document';
+
+        // Set leave type radio
+        const radio = document.querySelector(`input[name="type"][value="${data.type}"]`);
+        if (radio) radio.checked = true;
+        const typeVal = data.type && data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
+        if (typeof window.setPill === 'function') window.setPill(typeVal);
+
+        // Set dates
+        const startEl = form.querySelector('input[name="start_date"]');
+        const endEl   = form.querySelector('input[name="completion_date"]');
+        if (startEl) startEl.value = data.startRaw || '';
+        if (endEl)   endEl.value   = data.endRaw   || '';
+
+        // Set duration mode
+        if (data.startTime || data.endTime) {
+            const pr = form.querySelector('input[name="duration_mode"][value="partial"]');
+            if (pr) pr.checked = true;
+            if (typeof window.setLeaveDuration === 'function') window.setLeaveDuration('partial');
+            const st = form.querySelector('input[name="start_time"]');
+            const et = form.querySelector('input[name="end_time"]');
+            if (st) st.value = data.startTime || '';
+            if (et) et.value = data.endTime   || '';
+        } else {
+            const fr = form.querySelector('input[name="duration_mode"][value="full"]');
+            if (fr) fr.checked = true;
+            if (typeof window.setLeaveDuration === 'function') window.setLeaveDuration('full');
+        }
+
+        // Set category & information (delayed to let setPill finish rendering options)
+        setTimeout(() => {
+            const cat = document.getElementById('leave_category');
+            if (cat && data.category) cat.value = data.category;
+            const info = document.getElementById('leave_detail');
+            if (info) info.value = (data.information === '-') ? '' : (data.information || '');
+            if (typeof window.updateInformation === 'function') window.updateInformation(true);
+        }, 60);
+
+        // Open the leave modal in edit mode
+        if (typeof window.openLeaveModal === 'function') {
+            window.openLeaveModal(true, data.hasfile === 'true');
+        } else {
+            console.error('[ATTENSYS] openLeaveModal not defined');
+        }
+    };
+
+    /* ---- Misc ---- */
     function scrollToQr() {
         const qrSection = document.getElementById('qrCodeSection');
         if (qrSection) {
             qrSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Tambahkan sedikit highlight effect opsional
             qrSection.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
             setTimeout(() => {
                 qrSection.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
@@ -365,3 +434,4 @@
     }
 </script>
 @endsection
+
