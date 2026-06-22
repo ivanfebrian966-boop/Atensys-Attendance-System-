@@ -374,63 +374,6 @@
             }
         };
 
-        window.editLeave = function(btn) {
-            const data = btn.dataset;
-            const form = document.getElementById('leaveForm');
-            if (!form) return;
-            form.action = `{{ url('employee/attendance/permission') }}/${data.id}/update`;
-
-            if (typeof isEditing !== 'undefined') isEditing = true;
-            if (typeof editId !== 'undefined') editId = data.id;
-            if (typeof hasExistingFile !== 'undefined') hasExistingFile = data.hasfile === 'true';
-
-            document.getElementById('leaveModalTitle').textContent = "Edit Leave Request";
-            document.getElementById('leaveModalSub').textContent = "Update your pending leave request details";
-            document.getElementById('leaveSubmitText').textContent = "Save Changes";
-            document.getElementById('uploadText').textContent = (data.hasfile === 'true') ? "✅ Document already uploaded" : "Click or drag to upload your document";
-
-            // Set type
-            const typeVal = data.type && data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
-            const radio = document.querySelector(`input[name="type"][value="${data.type}"]`);
-            if (radio) radio.checked = true;
-            if (typeof setPill === 'function') setPill(typeVal);
-
-            // Set dates and times
-            const startInput = form.querySelector('input[name="start_date"]');
-            const endInput = form.querySelector('input[name="completion_date"]');
-            if (startInput) startInput.value = data.startRaw || '';
-            if (endInput) endInput.value = data.endRaw || '';
-
-            // Set duration mode
-            if (data.startTime || data.endTime) {
-                const partialRadio = form.querySelector('input[name="duration_mode"][value="partial"]');
-                if (partialRadio) partialRadio.checked = true;
-                if (typeof setLeaveDuration === 'function') setLeaveDuration('partial');
-                const stInput = form.querySelector('input[name="start_time"]');
-                const etInput = form.querySelector('input[name="end_time"]');
-                if (stInput) stInput.value = data.startTime || '';
-                if (etInput) etInput.value = data.endTime || '';
-            } else {
-                const fullRadio = form.querySelector('input[name="duration_mode"][value="full"]');
-                if (fullRadio) fullRadio.checked = true;
-                if (typeof setLeaveDuration === 'function') setLeaveDuration('full');
-            }
-
-            // Set category and information after short delay
-            setTimeout(() => {
-                const catSelect = document.getElementById('leave_category');
-                if (catSelect && data.category) catSelect.value = data.category;
-                const detailEl = document.getElementById('leave_detail');
-                if (detailEl) detailEl.value = (data.information === '-') ? '' : (data.information || '');
-                if (typeof updateInformation === 'function') updateInformation(true);
-            }, 50);
-
-            if (typeof window.openLeaveModal === 'function') {
-                window.openLeaveModal(true, data.hasfile === 'true');
-            }
-        };
-
-
         window.closeLeaveModal = function() {
             const m = document.getElementById('leaveModal');
             if(m) {
