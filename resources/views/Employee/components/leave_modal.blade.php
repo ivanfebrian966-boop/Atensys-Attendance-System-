@@ -265,7 +265,7 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="leave-form-field">
                         <label class="leave-form-label">Start Date</label>
-                        <input type="date" name="start_date" class="leave-form-input" required min="{{ date('Y-m-d') }}">
+                        <input type="date" name="start_date" class="leave-form-input" required min="{{ date('Y-m-d') }}" onchange="updateEndDate()">
                     </div>
                     <div class="leave-form-field">
                         <label class="leave-form-label">End Date</label>
@@ -358,6 +358,14 @@
                     document.getElementById('leaveSubmitText').textContent = "Submit Request";
                     document.getElementById('uploadText').textContent = "Click or drag to upload your document";
                     setPill('leave');
+                    
+                    const form = document.getElementById('leaveForm');
+                    const today = new Date().toISOString().split('T')[0];
+                    const startInput = form.querySelector('input[name="start_date"]');
+                    const endInput = form.querySelector('input[name="completion_date"]');
+                    if (startInput) startInput.value = today;
+                    if (endInput) endInput.value = today;
+                    
                     updateInformation();
                 }
                 m.classList.remove('hidden');
@@ -366,50 +374,62 @@
             }
         };
 
-        window.editLeave = function(data) {
+        window.editLeave = function(btn) {
+            const data = btn.dataset;
             const form = document.getElementById('leaveForm');
+            if (!form) return;
             form.action = `{{ url('employee/attendance/permission') }}/${data.id}/update`;
-            
+
+            if (typeof isEditing !== 'undefined') isEditing = true;
+            if (typeof editId !== 'undefined') editId = data.id;
+            if (typeof hasExistingFile !== 'undefined') hasExistingFile = data.hasfile === 'true';
+
             document.getElementById('leaveModalTitle').textContent = "Edit Leave Request";
             document.getElementById('leaveModalSub').textContent = "Update your pending leave request details";
             document.getElementById('leaveSubmitText').textContent = "Save Changes";
-            document.getElementById('uploadText').textContent = data.hasFile ? "✅ Document already uploaded" : "Click or drag to upload your document";
+            document.getElementById('uploadText').textContent = (data.hasfile === 'true') ? "✅ Document already uploaded" : "Click or drag to upload your document";
 
             // Set type
-            const typeVal = data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
+            const typeVal = data.type && data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
             const radio = document.querySelector(`input[name="type"][value="${data.type}"]`);
-            if(radio) radio.checked = true;
-            setPill(typeVal);
+            if (radio) radio.checked = true;
+            if (typeof setPill === 'function') setPill(typeVal);
 
             // Set dates and times
-            form.querySelector('input[name="start_date"]').value = data.start_raw;
-            form.querySelector('input[name="completion_date"]').value = data.end_raw;
+            const startInput = form.querySelector('input[name="start_date"]');
+            const endInput = form.querySelector('input[name="completion_date"]');
+            if (startInput) startInput.value = data.startRaw || '';
+            if (endInput) endInput.value = data.endRaw || '';
 
-            // Set duration mode based on whether times exist
-            if (data.start_time || data.end_time) {
+            // Set duration mode
+            if (data.startTime || data.endTime) {
                 const partialRadio = form.querySelector('input[name="duration_mode"][value="partial"]');
                 if (partialRadio) partialRadio.checked = true;
-                setLeaveDuration('partial');
-                form.querySelector('input[name="start_time"]').value = data.start_time || '';
-                form.querySelector('input[name="end_time"]').value = data.end_time || '';
+                if (typeof setLeaveDuration === 'function') setLeaveDuration('partial');
+                const stInput = form.querySelector('input[name="start_time"]');
+                const etInput = form.querySelector('input[name="end_time"]');
+                if (stInput) stInput.value = data.startTime || '';
+                if (etInput) etInput.value = data.endTime || '';
             } else {
                 const fullRadio = form.querySelector('input[name="duration_mode"][value="full"]');
                 if (fullRadio) fullRadio.checked = true;
-                setLeaveDuration('full');
+                if (typeof setLeaveDuration === 'function') setLeaveDuration('full');
             }
 
-            // Set category after a short delay for setPill to finish
+            // Set category and information after short delay
             setTimeout(() => {
                 const catSelect = document.getElementById('leave_category');
-                catSelect.value = data.category;
-                
-                // Set information/reason
-                document.getElementById('leave_detail').value = data.information === '-' ? '' : data.information;
-                updateInformation();
+                if (catSelect && data.category) catSelect.value = data.category;
+                const detailEl = document.getElementById('leave_detail');
+                if (detailEl) detailEl.value = (data.information === '-') ? '' : (data.information || '');
+                if (typeof updateInformation === 'function') updateInformation(true);
             }, 50);
 
-            window.openLeaveModal(true, data.hasFile);
+            if (typeof window.openLeaveModal === 'function') {
+                window.openLeaveModal(true, data.hasfile === 'true');
+            }
         };
+
 
         window.closeLeaveModal = function() {
             const m = document.getElementById('leaveModal');
@@ -473,10 +493,43 @@
             }
         };
 
-        window.updateInformation = function() {
+        window.updateInformation = function(isFromEdit = false) {
             const det = document.getElementById('leave_detail').value;
             // The information field will be set automatically from textarea
             updateUploadRequirement();
+            if (!isFromEdit && !isEditing) {
+                updateEndDate();
+            }
+        };
+
+        window.updateEndDate = function() {
+            const form = document.getElementById('leaveForm');
+            if(!form) return;
+            const startInput = form.querySelector('input[name="start_date"]');
+            const endInput = form.querySelector('input[name="completion_date"]');
+            if(!startInput || !endInput || !startInput.value) return;
+
+            const catSelect = document.getElementById('leave_category');
+            if(!catSelect || catSelect.selectedIndex === -1) return;
+
+            const selectedOption = catSelect.options[catSelect.selectedIndex];
+            const maxDaysStr = selectedOption?.dataset.maxDays;
+
+            if (maxDaysStr && maxDaysStr !== 'Unlimited') {
+                const maxDays = parseInt(maxDaysStr, 10);
+                
+                const startDate = new Date(startInput.value);
+                if(!isNaN(startDate.getTime())) {
+                    const endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + (maxDays - 1));
+                    
+                    const yyyy = endDate.getFullYear();
+                    const mm = String(endDate.getMonth() + 1).padStart(2, '0');
+                    const dd = String(endDate.getDate()).padStart(2, '0');
+                    
+                    endInput.value = `${yyyy}-${mm}-${dd}`;
+                }
+            }
         };
 
         window.setLeaveDuration = function(mode) {
@@ -566,6 +619,7 @@
                 const endInput = form.querySelector('input[name="completion_date"]');
                 if (startInput && !startInput.value) startInput.value = today;
                 if (endInput && !endInput.value) endInput.value = today;
+                if (!isEditing) updateEndDate();
             }
         });
 
@@ -620,6 +674,29 @@
                 showNotification('Please upload a supporting document for this category', 'error');
                 document.getElementById('uploadZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 return;
+            }
+
+            // Max days validation
+            const maxDaysStr = selectedOption?.dataset.maxDays;
+            if (maxDaysStr && maxDaysStr !== 'Unlimited') {
+                const maxDays = parseInt(maxDaysStr, 10);
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                
+                // Check if end date is before start date
+                if (end < start) {
+                    showNotification('End date cannot be before start date', 'error');
+                    return;
+                }
+                
+                // Calculate difference in days (inclusive)
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+                if (diffDays > maxDays) {
+                    showNotification(`Maximum duration for this category is ${maxDays} days`, 'error');
+                    return;
+                }
             }
 
             // Disable button and show loading state
