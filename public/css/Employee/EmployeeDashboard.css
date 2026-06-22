@@ -625,6 +625,11 @@ a {
     color: #3b82f6;
 }
 
+.status-leave {
+    background: #faf5ff;
+    color: #8b5cf6;
+}
+
 .status-permission {
     background: #faf5ff;
     color: #8b5cf6;

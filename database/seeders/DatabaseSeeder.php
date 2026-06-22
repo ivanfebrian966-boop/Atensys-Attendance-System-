@@ -39,34 +39,52 @@ class DatabaseSeeder extends Seeder
         ];
 
         $raw_data = [
-            ['nama' => 'Ahmad Rafi` Sa`id Fadhilah', 'jk' => 'L', 'wa' => '082392573749', 'div' => 'OPR'],
-            ['nama' => 'Akbar Zamroni', 'jk' => 'L', 'wa' => '08117092501', 'div' => 'FIN'],
-            ['nama' => 'Cahyati Lamona Sitohang', 'jk' => 'P', 'wa' => '081266620445', 'div' => 'MKT'],
-            ['nama' => 'Crist Garcia Pasaribu', 'jk' => 'L', 'wa' => '089623467477', 'div' => 'IT'],
-            ['nama' => 'Damar Widi Nugroho', 'jk' => 'L', 'wa' => '082169784529', 'div' => 'SLS'],
-            ['nama' => 'Dias Ferdian', 'jk' => 'L', 'wa' => '085761021014', 'div' => 'LOG'],
-            ['nama' => 'Dimas Cakra Surya Ananta', 'jk' => 'L', 'wa' => '085278458109', 'div' => 'CS'],
-            ['nama' => 'Fathur Alfitrah Dermawan', 'jk' => 'L', 'wa' => '089635803536', 'div' => 'ADM'],
-            ['nama' => 'Fazri Rahman', 'jk' => 'L', 'wa' => '085264312600', 'div' => 'ENG'],
-            ['nama' => 'Fenni Patrik Simanjuntak', 'jk' => 'P', 'wa' => '087767351842', 'div' => 'FIN'],
-            ['nama' => 'Haikal Mubaroq Zafia', 'jk' => 'L', 'wa' => '082170533270', 'div' => 'MKT'],
-            ['nama' => 'Hilda Tri Utami', 'jk' => 'P', 'wa' => '087770703580', 'div' => 'SLS'],
-            ['nama' => 'M Nurramadhan Irsya', 'jk' => 'L', 'wa' => '085278342106', 'div' => 'OPR'],
-            ['nama' => 'M. Luthfi Causart Azavi', 'jk' => 'L', 'wa' => '081261408239', 'div' => 'LOG'],
-            ['nama' => 'Michael Sando Turnip', 'jk' => 'L', 'wa' => '081372079904', 'div' => 'CS'],
-            ['nama' => 'Muhammad Faturrahman', 'jk' => 'L', 'wa' => '085823310134', 'div' => 'IT'],
-            ['nama' => 'Muhammad Ivan Febrian', 'jk' => 'L', 'wa' => '082008982186', 'div' => 'ADM'],
-            ['nama' => 'Muradika Laksamana Putra', 'jk' => 'L', 'wa' => '089521953535', 'div' => 'ENG'],
-            ['nama' => 'Nur Iliyanie', 'jk' => 'P', 'wa' => '088271477576', 'div' => 'HRD'],
-            ['nama' => 'Rangga Surya Saputra', 'jk' => 'L', 'wa' => '081261260195', 'div' => 'SLS'],
-            ['nama' => 'Reifandra Kinadi', 'jk' => 'L', 'wa' => '081534211742', 'div' => 'IT'],
-            ['nama' => 'Robi Yahya Harahap', 'jk' => 'L', 'wa' => '087754460586', 'div' => 'OPR'],
+            // IT Division (3 orang) — Muhammad Faturrahman sebagai Super Admin (IT-001)
+            ['nama' => 'Muhammad Faturrahman',           'jk' => 'L', 'wa' => '085823310134', 'div' => 'IT'],
+            ['nama' => 'Crist Garcia Pasaribu',          'jk' => 'L', 'wa' => '089623467477', 'div' => 'IT'],
+            ['nama' => 'Reifandra Kinadi',               'jk' => 'L', 'wa' => '081534211742', 'div' => 'IT'],
+
+            // HR Division (1 orang)
+            ['nama' => 'Nur Iliyanie',                   'jk' => 'P', 'wa' => '088271477576', 'div' => 'HRD'],
+
+            // Operations Division (3 orang)
+            ['nama' => 'Ahmad Rafi` Sa`id Fadhilah',    'jk' => 'L', 'wa' => '082392573749', 'div' => 'OPR'],
+            ['nama' => 'M Nurramadhan Irsya',            'jk' => 'L', 'wa' => '085278342106', 'div' => 'OPR'],
+            ['nama' => 'Robi Yahya Harahap',             'jk' => 'L', 'wa' => '087754460586', 'div' => 'OPR'],
+
+            // Finance Division (3 orang)
+            ['nama' => 'Akbar Zamroni',                  'jk' => 'L', 'wa' => '08117092501',  'div' => 'FIN'],
+            ['nama' => 'Fenni Patrik Simanjuntak',       'jk' => 'P', 'wa' => '087767351842', 'div' => 'FIN'],
             ['nama' => 'Shofiyyah Binti Tholib Uwaini', 'jk' => 'P', 'wa' => '085761801593', 'div' => 'FIN'],
-            ['nama' => 'Siti Halimah Chania', 'jk' => 'P', 'wa' => '085136863353', 'div' => 'MKT'],
-            ['nama' => 'Yohanes Armando Hubin', 'jk' => 'L', 'wa' => '083802617114', 'div' => 'ENG'],
-            ['nama' => 'Zahrah Athirah Badiah', 'jk' => 'P', 'wa' => '081268721870', 'div' => 'CS'],
-            ['nama' => 'Zaid Hasbiya Abrar', 'jk' => 'L', 'wa' => '081261442840', 'div' => 'LOG'],
+
+            // Marketing Division (2 orang)
+            ['nama' => 'Cahyati Lamona Sitohang',        'jk' => 'P', 'wa' => '081266620445', 'div' => 'MKT'],
+            ['nama' => 'Siti Halimah Chania',            'jk' => 'P', 'wa' => '085136863353', 'div' => 'MKT'],
+
+            // Sales Division (3 orang)
+            ['nama' => 'Damar Widi Nugroho',             'jk' => 'L', 'wa' => '082169784529', 'div' => 'SLS'],
+            ['nama' => 'Rangga Surya Saputra',           'jk' => 'L', 'wa' => '081261260195', 'div' => 'SLS'],
+            ['nama' => 'Zahrah Athirah Badiah',          'jk' => 'P', 'wa' => '081268721870', 'div' => 'SLS'],
+
+            // Logistics Division (3 orang)
+            ['nama' => 'Dias Ferdian',                   'jk' => 'L', 'wa' => '085761021014', 'div' => 'LOG'],
+            ['nama' => 'M. Luthfi Causart Azavi',        'jk' => 'L', 'wa' => '081261408239', 'div' => 'LOG'],
+            ['nama' => 'Zaid Hasbiya Abrar',             'jk' => 'L', 'wa' => '081261442840', 'div' => 'LOG'],
+
+            // Customer Service Division (2 orang)
+            ['nama' => 'Dimas Cakra Surya Ananta',       'jk' => 'L', 'wa' => '085278458109', 'div' => 'CS'],
+            ['nama' => 'Michael Sando Turnip',           'jk' => 'L', 'wa' => '081372079904', 'div' => 'CS'],
+
+            // Administration Division (2 orang)
+            ['nama' => 'Fathur Alfitrah Dermawan',       'jk' => 'L', 'wa' => '089635803536', 'div' => 'ADM'],
+            ['nama' => 'Muhammad Ivan Febrian',          'jk' => 'L', 'wa' => '082008982186', 'div' => 'ADM'],
+
+            // Engineering Division (3 orang)
+            ['nama' => 'Fazri Rahman',                   'jk' => 'L', 'wa' => '085264312600', 'div' => 'ENG'],
+            ['nama' => 'Muradika Laksamana Putra',       'jk' => 'L', 'wa' => '089521953535', 'div' => 'ENG'],
+            ['nama' => 'Yohanes Armando Hubin',          'jk' => 'L', 'wa' => '083802617114', 'div' => 'ENG'],
         ];
+
 
         foreach ($raw_data as $emp) {
             $isSuperAdmin = $emp['nama'] === 'Muhammad Faturrahman';
@@ -105,10 +123,12 @@ class DatabaseSeeder extends Seeder
                 $email = 'admin@attensys.com';
                 $password = 'admin123';
             } else {
-                // Email format: divisionname + counter @attensys.com (e.g. operations1@attensys.com)
-                $divisionNameLower = strtolower(str_replace(' Division', '', $divisions[$divKey === 'HRD' ? 'HR' : $divKey]->division_name));
-                $email = str_replace(' ', '', $divisionNameLower) . $currentCount . '@attensys.com';
-                $password = str_replace(' ', '', $divisionNameLower) . '123';
+                // Email format: firstname.lastname@attensys.com
+                $cleanName = strtolower(str_replace(['`', '.', '\''], '', $emp['nama']));
+                $parts = explode(' ', trim($cleanName));
+                $email = implode('.', $parts) . '@attensys.com';
+                // Password: fullname (no spaces) + 123, guaranteed >= 8 chars
+                $password = str_replace(' ', '', $cleanName) . '123';
             }
 
             Employee::create([

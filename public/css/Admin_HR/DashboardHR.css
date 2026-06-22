@@ -267,7 +267,9 @@
 .status-absent   { background: #fef2f2; color: #dc2626; }
 .status-late     { background: #fffbeb; color: #d97706; }
 .status-sick     { background: #eff6ff; color: #2563eb; }
+.status-leave    { background: #f3e8ff; color: #7c3aed; }
 .status-permission { background: #faf5ff; color: #7c3aed; }
+
 
 /* ============================================================
    SEARCH & FILTER
