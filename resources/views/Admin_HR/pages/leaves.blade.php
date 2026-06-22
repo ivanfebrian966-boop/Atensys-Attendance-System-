@@ -249,7 +249,7 @@
         <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Manage Leave Request</h3>
         <p class="text-sm text-slate-500 mb-4" id="manageEmployeeName">Employee Name</p>
 
-        <form id="manageForm" onsubmit="submitManageForm(event)">
+        <form id="manageForm" onsubmit="submitManageForm(event)" novalidate>
             <input type="hidden" id="manageId">
             
             <div class="grid grid-cols-2 gap-4">
@@ -273,13 +273,15 @@
             </div>
 
             <div class="form-group" id="manageRejectReasonGroup" style="display:none;">
-                <label class="form-label">Rejection Reason</label>
+                <label class="form-label">Rejection Reason <span class="text-red-500">*</span></label>
                 <textarea id="manageRejectReason" class="form-input" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                <p id="manageRejectError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>
 
             <div class="form-group" id="manageApprovalReasonGroup" style="display:none;">
-                <label class="form-label">Approval Reason</label>
+                <label class="form-label">Approval Reason <span class="text-red-500">*</span></label>
                 <textarea id="manageApprovalReason" class="form-input" rows="3" placeholder="Enter reason for approval..."></textarea>
+                <p id="manageApprovalError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>
 
             <div class="flex gap-2 justify-end mt-6">
@@ -296,12 +298,13 @@
         <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Reject Leave Request</h3>
         <p class="text-sm text-slate-500 mb-4">Please provide a reason for rejecting this request.</p>
 
-        <form id="rejectForm" onsubmit="submitRejectForm(event)">
+        <form id="rejectForm" onsubmit="submitRejectForm(event)" novalidate>
             <input type="hidden" id="rejectId">
             
             <div class="form-group">
-                <label class="form-label">Reason</label>
+                <label class="form-label">Reason <span class="text-red-500">*</span></label>
                 <textarea id="rejectReason" class="form-input" rows="3" required placeholder="Enter reason for rejection..."></textarea>
+                <p id="rejectError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>
 
             <div class="flex gap-2 justify-end mt-6">
@@ -318,10 +321,11 @@
         <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Approve Leave Request</h3>
         <p class="text-sm text-slate-500 mb-4">Please provide a reason for approving this request.</p>
 
-        <form id="approveForm" onsubmit="submitApproveForm(event)">
+        <form id="approveForm" onsubmit="submitApproveForm(event)" novalidate>
             <div class="form-group">
-                <label class="form-label">Approval Reason</label>
+                <label class="form-label">Approval Reason <span class="text-red-500">*</span></label>
                 <textarea id="approvalReason" class="form-input" rows="3" required placeholder="Enter reason for approval..."></textarea>
+                <p id="approveError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>
 
             <div class="flex gap-2 justify-end mt-6">

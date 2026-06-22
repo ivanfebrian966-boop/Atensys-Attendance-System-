@@ -401,6 +401,10 @@ function changeReportPage(page) {
 
 /* ---- Export ---- */
 function exportAllReport() {
+    if (!_detailFull || _detailFull.length === 0) {
+        showToast('No attendance data available to export', 'error', 3000);
+        return;
+    }
     const rows = [['Name', 'Division', 'Total', 'Present', 'Absent', 'Late', 'Permission', '% Present', 'Avg Check In']];
     _detailFull.forEach(r => rows.push([r.name, r.div, r.total, r.present, r.absent, r.late, r.perm, r.rate + '%', r.avgCi]));
     downloadCSV(`report_${new Date().toISOString().slice(0, 10)}.csv`, rows);

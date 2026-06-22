@@ -4,130 +4,94 @@ namespace Database\Seeders;
 
 use App\Models\Employee;
 use App\Models\Division;
-use App\Models\Attendance;
-use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $data = [
-            'HR' => [
-                ['nama' => 'Andi Saputra', 'posisi' => 'HR Manager'],
-                ['nama' => 'Siti Nurhaliza', 'posisi' => 'HR Staff'],
-            ],
-            'Finance' => [
-                ['nama' => 'Budi Santoso', 'posisi' => 'Finance Manager'],
-                ['nama' => 'Dewi Lestari', 'posisi' => 'Accountant'],
-            ],
-            'IT' => [
-                ['nama' => 'Rizky Pratama', 'posisi' => 'Software Developer'],
-                ['nama' => 'Agus Setiawan', 'posisi' => 'Network Engineer'],
-            ],
-            'Marketing' => [
-                ['nama' => 'Fajar Nugroho', 'posisi' => 'Digital Marketing Specialist'],
-                ['nama' => 'Lina Marlina', 'posisi' => 'Content Creator'],
-            ],
-            'Sales' => [
-                ['nama' => 'Hendra Wijaya', 'posisi' => 'Sales Executive'],
-                ['nama' => 'Rina Sari', 'posisi' => 'Account Executive'],
-            ],
-            'Operations' => [
-                ['nama' => 'Dedi Kurniawan', 'posisi' => 'Operations Manager'],
-                ['nama' => 'Joko Susilo', 'posisi' => 'Operator'],
-            ],
-            'Logistics' => [
-                ['nama' => 'Eko Prasetyo', 'posisi' => 'Warehouse Staff'],
-                ['nama' => 'Tono Sapriadi', 'posisi' => 'Driver'],
-            ],
-            'Customer Service' => [
-                ['nama' => 'Maya Putri', 'posisi' => 'Customer Service Officer'],
-                ['nama' => 'Intan Permata', 'posisi' => 'Call Center Agent'],
-            ],
-            'Legal' => [
-                ['nama' => 'Arif Rahman', 'posisi' => 'Legal Officer'],
-                ['nama' => 'Putri Ayu', 'posisi' => 'Contract Specialist'],
-            ],
-            'R&D' => [
-                ['nama' => 'Yoga Pratama', 'posisi' => 'Researcher'],
-                ['nama' => 'Nina Oktaviani', 'posisi' => 'Product Developer'],
-            ],
-            'Administration' => [
-                ['nama' => 'Slamet Riyadi', 'posisi' => 'Admin Staff'],
-                ['nama' => 'Dina Safitri', 'posisi' => 'Document Controller'],
-            ],
-            'Procurement' => [
-                ['nama' => 'Bayu Saputra', 'posisi' => 'Purchasing Staff'],
-                ['nama' => 'Vina Oktavia', 'posisi' => 'Vendor Specialist'],
-            ],
-            'Engineering' => [
-                ['nama' => 'Rudi Hartono', 'posisi' => 'Mechanical Engineer'],
-                ['nama' => 'Ahmad Fauzi', 'posisi' => 'Electrical Engineer'],
-            ],
-            'Quality Assurance' => [
-                ['nama' => 'Sari Dewi', 'posisi' => 'QA Staff'],
-                ['nama' => 'Teguh Prakoso', 'posisi' => 'Quality Auditor'],
-            ],
-            'Security & Safety' => [
-                ['nama' => 'Yusuf Hidayat', 'posisi' => 'Security Staff'],
-                ['nama' => 'Rahmat Hidayat', 'posisi' => 'Safety Officer'],
-            ],
-            'Corporate Strategy' => [
-                ['nama' => 'Kevin Alexander', 'posisi' => 'Business Analyst'],
-                ['nama' => 'Claudia Angel', 'posisi' => 'Data Analyst'],
-            ],
+        $divisions = [
+            'IT' => Division::create(['division_name' => 'IT Division']),
+            'HR' => Division::create(['division_name' => 'HR Division']),
+            'Operations' => Division::create(['division_name' => 'Operations Division']),
         ];
 
-        $nip = 1;
+        $raw_data = [
+            ['nama' => 'Ahmad Rafi` Sa`id Fadhilah', 'jk' => 'L', 'wa' => '082392573749'],
+            ['nama' => 'Akbar Zamroni', 'jk' => 'L', 'wa' => '08117092501'],
+            ['nama' => 'Cahyati Lamona Sitohang', 'jk' => 'P', 'wa' => '081266620445'],
+            ['nama' => 'Crist Garcia Pasaribu', 'jk' => 'L', 'wa' => '089623467477'],
+            ['nama' => 'Damar Widi Nugroho', 'jk' => 'L', 'wa' => '082169784529'],
+            ['nama' => 'Dias Ferdian', 'jk' => 'L', 'wa' => '085761021014'],
+            ['nama' => 'Dimas Cakra Surya Ananta', 'jk' => 'L', 'wa' => '085278458109'],
+            ['nama' => 'Fathur Alfitrah Dermawan', 'jk' => 'L', 'wa' => '089635803536'],
+            ['nama' => 'Fazri Rahman', 'jk' => 'L', 'wa' => '085264312600'],
+            ['nama' => 'Fenni Patrik Simanjuntak', 'jk' => 'P', 'wa' => '087767351842'],
+            ['nama' => 'Haikal Mubaroq Zafia', 'jk' => 'L', 'wa' => '082170533270'],
+            ['nama' => 'Hilda Tri Utami', 'jk' => 'P', 'wa' => '087770703580'],
+            ['nama' => 'M Nurramadhan Irsya', 'jk' => 'L', 'wa' => '085278342106'],
+            ['nama' => 'M. Luthfi Causart Azavi', 'jk' => 'L', 'wa' => '081261408239'],
+            ['nama' => 'Michael Sando Turnip', 'jk' => 'L', 'wa' => '081372079904'],
+            ['nama' => 'Muhammad Faturrahman', 'jk' => 'L', 'wa' => '085823310134'],
+            ['nama' => 'Muhammad Ivan Febrian', 'jk' => 'L', 'wa' => '082008982186'],
+            ['nama' => 'Muradika Laksamana Putra', 'jk' => 'L', 'wa' => '089521953535'],
+            ['nama' => 'Nur Iliyanie', 'jk' => 'P', 'wa' => '088271477576'],
+            ['nama' => 'Rangga Surya Saputra', 'jk' => 'L', 'wa' => '081261260195'],
+            ['nama' => 'Reifandra Kinadi', 'jk' => 'L', 'wa' => '081534211742'],
+            ['nama' => 'Robi Yahya Harahap', 'jk' => 'L', 'wa' => '087754460586'],
+            ['nama' => 'Shofiyyah Binti Tholib Uwaini', 'jk' => 'P', 'wa' => '085761801593'],
+            ['nama' => 'Siti Halimah Chania', 'jk' => 'P', 'wa' => '085136863353'],
+            ['nama' => 'Yohanes Armando Hubin', 'jk' => 'L', 'wa' => '083802617114'],
+            ['nama' => 'Zahrah Athirah Badiah', 'jk' => 'P', 'wa' => '081268721870'],
+            ['nama' => 'Zaid Hasbiya Abrar', 'jk' => 'L', 'wa' => '081261442840'],
+        ];
 
-        foreach ($data as $divisionName => $employees) {
+        $empCounter = 1;
 
-            $division = Division::create([
-                'division_name' => $divisionName . ' Division',
-            ]);
+        foreach ($raw_data as $emp) {
+            $isSuperAdmin = $emp['nama'] === 'Muhammad Faturrahman';
+            $isAdminHR = $emp['nama'] === 'Nur Iliyanie';
 
-            foreach ($employees as $emp) {
+            $role = 'Employee';
+            $nip = 'EMP-' . str_pad($empCounter++, 3, '0', STR_PAD_LEFT);
+            $division_id = $divisions['Operations']->division_id;
+            $position = 'Staff';
 
-                $clean = strtolower(str_replace(' ', '', $emp['posisi']));
-
-                Employee::create([
-                    'nip' => str_pad($nip++, 7, '0', STR_PAD_LEFT),
-                    'name' => $emp['nama'],
-                    'email' => $clean . '@attensys.com',
-                    'password' => Hash::make($clean . '123'),
-                    'role' => $emp['posisi'] == 'HR Manager' ? 'Admin HR' : 'Employee',
-                    'position' => $emp['posisi'],
-                    'division_id' => $division->division_id,
-                    'no_hp' => '08' . rand(1000000000, 9999999999),
-                    'alamat' => 'Kantor ' . $divisionName,
-                    'status' => 'Aktif',
-                    'gender' => in_array($emp['nama'], [
-                        'Siti Nurhaliza', 'Dewi Lestari', 'Lina Marlina', 'Rina Sari',
-                        'Maya Putri', 'Intan Permata', 'Putri Ayu', 'Nina Oktaviani',
-                        'Dina Safitri', 'Vina Oktavia', 'Sari Dewi', 'Claudia Angel'
-                    ]) ? 'Female' : 'Male',
-                ]);
+            if ($isSuperAdmin) {
+                $role = 'Super Admin';
+                $nip = 'SUP-001';
+                $division_id = $divisions['IT']->division_id;
+                $position = 'System Administrator';
+            } elseif ($isAdminHR) {
+                $role = 'Admin HR';
+                $nip = 'HRD-001';
+                $division_id = $divisions['HR']->division_id;
+                $position = 'HR Manager';
             }
+
+            if ($isSuperAdmin) {
+                $email = 'admin@attensys.com';
+                $password = 'admin123';
+            } else {
+                $cleanName = strtolower(str_replace([' ', '`', '.', '\''], '', $emp['nama']));
+                $email = $cleanName . '@attensys.com';
+                $password = $cleanName . '123';
+            }
+
+            Employee::create([
+                'nip' => $nip,
+                'name' => $emp['nama'],
+                'email' => $email,
+                'password' => Hash::make($password),
+                'role' => $role,
+                'position' => $position,
+                'division_id' => $division_id,
+                'no_hp' => $emp['wa'],
+                'alamat' => 'Batam',
+                'status' => 'Aktif',
+                'gender' => $emp['jk'] === 'L' ? 'Male' : 'Female',
+            ]);
         }
-
-        // SUPER ADMIN
-        $it = Division::where('division_name', 'IT Division')->first();
-
-        Employee::create([
-            'nip' => '0000000',
-            'name' => 'Muhammad Faturrahman',
-            'email' => 'admin@attensys.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'Super Admin',
-            'position' => 'System Administrator',
-            'division_id' => $it->division_id,
-            'no_hp' => '081234567890',
-            'alamat' => 'Kantor Pusat',
-            'status' => 'Aktif',
-        ]);
-
     }
 }

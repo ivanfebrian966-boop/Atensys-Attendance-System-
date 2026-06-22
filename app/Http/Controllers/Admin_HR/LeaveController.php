@@ -91,6 +91,9 @@ class LeaveController extends Controller
     {
         try {
             DB::beginTransaction();
+            if (empty(request()->input('approval_reason'))) {
+                return response()->json(['success' => false, 'message' => 'Approval reason is required.'], 422);
+            }
             $permission = Permission::findOrFail($id);
 
             if ($permission->permission_status !== 'Pending') {
@@ -143,6 +146,9 @@ class LeaveController extends Controller
     public function reject(Request $request, $id)
     {
         try {
+            if (empty($request->reject_reason)) {
+                return response()->json(['success' => false, 'message' => 'Reject reason is required.'], 422);
+            }
             $permission = Permission::findOrFail($id);
 
             if ($permission->permission_status !== 'Pending') {
@@ -187,6 +193,14 @@ class LeaveController extends Controller
     {
         try {
             DB::beginTransaction();
+            
+            if ($request->status === 'Approved' && empty($request->approval_reason)) {
+                return response()->json(['success' => false, 'message' => 'Approval reason is required.'], 422);
+            }
+            if ($request->status === 'Rejected' && empty($request->reject_reason)) {
+                return response()->json(['success' => false, 'message' => 'Reject reason is required.'], 422);
+            }
+
             $permission = Permission::findOrFail($id);
 
             $oldStatus = $permission->permission_status;

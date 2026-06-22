@@ -545,6 +545,10 @@ function execDelAtt() {
    ========================================================= */
 
 function exportAtt() {
+    if (!_attFull || _attFull.length === 0) {
+        showToast('No attendance data available to export', 'error', 3000);
+        return;
+    }
     showToast('Processing export...', 'info', 2000);
 }
 

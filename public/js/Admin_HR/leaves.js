@@ -164,6 +164,7 @@ let approveTargetId = null;
 function doApprove(id) {
     approveTargetId = id;
     document.getElementById('approvalReason').value = '';
+    document.getElementById('approveError').classList.add('hidden');
     document.getElementById('approveConfirmModal').style.display = 'flex';
 }
 
@@ -175,6 +176,13 @@ async function submitApproveForm(e) {
     e.preventDefault();
     if (!approveTargetId) return;
     const reason = document.getElementById('approvalReason').value;
+    
+    if (!reason.trim()) {
+        document.getElementById('approveError').classList.remove('hidden');
+        return;
+    }
+    document.getElementById('approveError').classList.add('hidden');
+
     const btn = document.getElementById('confirmApproveBtn');
     btn.disabled = true;
     btn.textContent = 'Processing...';
@@ -203,6 +211,7 @@ async function submitApproveForm(e) {
 function doReject(id) {
     document.getElementById('rejectId').value = id;
     document.getElementById('rejectReason').value = '';
+    document.getElementById('rejectError').classList.add('hidden');
     document.getElementById('rejectModal').style.display = 'flex';
 }
 
@@ -214,6 +223,13 @@ async function submitRejectForm(e) {
     e.preventDefault();
     const id = document.getElementById('rejectId').value;
     const reason = document.getElementById('rejectReason').value;
+    
+    if (!reason.trim()) {
+        document.getElementById('rejectError').classList.remove('hidden');
+        return;
+    }
+    document.getElementById('rejectError').classList.add('hidden');
+
     const btn = document.getElementById('rejectSubmitBtn');
 
     btn.disabled = true;
@@ -248,6 +264,8 @@ function openManageModal(row) {
     document.getElementById('manageStatus').value = row.status;
     document.getElementById('manageRejectReason').value = row.reject_reason || '';
     document.getElementById('manageApprovalReason').value = row.approval_reason || '';
+    document.getElementById('manageRejectError').classList.add('hidden');
+    document.getElementById('manageApprovalError').classList.add('hidden');
     
     toggleManageRejectReason();
     document.getElementById('manageModal').style.display = 'flex';
@@ -258,6 +276,8 @@ function toggleManageRejectReason() {
     const approveGroup = document.getElementById('manageApprovalReasonGroup');
     rejectGroup.style.display = status === 'Rejected' ? 'block' : 'none';
     approveGroup.style.display = status === 'Approved' ? 'block' : 'none';
+    document.getElementById('manageRejectReason').required = (status === 'Rejected');
+    document.getElementById('manageApprovalReason').required = (status === 'Approved');
 }
 function closeManageModal() {
     document.getElementById('manageModal').style.display = 'none';
@@ -265,16 +285,34 @@ function closeManageModal() {
 
 async function submitManageForm(e) {
     e.preventDefault();
-    const btn = document.getElementById('manageSubmitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-
+    
     const id = document.getElementById('manageId').value;
     const start_date = document.getElementById('manageStart').value;
     const completion_date = document.getElementById('manageEnd').value;
     const status = document.getElementById('manageStatus').value;
     const reject_reason = status === 'Rejected' ? document.getElementById('manageRejectReason').value : null;
     const approval_reason = status === 'Approved' ? document.getElementById('manageApprovalReason').value : null;
+
+    let hasError = false;
+    if (status === 'Rejected' && (!reject_reason || !reject_reason.trim())) {
+        document.getElementById('manageRejectError').classList.remove('hidden');
+        hasError = true;
+    } else {
+        document.getElementById('manageRejectError').classList.add('hidden');
+    }
+    
+    if (status === 'Approved' && (!approval_reason || !approval_reason.trim())) {
+        document.getElementById('manageApprovalError').classList.remove('hidden');
+        hasError = true;
+    } else {
+        document.getElementById('manageApprovalError').classList.add('hidden');
+    }
+
+    if (hasError) return;
+
+    const btn = document.getElementById('manageSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
 
     try {
         const url = `${LEAVE_BASE_URL}/${id}`;

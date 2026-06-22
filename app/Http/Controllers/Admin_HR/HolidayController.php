@@ -39,11 +39,13 @@ class HolidayController extends Controller
         $request->validate([
             'date'    => 'required|date',
             'names'   => 'required|array|min:1',
-            'names.*' => 'required|string|max:150',
+            'names.*' => 'required|string|max:150|distinct|unique:holiday_dates,name',
         ], [
             'date.required'  => 'Holiday date is required.',
             'names.required' => 'Holiday name is required.',
             'names.*.required' => 'Holiday name cannot be empty.',
+            'names.*.distinct' => 'Holiday names cannot be identical.',
+            'names.*.unique'   => 'Holiday name has already been taken.',
         ]);
 
         try {
@@ -94,10 +96,18 @@ class HolidayController extends Controller
     {
         $request->validate([
             'names'   => 'required|array|min:1',
-            'names.*' => 'required|string|max:150',
+            'names.*' => [
+                'required',
+                'string',
+                'max:150',
+                'distinct',
+                \Illuminate\Validation\Rule::unique('holiday_dates', 'name')->ignore($id)
+            ],
         ], [
             'names.required'   => 'At least 1 holiday name must be filled.',
             'names.*.required' => 'Holiday name cannot be empty.',
+            'names.*.distinct' => 'Holiday names cannot be identical.',
+            'names.*.unique'   => 'Holiday name has already been taken.',
         ]);
 
         try {
