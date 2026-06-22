@@ -340,6 +340,8 @@
                 <span id="leaveSubmitText">Submit Request</span>
             </button>
         </div>
+    </div>
+</div>
 
 <script>
     if (typeof window.openLeaveModal !== 'function') {
