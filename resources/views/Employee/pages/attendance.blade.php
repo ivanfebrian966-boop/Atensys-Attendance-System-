@@ -342,10 +342,11 @@
         if (filterSelect) filterSelect.addEventListener('change', filterTable);
     });
 
+    /* ---- Delete Modal ---- */
     function openDeleteModal(id) {
         const modal = document.getElementById('deletePermissionModal');
-        const form = document.getElementById('deleteForm');
-        if (!modal || !form) { console.error('Delete modal or form not found!'); return; }
+        const form  = document.getElementById('deleteForm');
+        if (!modal || !form) { console.error('[ATTENSYS] deletePermissionModal or deleteForm not found'); return; }
         form.action = `{{ url('employee/attendance/permission') }}/${id}/delete`;
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
@@ -357,12 +358,74 @@
         modal.style.display = 'none';
     }
 
+    /* ---- Edit Leave ---- */
+    window.editLeave = function(btn) {
+        const data = btn.dataset;
+
+        // Populate form action
+        const form = document.getElementById('leaveForm');
+        if (!form) { console.error('[ATTENSYS] leaveForm not found'); return; }
+        form.action = `{{ url('employee/attendance/permission') }}/${data.id}/update`;
+
+        // Update modal titles
+        const title   = document.getElementById('leaveModalTitle');
+        const sub     = document.getElementById('leaveModalSub');
+        const btnText = document.getElementById('leaveSubmitText');
+        const upText  = document.getElementById('uploadText');
+        if (title)   title.textContent   = 'Edit Leave Request';
+        if (sub)     sub.textContent     = 'Update your pending leave request details';
+        if (btnText) btnText.textContent = 'Save Changes';
+        if (upText)  upText.textContent  = (data.hasfile === 'true') ? '✅ Document already uploaded' : 'Click or drag to upload your document';
+
+        // Set leave type radio
+        const radio = document.querySelector(`input[name="type"][value="${data.type}"]`);
+        if (radio) radio.checked = true;
+        const typeVal = data.type && data.type.toLowerCase() === 'leave' ? 'leave' : 'sick';
+        if (typeof window.setPill === 'function') window.setPill(typeVal);
+
+        // Set dates
+        const startEl = form.querySelector('input[name="start_date"]');
+        const endEl   = form.querySelector('input[name="completion_date"]');
+        if (startEl) startEl.value = data.startRaw || '';
+        if (endEl)   endEl.value   = data.endRaw   || '';
+
+        // Set duration mode
+        if (data.startTime || data.endTime) {
+            const pr = form.querySelector('input[name="duration_mode"][value="partial"]');
+            if (pr) pr.checked = true;
+            if (typeof window.setLeaveDuration === 'function') window.setLeaveDuration('partial');
+            const st = form.querySelector('input[name="start_time"]');
+            const et = form.querySelector('input[name="end_time"]');
+            if (st) st.value = data.startTime || '';
+            if (et) et.value = data.endTime   || '';
+        } else {
+            const fr = form.querySelector('input[name="duration_mode"][value="full"]');
+            if (fr) fr.checked = true;
+            if (typeof window.setLeaveDuration === 'function') window.setLeaveDuration('full');
+        }
+
+        // Set category & information (delayed to let setPill finish rendering options)
+        setTimeout(() => {
+            const cat = document.getElementById('leave_category');
+            if (cat && data.category) cat.value = data.category;
+            const info = document.getElementById('leave_detail');
+            if (info) info.value = (data.information === '-') ? '' : (data.information || '');
+            if (typeof window.updateInformation === 'function') window.updateInformation(true);
+        }, 60);
+
+        // Open the leave modal in edit mode
+        if (typeof window.openLeaveModal === 'function') {
+            window.openLeaveModal(true, data.hasfile === 'true');
+        } else {
+            console.error('[ATTENSYS] openLeaveModal not defined');
+        }
+    };
+
+    /* ---- Misc ---- */
     function scrollToQr() {
         const qrSection = document.getElementById('qrCodeSection');
         if (qrSection) {
             qrSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Tambahkan sedikit highlight effect opsional
             qrSection.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
             setTimeout(() => {
                 qrSection.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
@@ -371,3 +434,4 @@
     }
 </script>
 @endsection
+
