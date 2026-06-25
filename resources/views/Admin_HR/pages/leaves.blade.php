@@ -273,13 +273,11 @@
             </div>
 
             <div class="form-group" id="manageRejectReasonGroup" style="display:none;">
-                <label class="form-label">Rejection Reason <span class="text-red-500">*</span></label>
-                <textarea id="manageRejectReason" class="form-input" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                 <textarea id="manageRejectReason" class="form-input" rows="3" placeholder="Enter reason for rejection..."></textarea>
                 <p id="manageRejectError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>
 
             <div class="form-group" id="manageApprovalReasonGroup" style="display:none;">
-                <label class="form-label">Approval Reason <span class="text-red-500">*</span></label>
                 <textarea id="manageApprovalReason" class="form-input" rows="3" placeholder="Enter reason for approval..."></textarea>
                 <p id="manageApprovalError" class="text-xs text-red-500 mt-1 hidden">Reason is required</p>
             </div>

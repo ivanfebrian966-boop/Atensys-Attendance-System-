@@ -210,7 +210,7 @@ class AttendanceController extends Controller
             } elseif (!is_null($todayAttendance->check_in) && !is_null($todayAttendance->attendance_status) && is_null($todayAttendance->check_out)) {
                 // 2. Kalau ada atd, tapi ada isi di kolom check_in, maka anggap dia perlu verifikasi (jeda waktu sebelum bisa check_out)
                 $checkInTime = Carbon::parse($todayAttendance->check_in);
-                if ($now->diffInMinutes($checkInTime) < 5) {
+                if (abs($now->diffInMinutes($checkInTime)) < 5) {
                     return response()->json([
                         'success' => true,
                         'type' => 'check_in',
@@ -549,28 +549,30 @@ class AttendanceController extends Controller
             $start = Carbon::parse($permission->start_date);
             $end = Carbon::parse($permission->completion_date);
 
+
             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
                 $existingAttendance = Attendance::where('nip', $permission->nip)
                     ->whereDate('created_at', $date->toDateString())
                     ->first();
 
+                $status = ($permission->start_time !== null) ? 'Leave' : ($permission->type === 'Sick' ? 'Sick' : 'Leave');
+                $attendanceDate = $date->copy()->setTime(7, 0, 0);
+
                 if (!$existingAttendance) {
-                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     $attendance = new Attendance([
-                        'nip' => $permission->nip,
-                        'check_in' => $attendanceDate,
-                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
-                        'qr_code' => 'SYSTEM',
+                        'nip'               => $permission->nip,
+                        'check_in'          => null,
+                        'attendance_status'  => $status,
+                        'qr_code'           => 'SYSTEM',
                     ]);
                     $attendance->created_at = $attendanceDate;
                     $attendance->updated_at = $attendanceDate;
                     $attendance->save();
-                } else if ($existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
-                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
+                } elseif ($existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
                     $existingAttendance->update([
-                        'check_in' => $attendanceDate,
-                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
-                        'qr_code' => 'SYSTEM',
+                        'check_in'          => null,
+                        'attendance_status'  => $status,
+                        'qr_code'           => 'SYSTEM',
                     ]);
                 }
             }
