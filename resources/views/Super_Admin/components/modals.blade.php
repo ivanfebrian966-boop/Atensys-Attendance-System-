@@ -33,9 +33,7 @@
                         <select name="division_id" class="form-select" required>
                             <option value="">Select Division</option>
                             @foreach ($divisions as $div)
-                                @if(stripos($div->division_name, 'HR') === false)
-                                    <option value="{{ $div->division_id }}" {{ old('division_id') == $div->division_id ? 'selected' : '' }}>{{ $div->division_name }}</option>
-                                @endif
+                                <option value="{{ $div->division_id }}" {{ old('division_id') == $div->division_id ? 'selected' : '' }}>{{ $div->division_name }}</option>
                             @endforeach
                         </select>
                         @error('division_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -136,7 +134,7 @@
     <div class="modal-box" onclick="event.stopPropagation()">
         <div class="flex items-start justify-between mb-4">
             <div>
-                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Add Admin HR Account</h3>
+                <h3 class="text-lg font-bold text-slate-900" style="font-family:'Sora',sans-serif">Add  HR Admin Account</h3>
                 <p class="text-sm text-slate-400 mt-1">Create a new account with HR management access</p>
             </div>
             <button onclick="closeModal('modalAddAdmin')" class="p-2 rounded-xl hover:bg-slate-100 transition text-slate-400">✕</button>
@@ -349,9 +347,7 @@
                     <label class="form-label">Division</label>
                     <select name="division_id" id="edit_emp_division" class="form-select" required>
                         @foreach ($divisions as $div)
-                            @if(stripos($div->division_name, 'HR') === false)
-                                <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
-                            @endif
+                            <option value="{{ $div->division_id }}">{{ $div->division_name }}</option>
                         @endforeach
                     </select>
                 </div>

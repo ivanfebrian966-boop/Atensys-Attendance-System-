@@ -75,7 +75,7 @@ class SuperAdminController extends Controller
             $request->validate([
                 'name' => 'required|string|max:75',
                 'email' => 'required|string|email|max:50|unique:employees',
-                'nip' => 'required|string|size:7|unique:employees',
+                'nip' => 'required|string|max:11|unique:employees',
                 'division_id' => 'required|exists:divisions,division_id',
                 'jabatan' => 'required|string|max:30',
                 'no_hp' => 'required|string|max:15',
@@ -112,7 +112,7 @@ class SuperAdminController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|max:75',
-                'nip' => 'required|string|size:7|unique:employees',
+                'nip' => 'required|string|max:11|unique:employees',
                 'email' => 'required|string|email|max:50|unique:employees',
                 'password' => 'required|string|min:8',
                 'phone' => 'required|string|max:15',
@@ -149,7 +149,8 @@ class SuperAdminController extends Controller
     {
         $employee = Employee::findOrFail($nip);
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'nip' => 'required|in:' . $nip,
             'name' => 'required|string|max:75',
             'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
             'division_id' => 'required|exists:divisions,division_id',
@@ -158,7 +159,13 @@ class SuperAdminController extends Controller
             'alamat' => 'required|string|max:500',
             'status' => 'required|in:Aktif,Tidak Aktif',
             'gender' => 'nullable|in:Male,Female',
+        ], [
+            'nip.in' => 'The NIP must be sequential.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
 
         $data = [
             'name' => $request->name,
@@ -191,7 +198,8 @@ class SuperAdminController extends Controller
     {
         $employee = Employee::findOrFail($nip);
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'nip' => 'required|in:' . $nip,
             'name' => 'required|string|max:75',
             'email' => 'required|string|email|max:50|unique:employees,email,' . $nip . ',nip',
             'phone' => 'required|string|max:15',
@@ -200,7 +208,13 @@ class SuperAdminController extends Controller
             'division_id' => 'required|exists:divisions,division_id',
             'position' => 'required|string|max:30',
             'gender' => 'nullable|in:Male,Female',
+        ], [
+            'nip.in' => 'The NIP must be sequential.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
 
         $data = [
             'name' => $request->name,
@@ -335,9 +349,16 @@ class SuperAdminController extends Controller
     {
         $scanner = \App\Models\ScannerDevice::findOrFail($id);
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'scanner_id' => 'sometimes|in:' . $id,
             'password' => 'nullable|string|min:8',
+        ], [
+            'scanner_id.in' => 'The Scanner ID cannot be changed.',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', $validator->errors()->first());
+        }
 
         if ($request->filled('password')) {
             $scanner->update([

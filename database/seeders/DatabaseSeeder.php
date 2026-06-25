@@ -144,6 +144,29 @@ class DatabaseSeeder extends Seeder
                 'status' => 'Aktif',
                 'gender' => $emp['jk'] === 'L' ? 'Male' : 'Female',
             ]);
+
+            // If it's Admin HR, create a secondary Employee account
+            if ($isAdminHR) {
+                Employee::create([
+                    'nip' => $nip . '-EMP',
+                    'name' => $emp['nama'],
+                    'email' => str_replace('@', '.emp@', $email),
+                    'password' => Hash::make($password),
+                    'role' => 'Employee',
+                    'position' => 'Staff',
+                    'division_id' => $division_id,
+                    'no_hp' => $emp['wa'],
+                    'alamat' => 'Batam',
+                    'status' => 'Aktif',
+                    'gender' => $emp['jk'] === 'L' ? 'Male' : 'Female',
+                ]);
+            }
         }
+
+        // Add Scanner Device Account
+        \App\Models\ScannerDevice::create([
+            'scanner_id' => 'SD-01',
+            'password' => Hash::make('scanner123'),
+        ]);
     }
 }

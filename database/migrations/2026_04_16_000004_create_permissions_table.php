@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('permissions', function (Blueprint $table) {
             $table->id('permission_id');
-            $table->string('nip', 7);
+            $table->string('nip', 11);
             $table->enum('type', ['Sick', 'Leave']);
             $table->enum('leave_category', [
                 'Marriage Leave',

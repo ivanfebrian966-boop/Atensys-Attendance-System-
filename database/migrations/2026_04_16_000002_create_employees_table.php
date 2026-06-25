@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
-            $table->string('nip', 7)->primary();
+            $table->string('nip', 11)->primary();
             $table->string('password', 60);
             $table->string('name', 75);
             $table->enum('gender', ['Male', 'Female'])->default('Male');

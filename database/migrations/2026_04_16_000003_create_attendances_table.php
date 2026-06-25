@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id('attendance_id');
-            $table->string('nip', 7);
+            $table->string('nip', 11);
             $table->datetime('check_in')->nullable();
             $table->datetime('check_out')->nullable();
             $table->enum('attendance_status', ['Present', 'Late', 'Leave', 'Sick', 'Absent']);
