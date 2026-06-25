@@ -540,21 +540,30 @@
 
             fetch("{{ route('scanner.process-qr') }}", {
                 method:  'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
                 body:    JSON.stringify({ qr_data: decodedText }),
             })
-            .then(r => r.json())
+            .then(async r => {
+                const contentType = r.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    // Server returned HTML (e.g., redirect to login page or PHP fatal error)
+                    const text = await r.text();
+                    console.error('[ATTENSYS] Non-JSON response from server:', r.status, text.substring(0, 200));
+                    throw new Error('Server returned non-JSON response (status ' + r.status + '). Check server logs.');
+                }
+                return r.json();
+            })
             .then(data => {
                 if (data.success) {
                     playScanSound('success');
                     
                     const isCheckIn = data.type === 'check_in';
                     const msg = isCheckIn
-                        ? `Check In — ${data.employee} (${data.time})`
-                        : `Check Out — ${data.employee} (${data.time})`;
+                        ? `✅ Check In — ${data.employee} (${data.time})`
+                        : `✅ Check Out — ${data.employee} (${data.time})`;
 
                     setStatus(isCheckIn ? 'Check In Successful' : 'Check Out Successful', 'success');
-                    showToast(msg, 'success', 3000);
+                    showToast(msg, 'success', 4000);
 
                     // Update session counter
                     sessionScans++;
@@ -570,24 +579,28 @@
 
                 } else {
                     playScanSound('error');
-                    setStatus(data.message, 'error');
-                    showToast(data.message, 'error', 3500);
+                    setStatus(data.message || 'Scan rejected', 'error');
+                    showToast(data.message || 'Scan rejected by server', 'error', 4000);
                     
                     setTimeout(() => {
                         isProcessing = false;
                         setStatus('Ready to Scan', 'ready');
-                    }, 3000);
+                    }, 3500);
                 }
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('[ATTENSYS] Scanner fetch error:', err);
                 playScanSound('error');
+                const errMsg = err && err.message && !err.message.includes('JSON') 
+                    ? err.message 
+                    : 'Failed to connect to server. Please check your network connection.';
                 setStatus('Connection Failed', 'error');
-                showToast('Failed to connect to the attendance server', 'error', 3000);
+                showToast(errMsg, 'error', 4000);
                 
                 setTimeout(() => {
                     isProcessing = false;
                     setStatus('Ready to Scan', 'ready');
-                }, 3000);
+                }, 3500);
             });
         }
 

@@ -399,8 +399,7 @@
             { text: "Personal Leave", requireUpload: false, min: 1, max: 1 },
             { text: "Family Event", requireUpload: false, min: 1, max: 2 },
             { text: "Hajj Leave", requireUpload: true, min: 1, max: 40 },
-            { text: "Umrah Leave", requireUpload: true, min: 1, max: 15 },
-            { text: "Official Duty Leave", requireUpload: true, min: 1, max: 'Unlimited' }
+            { text: "Umrah Leave", requireUpload: true, min: 1, max: 15 }
         ];
         
         const sickOptions = [
@@ -415,17 +414,28 @@
         let isEditing = false;
         let hasExistingFile = false;
 
-        window.setPill = function(type) {
-            const pillPerm = document.getElementById('pill-permission');
-            const pillSick = document.getElementById('pill-sick');
-            if(pillPerm) pillPerm.classList.toggle('active', type === 'permission' || type === 'leave');
-            if(pillSick) pillSick.classList.toggle('active', type === 'sick');
+        window.populateCategories = function() {
+            const activeTypeRadio = document.querySelector('input[name="type"]:checked');
+            const type = activeTypeRadio ? activeTypeRadio.value.toLowerCase() : 'leave';
+            const durationMode = document.querySelector('input[name="duration_mode"]:checked')?.value || 'full';
 
             const catSelect = document.getElementById('leave_category');
             if(catSelect) {
                 catSelect.innerHTML = '';
                 catSelect.name = (type === 'permission' || type === 'leave') ? 'leave_category' : 'sick_category';
-                const opts = (type === 'permission' || type === 'leave') ? permissionOptions : sickOptions;
+                
+                let opts = (type === 'permission' || type === 'leave') ? permissionOptions : sickOptions;
+                
+                if (durationMode === 'partial') {
+                    if (type === 'permission' || type === 'leave') {
+                        const toRemove = ["Marriage Leave", "Annual Leave", "Hajj Leave", "Umrah Leave"];
+                        opts = opts.filter(o => !toRemove.includes(o.text));
+                    } else if (type === 'sick') {
+                        const toRemove = ["Sick Leave with Medical Certificate", "Hospitalization"];
+                        opts = opts.filter(o => !toRemove.includes(o.text));
+                    }
+                }
+                
                 opts.forEach(o => {
                     const opt = document.createElement('option');
                     opt.value = o.text;
@@ -436,6 +446,15 @@
                 });
                 updateInformation();
             }
+        };
+
+        window.setPill = function(type) {
+            const pillPerm = document.getElementById('pill-permission');
+            const pillSick = document.getElementById('pill-sick');
+            if(pillPerm) pillPerm.classList.toggle('active', type === 'permission' || type === 'leave');
+            if(pillSick) pillSick.classList.toggle('active', type === 'sick');
+
+            populateCategories();
         };
 
         window.updateInformation = function(isFromEdit = false) {
@@ -453,6 +472,12 @@
             const startInput = form.querySelector('input[name="start_date"]');
             const endInput = form.querySelector('input[name="completion_date"]');
             if(!startInput || !endInput || !startInput.value) return;
+
+            const durationMode = document.querySelector('input[name="duration_mode"]:checked')?.value || 'full';
+            if (durationMode === 'partial') {
+                endInput.value = startInput.value;
+                return;
+            }
 
             const catSelect = document.getElementById('leave_category');
             if(!catSelect || catSelect.selectedIndex === -1) return;
@@ -487,14 +512,29 @@
             if (pillFull) pillFull.classList.toggle('active', mode === 'full');
             if (pillPartial) pillPartial.classList.toggle('active', mode === 'partial');
 
+            const startInput = document.querySelector('input[name="start_date"]');
+            const endInput = document.querySelector('input[name="completion_date"]');
+
             if (mode === 'partial') {
                 timeDiv.classList.remove('hidden');
+                if (startInput && endInput) {
+                    endInput.value = startInput.value;
+                    endInput.readOnly = true;
+                    endInput.style.backgroundColor = '#f1f5f9';
+                    endInput.style.cursor = 'not-allowed';
+                }
             } else {
                 timeDiv.classList.add('hidden');
                 // clear time inputs
                 const inputs = timeDiv.querySelectorAll('input');
                 inputs.forEach(i => i.value = '');
+                if (endInput) {
+                    endInput.readOnly = false;
+                    endInput.style.backgroundColor = '';
+                    endInput.style.cursor = '';
+                }
             }
+            populateCategories();
         };
         // Initialize based on default selection
         document.addEventListener('DOMContentLoaded', function() {
@@ -607,6 +647,25 @@
             if (!category || category === '') {
                 showNotification('Please select a leave category', 'error');
                 return;
+            }
+
+            // Validate partial request rules
+            const durationMode = form.querySelector('input[name="duration_mode"]:checked')?.value || 'full';
+            if (durationMode === 'partial') {
+                if (startDate !== endDate) {
+                    showNotification('Partial requests can only be made for a single day', 'error');
+                    return;
+                }
+                const startTime = form.querySelector('input[name="start_time"]').value;
+                const endTime = form.querySelector('input[name="end_time"]').value;
+                if (!startTime || !endTime) {
+                    showNotification('Please select both start and end time for partial request', 'error');
+                    return;
+                }
+                if (startTime >= endTime) {
+                    showNotification('End time must be after start time', 'error');
+                    return;
+                }
             }
 
             // Check if file upload is required

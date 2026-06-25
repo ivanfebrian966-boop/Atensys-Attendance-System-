@@ -30,13 +30,27 @@ class RoleMiddleware
 
         // Scanner role uses session-based auth (not Laravel Auth)
         if (in_array('Scanner', $roles)) {
-            return $isScannerSession
-                ? $next($request)
-                : redirect()->route('login');
+            if ($isScannerSession) {
+                return $next($request);
+            }
+            // If the request expects JSON (AJAX from scanner page), return 401 JSON instead of redirect
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Scanner session expired. Please log in again.'
+                ], 401);
+            }
+            return redirect()->route('login');
         }
 
         // If not authenticated via Laravel Auth, check for active scanner session
         if (!Auth::check()) {
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session expired. Please log in again.'
+                ], 401);
+            }
             return redirect()->route($isScannerSession ? 'scanner.index' : 'login');
         }
 
@@ -48,6 +62,13 @@ class RoleMiddleware
         }
 
         // Redirect to the user's own dashboard
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized access.'
+            ], 403);
+        }
+
         $redirect = self::ROLE_REDIRECTS[$user->role] ?? 'home';
 
         return redirect()->route($redirect);

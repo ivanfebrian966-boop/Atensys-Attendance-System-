@@ -50,16 +50,31 @@ class AttendanceController extends Controller
             $currentTime = Carbon::now()->format('H:i:s');
             
             // Cek apakah sudah ada check in hari ini
+            // Cek apakah sudah ada check in hari ini
             $attendance = Attendance::where('nip', $empId)
-                ->whereDate('check_in', $today)
+                ->whereDate('created_at', $today)
                 ->first();
             
+            // Check if there is an approved partial leave/sick today
+            $partialPermission = \App\Models\Permission::where('nip', $empId)
+                ->where('permission_status', 'Approved')
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('completion_date', '>=', $today)
+                ->whereNotNull('start_time')
+                ->first();
+
             if (!$attendance) {
                 // Belum check in, buat record baru dengan check in
+                $status = $this->determineStatus($currentTime);
+                if ($partialPermission) {
+                    $endTime = Carbon::parse($today . ' ' . $partialPermission->end_time);
+                    $status = Carbon::now()->lessThanOrEqualTo($endTime) ? 'Present' : 'Late';
+                }
+
                 $attendance = Attendance::create([
                     'nip' => $empId,
                     'check_in' => Carbon::now(),
-                    'attendance_status' => $this->determineStatus($currentTime),
+                    'attendance_status' => $status,
                     'qr_code' => $qrData,
                 ]);
                 
@@ -72,6 +87,30 @@ class AttendanceController extends Controller
                     'division' => $employee->division ?? 'Engineering'
                 ]);
             } else {
+                if (is_null($attendance->check_in)) {
+                    // Pre-created leave record
+                    $status = Carbon::now()->format('H:i') > '08:00' ? 'Late' : 'Present';
+                    if ($partialPermission) {
+                        $endTime = Carbon::parse($today . ' ' . $partialPermission->end_time);
+                        $status = Carbon::now()->lessThanOrEqualTo($endTime) ? 'Present' : 'Late';
+                    }
+
+                    $attendance->update([
+                        'check_in' => Carbon::now(),
+                        'attendance_status' => $status,
+                        'qr_code' => $qrData,
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Check In successful',
+                        'type' => 'check_in',
+                        'time' => $currentTime,
+                        'employee' => $employee->name,
+                        'division' => $employee->division ?? 'Engineering'
+                    ]);
+                }
+
                 // Sudah check in, update check out
                 if ($attendance->check_out) {
                     return response()->json([

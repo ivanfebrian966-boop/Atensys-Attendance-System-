@@ -20,7 +20,22 @@ class EmployeeController extends Controller
         Attendance::syncMissingCheckouts();
 
         $todayAttendance = Attendance::where('nip', $user->nip)
-            ->whereDate('check_in', Carbon::today())
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+
+        $today = Carbon::today();
+        $todayPartialLeave = Permission::where('nip', $user->nip)
+            ->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('completion_date', '>=', $today)
+            ->whereNotNull('start_time')
+            ->first();
+
+        $todayFullDayLeave = Permission::where('nip', $user->nip)
+            ->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('completion_date', '>=', $today)
+            ->whereNull('start_time')
             ->first();
         
         $monthStats = [
@@ -37,7 +52,7 @@ class EmployeeController extends Controller
         $qrCodeBaseData = 'ATTENSYS:EMP:' . $user->nip;
         $qrCodeData = $qrCodeBaseData . ':' . now()->timestamp;
         
-        return view('Employee.pages.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData'));
+        return view('Employee.pages.dashboard', compact('todayAttendance', 'monthStats', 'recentAttendances', 'user', 'qrCodeData', 'qrCodeBaseData', 'todayPartialLeave', 'todayFullDayLeave'));
     }
 
     public function checkIn(Request $request)
@@ -51,32 +66,72 @@ class EmployeeController extends Controller
             return back()->with('error', 'Cannot check in today because it is a holiday.');
         }
 
-        // Check if has permission/sick for today
-        $hasPermission = Permission::where('nip', $user->nip)
+        // Check if has full-day permission/sick for today
+        $hasFullDayPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
             ->whereIn('permission_status', ['Approved', 'Pending'])
+            ->whereNull('start_time')
             ->exists();
 
-        if ($hasPermission) {
-            return back()->with('error', 'Failed: You already have a permission/sick request for today.');
+        if ($hasFullDayPermission) {
+            return back()->with('error', 'Failed: You already have a full-day permission/sick request for today.');
         }
 
-        // Check if already checked in today
+        // Check if already checked in today (check_in is not null)
         $existing = Attendance::where('nip', $user->nip)
-            ->whereDate('check_in', $today)
+            ->whereDate('created_at', $today)
             ->first();
 
-        if ($existing) {
+        if ($existing && !is_null($existing->check_in)) {
             return back()->with('error', 'You have already checked in today.');
         }
 
-        Attendance::create([
-            'nip' => $user->nip,
-            'check_in' => Carbon::now(),
-            'attendance_status' => Carbon::now()->format('H:i') > '08:00' ? 'Late' : 'Present', // Basic threshold logic
-            'qr_code' => $request->qr_code ?? 'MANUAL',
-        ]);
+        $now = Carbon::now();
+
+        // Check if has approved partial leave/sick today
+        $partialPermission = Permission::where('nip', $user->nip)
+            ->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('completion_date', '>=', $today)
+            ->whereNotNull('start_time')
+            ->first();
+
+        if ($partialPermission) {
+            $endTime = Carbon::parse($today->toDateString() . ' ' . $partialPermission->end_time);
+            $status = $now->lessThanOrEqualTo($endTime) ? 'Present' : 'Late';
+
+            if ($existing) {
+                $existing->update([
+                    'check_in' => $now,
+                    'attendance_status' => $status,
+                    'qr_code' => $request->qr_code ?? 'MANUAL',
+                ]);
+            } else {
+                Attendance::create([
+                    'nip' => $user->nip,
+                    'check_in' => $now,
+                    'attendance_status' => $status,
+                    'qr_code' => $request->qr_code ?? 'MANUAL',
+                ]);
+            }
+            return back()->with('success', 'Check-in recorded successfully!');
+        }
+
+        if ($existing) {
+            $existing->update([
+                'check_in' => $now,
+                'attendance_status' => $now->format('H:i') > '08:00' ? 'Late' : 'Present',
+                'qr_code' => $request->qr_code ?? 'MANUAL',
+            ]);
+        } else {
+            Attendance::create([
+                'nip' => $user->nip,
+                'check_in' => $now,
+                'attendance_status' => $now->format('H:i') > '08:00' ? 'Late' : 'Present',
+                'qr_code' => $request->qr_code ?? 'MANUAL',
+            ]);
+        }
         
         return back()->with('success', 'Check-in recorded successfully!');
     }
@@ -91,19 +146,20 @@ class EmployeeController extends Controller
             return back()->with('error', 'Cannot check out today because it is a holiday.');
         }
 
-        // Check if has permission/sick for today
-        $hasPermission = Permission::where('nip', $user->nip)
+        // Check if has full-day permission/sick for today
+        $hasFullDayPermission = Permission::where('nip', $user->nip)
             ->whereDate('start_date', '<=', $today)
             ->whereDate('completion_date', '>=', $today)
             ->where('permission_status', 'Approved')
+            ->whereNull('start_time')
             ->exists();
 
-        if ($hasPermission) {
+        if ($hasFullDayPermission) {
             return back()->with('error', 'Failed: You cannot check in/out during approved leave or sick period.');
         }
 
         $attendance = Attendance::where('nip', $user->nip)
-            ->whereDate('check_in', $today)
+            ->whereDate('created_at', $today)
             ->first();
 
         if (!$attendance) {
@@ -157,7 +213,22 @@ class EmployeeController extends Controller
         Attendance::syncMissingCheckouts();
 
         $todayAttendance = Attendance::where('nip', $user->nip)
-            ->whereDate('check_in', Carbon::today())
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+
+        $today = Carbon::today();
+        $todayPartialLeave = Permission::where('nip', $user->nip)
+            ->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('completion_date', '>=', $today)
+            ->whereNotNull('start_time')
+            ->first();
+
+        $todayFullDayLeave = Permission::where('nip', $user->nip)
+            ->where('permission_status', 'Approved')
+            ->whereDate('start_date', '<=', $today)
+            ->whereDate('completion_date', '>=', $today)
+            ->whereNull('start_time')
             ->first();
 
         $recentAttendances = Attendance::where('nip', $user->nip)
@@ -170,7 +241,7 @@ class EmployeeController extends Controller
 
         $permissions = Permission::where('nip', $user->nip)->orderBy('created_at', 'desc')->get();
 
-        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user', 'permissions'));
+        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user', 'permissions', 'todayPartialLeave', 'todayFullDayLeave'));
     }
 
     public function leave()
@@ -194,6 +265,36 @@ class EmployeeController extends Controller
         ];
 
         $category = $request->type === 'Leave' ? $request->leave_category : $request->sick_category;
+        
+        if ($category === 'Official Duty Leave') {
+            return back()->with('error', 'Failed: Official Duty Leave is no longer available.');
+        }
+
+        $isPartial = $request->filled('start_time') || $request->filled('end_time');
+        if ($isPartial) {
+            if ($request->start_date !== $request->completion_date) {
+                return back()->with('error', 'Failed: Partial requests can only be made for a single day.');
+            }
+            if (!$request->filled('start_time') || !$request->filled('end_time')) {
+                return back()->with('error', 'Failed: Both start and end time must be specified for partial requests.');
+            }
+            if ($request->start_time >= $request->end_time) {
+                return back()->with('error', 'Failed: End time must be after start time.');
+            }
+
+            if ($request->type === 'Leave') {
+                $disallowed = ['Marriage Leave', 'Annual Leave', 'Hajj Leave', 'Umrah Leave'];
+                if (in_array($category, $disallowed)) {
+                    return back()->with('error', 'Failed: Selected leave category is not allowed for partial requests.');
+                }
+            } elseif ($request->type === 'Sick') {
+                $disallowed = ['Sick Leave with Medical Certificate', 'Hospitalization'];
+                if (in_array($category, $disallowed)) {
+                    return back()->with('error', 'Failed: Selected sick category is not allowed for partial requests.');
+                }
+            }
+        }
+
         $fileRequired = in_array($category, $mandatoryCategories);
 
         $request->validate([
@@ -297,6 +398,36 @@ class EmployeeController extends Controller
         ];
 
         $category = $request->type === 'Leave' ? $request->leave_category : $request->sick_category;
+        
+        if ($category === 'Official Duty Leave') {
+            return back()->with('error', 'Failed: Official Duty Leave is no longer available.');
+        }
+
+        $isPartial = $request->filled('start_time') || $request->filled('end_time');
+        if ($isPartial) {
+            if ($request->start_date !== $request->completion_date) {
+                return back()->with('error', 'Failed: Partial requests can only be made for a single day.');
+            }
+            if (!$request->filled('start_time') || !$request->filled('end_time')) {
+                return back()->with('error', 'Failed: Both start and end time must be specified for partial requests.');
+            }
+            if ($request->start_time >= $request->end_time) {
+                return back()->with('error', 'Failed: End time must be after start time.');
+            }
+
+            if ($request->type === 'Leave') {
+                $disallowed = ['Marriage Leave', 'Annual Leave', 'Hajj Leave', 'Umrah Leave'];
+                if (in_array($category, $disallowed)) {
+                    return back()->with('error', 'Failed: Selected leave category is not allowed for partial requests.');
+                }
+            } elseif ($request->type === 'Sick') {
+                $disallowed = ['Sick Leave with Medical Certificate', 'Hospitalization'];
+                if (in_array($category, $disallowed)) {
+                    return back()->with('error', 'Failed: Selected sick category is not allowed for partial requests.');
+                }
+            }
+        }
+
         $fileRequired = in_array($category, $mandatoryCategories) && !$permission->file;
 
         $request->validate([
