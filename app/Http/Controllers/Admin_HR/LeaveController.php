@@ -114,22 +114,23 @@ class LeaveController extends Controller
                     ->whereDate('created_at', $date->toDateString())
                     ->first();
 
+                $status = ($permission->start_time !== null) ? 'Leave' : ($permission->type === 'Sick' ? 'Sick' : 'Leave');
+
                 if (!$existingAttendance) {
                     $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     $attendance = new Attendance([
                         'nip'        => $permission->nip,
                         'check_in'   => null,
-                        'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                        'attendance_status'     => $status,
                         'qr_code'    => 'SYSTEM',
                     ]);
                     $attendance->created_at = $attendanceDate;
                     $attendance->updated_at = $attendanceDate;
                     $attendance->save();
                 } else if ($existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
-                    $attendanceDate = $date->copy()->setTime(7, 0, 0);
                     $existingAttendance->update([
-                        'check_in' => $attendanceDate,
-                        'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                        'check_in' => null,
+                        'attendance_status' => $status,
                         'qr_code' => 'SYSTEM',
                     ]);
                 }
@@ -233,12 +234,14 @@ class LeaveController extends Controller
                         ->whereDate('created_at', $date->toDateString())
                         ->first();
 
+                    $status = ($permission->start_time !== null) ? 'Leave' : ($permission->type === 'Sick' ? 'Sick' : 'Leave');
+
                     if (!$existingAttendance) {
                         $attendanceDate = $date->copy()->setTime(7, 0, 0);
                         $attendance = new Attendance([
                             'nip'        => $permission->nip,
-                            'check_in'   => $attendanceDate,
-                            'attendance_status'     => $permission->type === 'Sick' ? 'Sick' : 'Leave',
+                            'check_in'   => null,
+                            'attendance_status'     => $status,
                             'qr_code'    => 'SYSTEM',
                         ]);
                         $attendance->created_at = $attendanceDate;
@@ -246,8 +249,8 @@ class LeaveController extends Controller
                         $attendance->save();
                     } else if ($existingAttendance->attendance_status === 'Absent' || $existingAttendance->qr_code === 'SYSTEM-HOLIDAY') {
                         $existingAttendance->update([
-                            'attendance_status' => $permission->type === 'Sick' ? 'Sick' : 'Leave',
-                            'check_in' => $date->copy()->setTime(7, 0, 0),
+                            'attendance_status' => $status,
+                            'check_in' => null,
                             'qr_code' => 'SYSTEM',
                         ]);
                     }

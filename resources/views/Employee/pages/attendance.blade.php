@@ -14,19 +14,40 @@
         <div class="panel-header">
             <div>
                 <h3 class="panel-title">Today's Attendance</h3>
-                <p class="panel-subtitle">{{ now()->format('l, d F Y') }}</p>
+                <p class="panel-subtitle">{{ now()->translatedFormat('d F Y') }}</p>
             </div>
-            <span class="badge-rate">{{ $todayAttendance && $todayAttendance->check_in ? ($todayAttendance->check_out ? 'Completed' : 'Checked In') : 'Not Yet' }}</span>
+            <span class="badge-rate" id="attendanceStatusBadge">
+                @if($todayAttendance && $todayAttendance->check_in)
+                    {{ $todayAttendance->check_out ? 'Completed' : 'Checked In' }}
+                @elseif($todayFullDayLeave)
+                    {{ $todayFullDayLeave->type === 'Sick' ? 'Sick' : 'Leave' }}
+                @elseif($todayPartialLeave)
+                    Leave (Partial)
+                @else
+                    Not Yet
+                @endif
+            </span>
         </div>
-        <div class="p-5 text-center flex-grow">
-            @if(!$todayAttendance || !$todayAttendance->check_in)
+        <div class="p-5 text-center flex flex-col justify-center items-center flex-grow min-h-[160px]">
+            @if($todayFullDayLeave)
+                <div class="mb-4">
+                    <div class="text-6xl mb-3">🏖️</div>
+                    <p class="text-indigo-600 font-semibold">Approved Full-day {{ $todayFullDayLeave->type === 'Sick' ? 'Sick Leave' : 'Leave' }}</p>
+                    <p class="text-slate-500 text-sm mt-2">Category: {{ $todayFullDayLeave->type === 'Sick' ? $todayFullDayLeave->sick_category : $todayFullDayLeave->leave_category }}</p>
+                </div>
+            @elseif(!$todayAttendance || !$todayAttendance->check_in)
                 <div class="mb-4">
                     <div class="text-6xl mb-3">⏰</div>
-                    <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
-                    <div class="flex flex-col gap-2 max-w-xs mx-auto">
-                        <button type="button" onclick="scrollToQr()" class="btn-primary width-auto justify-center items-center flex">
-                            <svg class="h-4 mr-2 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    @if($todayPartialLeave)
+                        <p class="text-slate-600 mb-2">You have an approved Partial {{ $todayPartialLeave->type }} today</p>
+                        <p class="text-indigo-600 text-xs font-semibold mb-4">Time: {{ \Carbon\Carbon::parse($todayPartialLeave->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($todayPartialLeave->end_time)->format('H:i') }}</p>
+                    @else
+                        <p class="text-slate-600 mb-4">You haven't checked in yet today</p>
+                    @endif
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs">
+                        <button onclick="scrollToQr()" class="btn-primary w-full justify-center items-center flex">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 20h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                             Show QR to Check In
                         </button>
@@ -56,8 +77,14 @@
             @endif
         </div>
         <div class="bg-indigo-50/50 border-t border-indigo-50 p-3 text-center text-xs text-indigo-600/80 rounded-b-2xl mt-auto">
-            @if(!$todayAttendance || !$todayAttendance->check_in)
-                <span class="font-semibold">Reminder:</span> Check-in time is <strong>08:00 AM</strong>. Arrivals after 08:00 AM will be marked as late.
+            @if($todayFullDayLeave)
+                <span class="font-semibold">Status:</span> You are on approved full-day leave / sick today.
+            @elseif(!$todayAttendance || !$todayAttendance->check_in)
+                @if($todayPartialLeave)
+                    <span class="font-semibold">Reminder:</span> You have approved partial leave today until <strong>{{ \Carbon\Carbon::parse($todayPartialLeave->end_time)->format('H:i') }}</strong>. Please check in before <strong>{{ \Carbon\Carbon::parse($todayPartialLeave->end_time)->format('H:i') }}</strong>.
+                @else
+                    <span class="font-semibold">Reminder:</span> Check-in time is <strong>08:00 AM</strong>. Arrivals after 08:00 AM will be marked as late.
+                @endif
             @elseif($todayAttendance->check_in && !$todayAttendance->check_out)
                 <span class="font-semibold">Reminder:</span> Check-out time is <strong>17:00 (5:00 PM)</strong>. Don't forget to check out before leaving.
             @else

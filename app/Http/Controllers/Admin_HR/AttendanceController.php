@@ -69,6 +69,7 @@ class AttendanceController extends Controller
                     ->where('permission_status', 'Approved')
                     ->whereDate('start_date', '<=', $today)
                     ->whereDate('completion_date', '>=', $today)
+                    ->whereNull('start_time')
                     ->exists();
 
                 if ($hasApprovedLeave) {
@@ -113,8 +114,8 @@ class AttendanceController extends Controller
                     
                     $diff = abs(time() - $qrTimestamp);
                     
-                    // Batas waktu 10 detik (QR di-refresh tiap 10 detik, toleransi minimal)
-                    if ($diff > 10) {
+                    // Batas waktu 30 detik (QR di-refresh tiap 10 detik, toleransi lebih lebar untuk network delay)
+                    if ($diff > 30) {
                         return response()->json([
                             'success' => false,
                             'message' => 'QR Code expired. Please use the latest QR Code on your phone screen.'
@@ -144,12 +145,26 @@ class AttendanceController extends Controller
                 ->whereDate('created_at', $today)
                 ->first();
             
+            // Check if there is an approved partial leave/sick today
+            $partialPermission = Permission::where('nip', $nip)
+                ->where('permission_status', 'Approved')
+                ->whereDate('start_date', '<=', $today)
+                ->whereDate('completion_date', '>=', $today)
+                ->whereNotNull('start_time')
+                ->first();
+
             if (!$todayAttendance) {
                 // Belum ada attendance hari ini -> Check In
+                $status = $this->determineStatus($now);
+                if ($partialPermission) {
+                    $endTime = Carbon::parse($today->toDateString() . ' ' . $partialPermission->end_time);
+                    $status = $now->lessThanOrEqualTo($endTime) ? 'Present' : 'Late';
+                }
+
                 $attendance = Attendance::create([
                     'nip' => $nip,
                     'check_in' => $now,
-                    'attendance_status' => $this->determineStatus($now),
+                    'attendance_status' => $status,
                     'qr_code' => $qrData,
                 ]);
                 
@@ -169,14 +184,41 @@ class AttendanceController extends Controller
                     'message' => 'Employee ' . $employee->name . ' has already checked out today'
                 ], 400);
 
+            } elseif (is_null($todayAttendance->check_in)) {
+                // Pre-created leave attendance record (where check_in is null) -> Check In
+                $status = $now->format('H:i') > '08:00' ? 'Late' : 'Present';
+                if ($partialPermission) {
+                    $endTime = Carbon::parse($today->toDateString() . ' ' . $partialPermission->end_time);
+                    $status = $now->lessThanOrEqualTo($endTime) ? 'Present' : 'Late';
+                }
+
+                $todayAttendance->update([
+                    'check_in' => $now,
+                    'attendance_status' => $status,
+                    'qr_code' => $qrData,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'type' => 'check_in',
+                    'message' => 'Check In successful',
+                    'employee' => $employee->name,
+                    'time' => $now->format('H:i:s'),
+                    'status' => $status
+                ]);
+
             } elseif (!is_null($todayAttendance->check_in) && !is_null($todayAttendance->attendance_status) && is_null($todayAttendance->check_out)) {
                 // 2. Kalau ada atd, tapi ada isi di kolom check_in, maka anggap dia perlu verifikasi (jeda waktu sebelum bisa check_out)
                 $checkInTime = Carbon::parse($todayAttendance->check_in);
                 if ($now->diffInMinutes($checkInTime) < 5) {
                     return response()->json([
-                        'success' => false,
-                        'message' => 'Time interval is too short for verification. You just checked in.'
-                    ], 400);
+                        'success' => true,
+                        'type' => 'check_in',
+                        'message' => 'Check In successful',
+                        'employee' => $employee->name,
+                        'time' => $checkInTime->format('H:i:s'),
+                        'status' => $todayAttendance->attendance_status
+                    ]);
                 }
 
                 // 3. Kalau ada atd, ada isi kolom check_in dan ada isi kolom attendance_status 
@@ -194,7 +236,7 @@ class AttendanceController extends Controller
                 ]);
 
             } else {
-                // Kondisi lainnya (misal status Sick/Permission yang tidak memiliki check_in)
+                // Kondisi lainnya
                 return response()->json([
                     'success' => false,
                     'message' => 'You cannot perform QR attendance at this time.'

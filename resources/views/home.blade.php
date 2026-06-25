@@ -246,11 +246,11 @@
                     <div class="space-y-3">
                         <div class="flex items-center gap-3 text-sm text-slate-600 contact-text transition-colors duration-300">
                             <span>📧</span>
-                            <span style="font-family:'DM Sans',sans-serif">attensys@gmail.com</span>
+                            <span style="font-family:'DM Sans',sans-serif">attensys@attensys.com</span>
                         </div>
                         <div class="flex items-center gap-3 text-sm text-slate-600 contact-text transition-colors duration-300">
                             <span>📱</span>
-                            <span style="font-family:'DM Sans',sans-serif">+62 8X XXX XXX</span>
+                            <span style="font-family:'DM Sans',sans-serif">+62 882 7147 7576</span>
                         </div>
                     </div>
                 </div>
