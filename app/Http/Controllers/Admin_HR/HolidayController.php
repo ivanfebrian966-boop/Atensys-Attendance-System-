@@ -101,7 +101,7 @@ class HolidayController extends Controller
                 'string',
                 'max:150',
                 'distinct',
-                \Illuminate\Validation\Rule::unique('holiday_dates', 'name')->ignore($id)
+                \Illuminate\Validation\Rule::unique('holiday_dates', 'name')->ignore($id, 'holiday_id')
             ],
         ], [
             'names.required'   => 'At least 1 holiday name must be filled.',
@@ -118,6 +118,17 @@ class HolidayController extends Controller
 
             // Keep the first name on the existing row, and create a new row for each additional name.
             $primaryName = array_shift($names);
+
+            // Restrict editing of existing names on today's holidays
+            if ($holiday->date->isToday()) {
+                if ($holiday->name !== $primaryName) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Existing names of today\'s holiday cannot be edited.'
+                    ], 422);
+                }
+            }
+
             $holiday->update(['name' => $primaryName]);
 
             $createdRows = [];
@@ -168,6 +179,12 @@ class HolidayController extends Controller
             DB::beginTransaction();
 
             $holiday = HolidayDate::findOrFail($id);
+            if ($holiday->date->isToday()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Today\'s holiday cannot be deleted.'
+                ], 422);
+            }
             $dateStr = $holiday->date->format('Y-m-d');
             $holiday->delete();
 

@@ -6,7 +6,28 @@
 
 @section('content')
 
+@php
+    $isHolidayToday = $todayHolidays->count() > 0;
+    $holidayNames = $isHolidayToday ? $todayHolidays->pluck('name')->join(', ') : null;
+@endphp
+
+{{-- ===== HOLIDAY WARNING BANNER ===== --}}
+@if($isHolidayToday)
+<div class="mb-5 fade-up d1 rounded-2xl overflow-hidden shadow-md" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);">
+    <div class="flex items-center gap-4 px-6 py-4">
+        <div class="text-4xl flex-shrink-0">🗓️</div>
+        <div class="flex-1">
+            <p class="text-white font-bold text-lg leading-tight" style="font-family:'Sora',sans-serif;">Today is a Public Holiday</p>
+            <p class="text-red-100 text-sm mt-0.5">{{ $holidayNames }}</p>
+            <p class="text-red-200 text-xs mt-1">Attendance check-in is closed today. Enjoy your day off!</p>
+        </div>
+        <div class="flex-shrink-0 text-5xl opacity-20"></div>
+    </div>
+</div>
+@endif
+
 {{-- ===== TOP CARDS: TODAY + QR ===== --}}
+@if(!$isHolidayToday)
 <div class="grid lg:grid-cols-2 gap-4 mb-6">
 
     {{-- Today's Attendance --}}
@@ -119,6 +140,8 @@
         </div>
     </div>
 </div>
+
+@endif {{-- @if(!$isHolidayToday) --}}
 
 {{-- ===== RECENT ATTENDANCE ===== --}}
 <div class="panel fade-up d3 mb-6">
@@ -259,7 +282,7 @@
                     </td>
                     <td class="py-3 px-4">
                         <div class="flex items-center gap-2">
-                            @if($perm->permission_status === 'Pending')
+                            @if($perm->permission_status === 'Pending' && $perm->created_at->addDays(7)->isFuture())
                                 <button type="button"
                                     onclick="event.stopPropagation(); editLeave(this);"
                                     data-id="{{ $perm->permission_id }}"
@@ -280,7 +303,9 @@
                                     <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 </button>
                             @else
-                                <span class="text-[10px] text-slate-400 font-medium italic">Locked</span>
+                                <span class="text-[10px] text-slate-400 font-medium italic">
+                                    {{ $perm->permission_status !== 'Pending' ? 'Locked' : 'Edit window closed' }}
+                                </span>
                             @endif
                         </div>
                     </td>
@@ -298,9 +323,6 @@
 @endsection
 
 @section('modals')
-{{-- LEAVE REQUEST MODAL --}}
-@include('Employee.components.leave_modal')
-
 {{-- DELETE CONFIRM MODAL --}}
 <div id="deletePermissionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm items-center justify-center z-[9999]" style="display:none;" onclick="closeDeleteModal()">
     <div class="bg-white rounded-3xl w-[400px] max-w-[90vw] p-6 shadow-2xl transform transition-all" onclick="event.stopPropagation()">

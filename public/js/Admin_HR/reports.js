@@ -123,6 +123,9 @@ function updateSummaryCardsEmpty() {
 
 /* ---- Summary ---- */
 function renderSummaryCards() {
+    const { from, to } = getDateRange();
+    const workingDays = getWorkingDaysCount(from, to);
+
     const total = filteredData.length;
     const present = filteredData.filter(r => r.status === 'Present').length;
     const absent = filteredData.filter(r => r.status === 'Absent').length;
@@ -131,6 +134,12 @@ function renderSummaryCards() {
     const perm = filteredData.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
     const pct = v => total ? (v / total * 100).toFixed(1) + '%' : '—';
 
+    // Present rate relative to working days
+    const uniqueNames = [...new Set(filteredData.map(r => r.name))].length || 1;
+    const presentPctByWorkingDay = workingDays * uniqueNames
+        ? Math.min(100, ((present + late) / (workingDays * uniqueNames) * 100)).toFixed(1) + '%'
+        : '—';
+
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     set('rTotal', total);
     set('rPresent', present);
@@ -138,7 +147,7 @@ function renderSummaryCards() {
     set('rLate', late);
     set('rSick', sick);
     set('rPerm', perm);
-    set('rPresentPct', pct(present));
+    set('rPresentPct', presentPctByWorkingDay);
     set('rAbsentPct', pct(absent));
     set('rLatePct', pct(late));
     set('rSickPct', pct(sick));
@@ -287,9 +296,25 @@ function renderDivisionTable() {
     }).join('');
 }
 
+function getWorkingDaysCount(startDateStr, endDateStr) {
+    const start = new Date(startDateStr + 'T00:00:00');
+    const end = new Date(endDateStr + 'T00:00:00');
+    let count = 0;
+    let cur = new Date(start);
+    while (cur <= end) {
+        if (cur.getDay() !== 0) { // 0 is Sunday
+            count++;
+        }
+        cur.setDate(cur.getDate() + 1);
+    }
+    return count || 1; // prevent division by zero
+}
+
 /* ---- Detail table ---- */
 let _detailFull = [];
 function renderDetailTable(data) {
+    const { from, to } = getDateRange();
+    const workingDays = getWorkingDaysCount(from, to);
     const names = [...new Set(data.map(r => r.name))];
     _detailFull = names.map(name => {
         const rows = data.filter(r => r.name === name);
@@ -300,7 +325,7 @@ function renderDetailTable(data) {
         const late = rows.filter(r => r.status === 'Late').length;
         const sick = rows.filter(r => r.status === 'Sick').length;
         const perm = rows.filter(r => r.status === 'Permission' || r.status === 'Leave').length;
-        const rate = total ? Math.round(present / total * 100) : 0;
+        const rate = Math.min(100, Math.round((present + late) / workingDays * 100));
         const ciRows = rows.filter(r => r.ci && r.ci !== '-').map(r => r.ci);
         const avgCi = ciRows.length
             ? (() => {

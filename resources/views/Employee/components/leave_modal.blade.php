@@ -455,6 +455,38 @@
             if(pillSick) pillSick.classList.toggle('active', type === 'sick');
 
             populateCategories();
+
+            // Update min date based on type
+            const form = document.getElementById('leaveForm');
+            if (form) {
+                const startInput = form.querySelector('input[name="start_date"]');
+                const endInput = form.querySelector('input[name="completion_date"]');
+                
+                const localToday = new Date();
+                const offset = localToday.getTimezoneOffset();
+                const todayStr = new Date(localToday.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+                
+                // Add 7 days for Leave
+                const leaveMinDate = new Date(localToday.getTime() - (offset*60*1000));
+                leaveMinDate.setDate(leaveMinDate.getDate() + 7);
+                const leaveMinStr = leaveMinDate.toISOString().split('T')[0];
+                
+                const isLeave = (type === 'permission' || type === 'leave');
+                const minStr = isLeave ? leaveMinStr : todayStr;
+                
+                if (startInput) {
+                    startInput.min = minStr;
+                    if (!isEditing && startInput.value < minStr) {
+                        startInput.value = minStr;
+                    }
+                }
+                if (endInput) {
+                    endInput.min = minStr;
+                    if (!isEditing && endInput.value < minStr) {
+                        endInput.value = minStr;
+                    }
+                }
+            }
         };
 
         window.updateInformation = function(isFromEdit = false) {
