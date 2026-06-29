@@ -281,6 +281,9 @@ class EmployeeController extends Controller
             if ($request->start_time >= $request->end_time) {
                 return back()->with('error', 'Failed: End time must be after start time.');
             }
+            if ($request->start_time < '08:00' || $request->end_time > '17:00') {
+                return back()->with('error', 'Failed: Partial permission can only be requested between working hours (08:00 - 17:00).');
+            }
 
             if ($request->type === 'Leave') {
                 $disallowed = ['Marriage Leave', 'Annual Leave', 'Hajj Leave', 'Umrah Leave'];
@@ -413,6 +416,9 @@ class EmployeeController extends Controller
             }
             if ($request->start_time >= $request->end_time) {
                 return back()->with('error', 'Failed: End time must be after start time.');
+            }
+            if ($request->start_time < '08:00' || $request->end_time > '17:00') {
+                return back()->with('error', 'Failed: Partial permission can only be requested between working hours (08:00 - 17:00).');
             }
 
             if ($request->type === 'Leave') {

@@ -666,6 +666,10 @@
                     showNotification('End time must be after start time', 'error');
                     return;
                 }
+                if (startTime < "08:00" || endTime > "17:00") {
+                    showNotification('Partial requests can only be made during working hours (08:00 - 17:00)', 'error');
+                    return;
+                }
             }
 
             // Check if file upload is required

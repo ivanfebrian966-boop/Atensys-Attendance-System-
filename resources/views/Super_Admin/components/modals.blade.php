@@ -45,7 +45,7 @@
                     </div>
                     <div class="form-field col-span-2">
                         <label class="form-label">NIP</label>
-                        <input type="text" name="nip" class="form-input" placeholder="e.g.: 0000002" value="{{ old('nip') }}" required>
+                        <input type="text" name="nip" class="form-input" placeholder="Example: XXX-001" value="{{ old('nip') }}" required>
                         @error('nip') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
