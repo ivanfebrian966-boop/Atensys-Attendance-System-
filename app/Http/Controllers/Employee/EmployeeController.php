@@ -241,7 +241,10 @@ class EmployeeController extends Controller
 
         $permissions = Permission::where('nip', $user->nip)->orderBy('created_at', 'desc')->get();
 
-        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user', 'permissions', 'todayPartialLeave', 'todayFullDayLeave'));
+        $todayHolidays = HolidayDate::whereDate('date', Carbon::today())->get();
+        $allHolidays = HolidayDate::orderBy('date', 'asc')->get();
+
+        return view('Employee.pages.attendance', compact('todayAttendance', 'recentAttendances', 'qrCodeData', 'qrCodeBaseData', 'user', 'permissions', 'todayPartialLeave', 'todayFullDayLeave', 'todayHolidays', 'allHolidays'));
     }
 
     public function leave()
@@ -281,6 +284,9 @@ class EmployeeController extends Controller
             if ($request->start_time >= $request->end_time) {
                 return back()->with('error', 'Failed: End time must be after start time.');
             }
+            if ($request->start_time < '08:00' || $request->end_time > '17:00') {
+                return back()->with('error', 'Failed: Partial permission can only be requested between working hours (08:00 - 17:00).');
+            }
 
             if ($request->type === 'Leave') {
                 $disallowed = ['Marriage Leave', 'Annual Leave', 'Hajj Leave', 'Umrah Leave'];
@@ -308,6 +314,13 @@ class EmployeeController extends Controller
             'information' => 'nullable|string|max:255',
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
+
+        if ($request->type === 'Leave') {
+            $minDate = Carbon::today()->addDays(7)->toDateString();
+            if ($request->start_date < $minDate) {
+                return back()->with('error', 'Failed: Leave (Izin) must be requested at least 1 week (7 days) in advance.');
+            }
+        }
 
         // Maternity leave limit: 1 per year
         if ($category === 'Maternity Leave') {
@@ -392,6 +405,10 @@ class EmployeeController extends Controller
             return back()->with('error', 'Failed: Processed requests cannot be modified.');
         }
 
+        if ($permission->created_at->addDays(7)->isPast()) {
+            return back()->with('error', 'Failed: Requests can only be edited within a week after submission.');
+        }
+
         $mandatoryCategories = [
             'Marriage Leave', 'Maternity Leave',
             'Sick Leave with Medical Certificate', 'Hospitalization', 'Accident'
@@ -413,6 +430,9 @@ class EmployeeController extends Controller
             }
             if ($request->start_time >= $request->end_time) {
                 return back()->with('error', 'Failed: End time must be after start time.');
+            }
+            if ($request->start_time < '08:00' || $request->end_time > '17:00') {
+                return back()->with('error', 'Failed: Partial permission can only be requested between working hours (08:00 - 17:00).');
             }
 
             if ($request->type === 'Leave') {
@@ -441,6 +461,13 @@ class EmployeeController extends Controller
             'information' => 'nullable|string|max:255',
             'file' => ($fileRequired ? 'required' : 'nullable') . '|file|mimes:pdf|max:2048',
         ]);
+
+        if ($request->type === 'Leave') {
+            $minDate = Carbon::today()->addDays(7)->toDateString();
+            if ($request->start_date < $minDate) {
+                return back()->with('error', 'Failed: Leave (Izin) must be requested at least 1 week (7 days) in advance.');
+            }
+        }
 
         // Maternity leave limit: 1 per year (excluding this current request)
         if ($category === 'Maternity Leave') {
@@ -512,6 +539,10 @@ class EmployeeController extends Controller
 
         if ($permission->permission_status !== 'Pending') {
             return back()->with('error', 'Failed: Processed requests cannot be deleted.');
+        }
+
+        if ($permission->created_at->addDays(7)->isPast()) {
+            return back()->with('error', 'Failed: Requests can only be deleted within a week after submission.');
         }
 
         $permission->delete();

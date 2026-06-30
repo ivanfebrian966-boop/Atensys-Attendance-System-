@@ -78,9 +78,11 @@
                         </div>
                         <div class="hol-actions">
                             <button onclick="openEditHoliday({{ $hol->id }})"
-                                class="btn-icon-edit" title="Edit">✏️</button>
+                                class="btn-icon-edit" title="{{ $hol->date->isToday() ? 'View / Add Name' : 'Edit' }}">{{ $hol->date->isToday() ? '🔒' : '✏️' }}</button>
+                            @if(!$hol->date->isToday())
                             <button onclick="deleteHoliday({{ $hol->id }}, '{{ addslashes($hol->name) }}')"
                                 class="btn-icon-del" title="Delete">🗑</button>
+                            @endif
                         </div>
                     </div>
                     @empty

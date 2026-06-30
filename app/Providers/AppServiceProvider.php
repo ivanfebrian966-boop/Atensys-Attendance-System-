@@ -19,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        try {
+            if (\Schema::hasTable('permissions')) {
+                \App\Models\Permission::where('permission_status', 'Pending')
+                    ->where('created_at', '<', now()->subDays(7))
+                    ->update(['permission_status' => 'Approved']);
+            }
+        } catch (\Exception $e) {
+            // Prevent issues during database migration/initial setup
+        }
     }
 }

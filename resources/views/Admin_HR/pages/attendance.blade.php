@@ -223,39 +223,21 @@
                 </p> 
             </div>
 
-            {{-- Time Type Toggle --}}
-            <div style="margin-bottom:12px;">
-                <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:6px;display:block;">Time Type</label>
-                <div style="display:flex;gap:8px;">
-                    <button type="button" id="tglBtnIn" onclick="setTimeType('check_in')"
-                        style="flex:1;height:38px;border-radius:8px;border:1.5px solid #c7d2fe;background:#eef2ff;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
-                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                        Check In
-                    </button>
-                    <button type="button" id="tglBtnOut" onclick="setTimeType('check_out')"
-                        style="flex:1;height:38px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
-                        <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                        Check Out
-                    </button>
+            {{-- Time Inputs (Side by side) --}}
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+                    <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK IN</p>
+                    <input type="time" id="aaCheckIn" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
-                <input type="hidden" name="aaTimeType" id="aaTimeType" value="check_in">
-            </div>
- 
-            {{-- Time Input Block --}}
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;">
-                <div id="aaTimeIconWrap" style="width:36px;height:36px;border-radius:8px;background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg id="aaTimeIcon" style="width:16px;height:16px;stroke:#4f46e5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div style="flex:1;">
-                    <p id="aaTimeLabelText" style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 2px;">CHECK IN TIME</p>
-                    <input type="time" id="aaCheckIn" style="border:none;background:transparent;font-size:20px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
-                    <input type="time" id="aaCheckOut" style="display:none;border:none;background:transparent;font-size:20px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
+                    <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK OUT</p>
+                    <input type="time" id="aaCheckOut" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
             </div>
-            <span class="form-error" id="eaaCheckIn"></span>
-            <span class="form-error" id="eaaCheckOut"></span>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <span class="form-error" id="eaaCheckIn" style="display:block;"></span>
+                <span class="form-error" id="eaaCheckOut" style="display:block;"></span>
+            </div>
  
         </div>
  
@@ -299,14 +281,15 @@
                     style="background:#f8fafc;color:#64748b;cursor:not-allowed;font-size:13px;">
             </div>
  
-            {{-- Date (Full Width) --}}
+            {{-- Date (Full Width, readonly) --}}
             <div style="margin-bottom:14px;">
                 <label class="form-label" style="font-size:12px;font-weight:500;color:#64748b;margin-bottom:5px;display:block;">Date</label>
-                <input type="date" id="eaDate" class="form-input" style="font-size:13px;">
+                <input type="date" id="eaDate" class="form-input" readonly
+                    style="background:#f8fafc;color:#64748b;cursor:not-allowed;font-size:13px;">
             </div>
  
             {{-- Check In + Check Out side by side --}}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;">
                 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;">
                     <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK IN</p>
                     <input type="time" id="eaCheckIn" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
@@ -315,6 +298,10 @@
                     <p style="font-size:11px;font-weight:500;color:#94a3b8;margin:0 0 3px;">CHECK OUT</p>
                     <input type="time" id="eaCheckOut" style="border:none;background:transparent;font-size:18px;font-weight:500;color:#1e293b;outline:none;width:100%;padding:0;">
                 </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <span class="form-error" id="eeaCheckIn" style="display:block;"></span>
+                <span class="form-error" id="eeaCheckOut" style="display:block;"></span>
             </div>
 
             {{-- Checkout restriction banner for Edit modal (hidden by default) --}}

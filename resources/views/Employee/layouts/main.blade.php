@@ -31,6 +31,9 @@
     
     @yield('modals')
 
+    {{-- GLOBAL: Leave Request Modal (available on all employee pages) --}}
+    @include('Employee.components.leave_modal')
+
 
 
     <!-- QR Code Library -->

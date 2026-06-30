@@ -6,8 +6,12 @@
    - Click empty day to open Add modal
    ══════════════════════════════════════════════════════ */
 
-let calYear = new Date().getFullYear();
-let calMonth = new Date().getMonth(); // 0-indexed
+const localTodayDate = new Date();
+const offsetToday = localTodayDate.getTimezoneOffset();
+const today = new Date(localTodayDate.getTime() - (offsetToday*60*1000)).toISOString().split('T')[0];
+
+let calYear = localTodayDate.getFullYear();
+let calMonth = localTodayDate.getMonth(); // 0-indexed
 
 const MONTHS_ID = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -29,7 +33,6 @@ function renderCalendar() {
 
     const firstDay = new Date(calYear, calMonth, 1).getDay(); // 0=Sun
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
-    const today = new Date().toISOString().slice(0, 10);
 
     // Empty spaces before first day
     for (let i = 0; i < firstDay; i++) {
@@ -157,14 +160,14 @@ function filterHolidayList() {
 /* ──────────────────────────────────────────────────────
    NAME FIELDS BUILDER
    ────────────────────────────────────────────────────── */
-function buildNameFields(names = ['']) {
+function buildNameFields(names = [''], isToday = false) {
     const wrap = document.getElementById('nameFieldsWrap');
     if (!wrap) return;
     wrap.innerHTML = '';
-    names.forEach((nm, idx) => addNameField(nm));
+    names.forEach((nm, idx) => addNameField(nm, isToday && nm !== ''));
 }
 
-function addNameField(value = '') {
+function addNameField(value = '', isExistingOfToday = false) {
     const wrap = document.getElementById('nameFieldsWrap');
     if (!wrap) return;
     const idx = wrap.children.length;
@@ -176,8 +179,8 @@ function addNameField(value = '') {
                class="form-input hol-name-input"
                placeholder="Holiday Name ${idx + 1}"
                value="${escHtml(value)}"
-               style="font-size:13px;flex:1;">
-        ${idx > 0
+               ${isExistingOfToday ? 'readonly style="font-size:13px;flex:1;background-color:#e2e8f0;cursor:not-allowed;"' : 'style="font-size:13px;flex:1;"'}>
+        ${!isExistingOfToday
             ? `<button type="button" onclick="removeNameField(this)" class="btn-remove-name" title="Delete">✕</button>`
             : `<span style="width:28px;"></span>`
         }`;
@@ -198,12 +201,9 @@ function refreshBadges() {
         const input = row.querySelector('.hol-name-input');
         if (badge) badge.textContent = idx + 1;
         if (input) input.placeholder = `Holiday Name ${idx + 1}`;
-        // show/hide remove button
         const removeBtn = row.querySelector('.btn-remove-name');
-        if (idx === 0) {
-            if (removeBtn) removeBtn.style.display = 'none';
-        } else {
-            if (removeBtn) removeBtn.style.display = 'flex';
+        if (removeBtn) {
+            removeBtn.style.display = 'flex';
         }
     });
 }
@@ -257,20 +257,22 @@ function openEditHoliday(id) {
     if (!row) return;
     const dateStr = row.dataset.holDate;
     const names = JSON.parse(row.dataset.holNames || '[]');
+    const isTodayDate = dateStr === today;
 
     resetHolModal();
     document.getElementById('holDate').value = dateStr;
     document.getElementById('holEditId').value = id;
     document.getElementById('modalHolTitle').textContent = 'Edit Holiday';
     document.getElementById('btnSaveHolTxt').textContent = 'Update';
-    document.getElementById('modalHolIcon').textContent = '✏️';
+    document.getElementById('modalHolIcon').textContent = isTodayDate ? '🔒' : '✏️';
     setDateDisplay(dateStr);
-    buildNameFields(names.length ? names : ['']);
+    buildNameFields(names.length ? names : [''], isTodayDate);
     openModal('modalHoliday');
 }
 
 /** Open edit modal by clicking a holiday date on calendar */
 function openEditHolidayByDate(dateStr) {
+    // Check if today - allow only adding new names
     const row = document.querySelector(`[data-hol-date="${dateStr}"]`);
     if (!row) return;
     const id = row.id.replace('hol-row-', '');

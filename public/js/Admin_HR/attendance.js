@@ -296,44 +296,6 @@ function clearEmployeeSelection() {
 }
 
 /* =========================================================
-   TIME TYPE TOGGLE  (Check In / Check Out)
-   ========================================================= */
-
-/**
- * @param {'check_in'|'check_out'} type
- */
-function setTimeType(type) {
-    const btnIn   = document.getElementById('tglBtnIn');
-    const btnOut  = document.getElementById('tglBtnOut');
-    const inField = document.getElementById('aaCheckIn');
-    const outField= document.getElementById('aaCheckOut');
-    const label   = document.getElementById('aaTimeLabelText');
-    const icon    = document.getElementById('aaTimeIconWrap');
-    const hiddenType = document.getElementById('aaTimeType');
-
-    const activeBtn   = 'flex:1;height:38px;border-radius:8px;border:1.5px solid #c7d2fe;background:#eef2ff;color:#4f46e5;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;';
-    const inactiveBtn = 'flex:1;height:38px;border-radius:8px;border:1px solid #e2e8f0;background:#f8fafc;color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;';
-
-    if (type === 'check_in') {
-        if (btnIn)  btnIn.style.cssText  = activeBtn;
-        if (btnOut) btnOut.style.cssText = inactiveBtn;
-        if (inField)  inField.style.display  = '';
-        if (outField) { outField.style.display = 'none'; outField.value = ''; }
-        if (label) label.textContent = 'CHECK IN TIME';
-        if (icon)  icon.style.background = '#eef2ff';
-        if (hiddenType) hiddenType.value = 'check_in';
-    } else {
-        if (btnOut) btnOut.style.cssText = activeBtn;
-        if (btnIn)  btnIn.style.cssText  = inactiveBtn;
-        if (outField) outField.style.display = '';
-        if (inField)  { inField.style.display = 'none'; inField.value = ''; }
-        if (label) label.textContent = 'CHECK OUT TIME';
-        if (icon)  icon.style.background = '#fef9c3';
-        if (hiddenType) hiddenType.value = 'check_out';
-    }
-}
-
-/* =========================================================
    MODAL — ADD
    ========================================================= */
 
@@ -347,9 +309,6 @@ function openAddAttModal() {
     document.getElementById('aaCheckIn').value  = '';
     document.getElementById('aaCheckOut').value = '';
 
-    // Reset toggle to Check In
-    setTimeType('check_in');
-
     // Cek apakah checkout hari ini sudah boleh diisi
     applyCheckoutRestriction();
 
@@ -358,38 +317,33 @@ function openAddAttModal() {
 }
 
 /**
- * Aktifkan / nonaktifkan tombol Check Out pada modal Add
+ * Aktifkan / nonaktifkan input Check Out pada modal Add
  * berdasarkan tanggal yang dipilih dan jam sekarang.
  */
 function applyCheckoutRestriction() {
     const dateVal = document.getElementById('aaDate')?.value || '';
     const allowed = isTodayCheckoutAllowed(dateVal);
-    const btnOut  = document.getElementById('tglBtnOut');
+    const coInput = document.getElementById('aaCheckOut');
     const banner  = document.getElementById('aaCheckoutBanner');
 
-    if (btnOut) {
-        btnOut.disabled = !allowed;
-        btnOut.style.opacity = allowed ? '1' : '0.4';
-        btnOut.style.cursor  = allowed ? 'pointer' : 'not-allowed';
-        btnOut.title = allowed ? '' : 'Checkout hari ini hanya bisa diisi setelah jam 17:00';
+    if (coInput) {
+        coInput.disabled = !allowed;
+        coInput.style.opacity = allowed ? '1' : '0.4';
+        coInput.style.cursor  = allowed ? 'text' : 'not-allowed';
     }
     if (banner) {
         banner.style.display = allowed ? 'none' : 'flex';
-    }
-    // Jika tombol Check Out sedang aktif & sekarang tidak diizinkan → paksa ke Check In
-    if (!allowed) {
-        const currentType = document.getElementById('aaTimeType')?.value;
-        if (currentType === 'check_out') setTimeType('check_in');
     }
 }
 
 function saveAtt() {
     const nip      = document.getElementById('aaEmpId')?.value;
     const date     = document.getElementById('aaDate')?.value;
-    const timeType = document.getElementById('aaTimeType')?.value || 'check_in';
 
-    const check_in  = timeType === 'check_in'  ? (document.getElementById('aaCheckIn')?.value  || '') : '';
-    const check_out = timeType === 'check_out' ? (document.getElementById('aaCheckOut')?.value || '') : '';
+    const check_in  = document.getElementById('aaCheckIn')?.value || '';
+    const check_out = document.getElementById('aaCheckOut')?.value || '';
+
+    clearAllErrors();
 
     // Validation
     if (!nip) {
@@ -400,12 +354,22 @@ function saveAtt() {
         setErr('aaDate', 'eaaDate', 'Date is required');
         return;
     }
-    if (timeType === 'check_in' && !check_in) {
+    
+    // User cannot submit empty both
+    if (!check_in && !check_out) {
         setErr('aaCheckIn', 'eaaCheckIn', 'Check In time is required');
         return;
     }
-    if (timeType === 'check_out' && !check_out) {
-        setErr('aaCheckOut', 'eaaCheckOut', 'Check Out time is required');
+
+    // if user fills check out only, it's not allowed
+    if (!check_in && check_out) {
+        setErr('aaCheckIn', 'eaaCheckIn', 'You must fill in check in first');
+        return;
+    }
+
+    // if both are filled, check_in must be before check_out
+    if (check_in && check_out && check_in >= check_out) {
+        setErr('aaCheckIn', 'eaaCheckIn', 'Check out time must be after check in time');
         return;
     }
 
@@ -415,7 +379,7 @@ function saveAtt() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
-        body: JSON.stringify({ nip, date, check_in, check_out, time_type: timeType })
+        body: JSON.stringify({ nip, date, check_in, check_out })
     })
     .then(r => r.json())
     .then(data => {
@@ -468,9 +432,17 @@ function updateAtt() {
     const date      = document.getElementById('eaDate')?.value;
     const check_in  = document.getElementById('eaCheckIn')?.value;
     const check_out = document.getElementById('eaCheckOut')?.value;
-
+ 
     if (!id || !date) return;
 
+    clearAllErrors();
+    
+    // Validation: if both are filled, check_in must be before check_out
+    if (check_in && check_out && check_in !== '—' && check_out !== '—' && check_in >= check_out) {
+        setErr('eaCheckIn', 'eeaCheckIn', 'Check out time must be after check in time');
+        return;
+    }
+ 
     // Sanitize: value "—" from table is sent as null to avoid Carbon error
     const sanitizeTime = v => (v && v !== '—' && v.trim() !== '') ? v : null;
 
