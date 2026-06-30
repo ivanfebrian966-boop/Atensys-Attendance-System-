@@ -16,6 +16,7 @@ class LeaveController extends Controller
         // Auto-run mark absent on page load
         $this->runMarkAbsent();
         Attendance::syncMissingCheckouts();
+        Permission::autoApproveExpired();
 
         $stats = [
             'total'      => Permission::count(),
@@ -37,6 +38,7 @@ class LeaveController extends Controller
     public function getData(Request $request)
     {
         try {
+            Permission::autoApproveExpired();
             $query = Permission::with(['employee.division']);
 
             if ($request->filled('type') && $request->type !== 'all') {
@@ -78,6 +80,7 @@ class LeaveController extends Controller
                     'file'            => $perm->file ? asset('storage/' . $perm->file) : null,
                     'submitted'   => Carbon::parse($perm->created_at)->format('d M Y, H:i'),
                     'overdue'     => $perm->permission_status === 'Approved' && Carbon::parse($perm->completion_date)->isPast(),
+                    'is_locked'   => Carbon::parse($perm->created_at)->lt(Carbon::now()->subDays(3)),
                 ];
             });
 
@@ -95,6 +98,10 @@ class LeaveController extends Controller
                 return response()->json(['success' => false, 'message' => 'Approval reason is required.'], 422);
             }
             $permission = Permission::findOrFail($id);
+
+            if ($permission->created_at->lt(Carbon::now()->subDays(3))) {
+                return response()->json(['success' => false, 'message' => 'Action locked: The request was submitted more than 3 days ago.'], 403);
+            }
 
             if ($permission->permission_status !== 'Pending') {
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
@@ -152,6 +159,10 @@ class LeaveController extends Controller
             }
             $permission = Permission::findOrFail($id);
 
+            if ($permission->created_at->lt(Carbon::now()->subDays(3))) {
+                return response()->json(['success' => false, 'message' => 'Action locked: The request was submitted more than 3 days ago.'], 403);
+            }
+
             if ($permission->permission_status !== 'Pending') {
                 return response()->json(['success' => false, 'message' => 'Request is no longer pending.'], 422);
             }
@@ -203,6 +214,10 @@ class LeaveController extends Controller
             }
 
             $permission = Permission::findOrFail($id);
+
+            if ($permission->created_at->lt(Carbon::now()->subDays(3))) {
+                return response()->json(['success' => false, 'message' => 'Action locked: The request was submitted more than 3 days ago.'], 403);
+            }
 
             $oldStatus = $permission->permission_status;
             $oldStart  = $permission->start_date;
@@ -293,6 +308,10 @@ class LeaveController extends Controller
         try {
             DB::beginTransaction();
             $permission = Permission::findOrFail($id);
+
+            if ($permission->created_at->lt(Carbon::now()->subDays(3))) {
+                return response()->json(['success' => false, 'message' => 'Action locked: The request was submitted more than 3 days ago.'], 403);
+            }
 
             // If it was approved, clean up the attendance records for that period
             if ($permission->permission_status === 'Approved') {

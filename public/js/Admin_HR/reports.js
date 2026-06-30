@@ -334,7 +334,7 @@ function renderDetailTable(data) {
                 return `${String(Math.floor(avg / 60)).padStart(2, '0')}:${String(avg % 60).padStart(2, '0')}`;
             })()
             : '—';
-        return { name, div, total, present, absent, late, sick, perm, rate, avgCi };
+        return { name, div, total, present, absent, late, sick, perm, rate, avgCi, workingDays };
     }).sort((a, b) => b.rate - a.rate);
 
     filterReport();
@@ -527,7 +527,10 @@ function renderReportCards(list) {
                     <div class="report-percentage-bar">
                         <div class="report-percentage-fill" style="width:${parseInt(percentage)}%"></div>
                     </div>
-                    <p class="report-percentage-text">${percentage} Present</p>
+                    <div class="flex justify-between items-center">
+                        <p class="report-percentage-text">${percentage} Present</p>
+                        <p class="report-percentage-text">${r.present + r.late}/${r.workingDays} Days</p>
+                    </div>
                 </div>
             </div>
         `;

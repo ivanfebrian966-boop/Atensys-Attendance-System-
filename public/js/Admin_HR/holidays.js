@@ -8,7 +8,7 @@
 
 const localTodayDate = new Date();
 const offsetToday = localTodayDate.getTimezoneOffset();
-const today = new Date(localTodayDate.getTime() - (offsetToday*60*1000)).toISOString().split('T')[0];
+const today = new Date(localTodayDate.getTime() - (offsetToday * 60 * 1000)).toISOString().split('T')[0];
 
 let calYear = localTodayDate.getFullYear();
 let calMonth = localTodayDate.getMonth(); // 0-indexed
@@ -87,7 +87,7 @@ function renderCalendar() {
 
         grid.appendChild(el);
     }
-    
+
     filterHolidayList();
 }
 
@@ -272,11 +272,19 @@ function openEditHoliday(id) {
 
 /** Open edit modal by clicking a holiday date on calendar */
 function openEditHolidayByDate(dateStr) {
-    // Check if today - allow only adding new names
-    const row = document.querySelector(`[data-hol-date="${dateStr}"]`);
-    if (!row) return;
-    const id = row.id.replace('hol-row-', '');
-    openEditHoliday(id);
+    const names = HOLIDAY_MAP[dateStr] || [];
+    const isTodayDate = dateStr === today;
+
+    resetHolModal();
+    document.getElementById('holDate').value = dateStr;
+    document.getElementById('holEditId').value = ''; // empty means save/update by date
+    document.getElementById('modalHolTitle').textContent = 'Edit Holiday';
+    document.getElementById('btnSaveHolTxt').textContent = 'Update';
+    document.getElementById('modalHolIcon').textContent = isTodayDate ? '🔒' : '✏️';
+    setDateDisplay(dateStr);
+    
+    buildNameFields(names.length ? names : [''], isTodayDate);
+    openModal('modalHoliday');
 }
 
 /* ──────────────────────────────────────────────────────
@@ -322,21 +330,16 @@ function saveHoliday() {
 
                 if (isEdit) {
                     updateHolidayInList(data.holiday);
-                    HOLIDAY_MAP[data.holiday.date] = data.holiday.names;
-                    if (Array.isArray(data.created)) {
-                        data.created.forEach((hol) => {
-                            addHolidayToList(hol);
-                        });
-                        const existingNames = HOLIDAY_MAP[data.holiday.date] || [];
-                        HOLIDAY_MAP[data.holiday.date] = Array.from(new Set([...(existingNames || []), ...data.created.flatMap(h => h.names)]));
-                    }
                 } else {
+                    const existingRows = document.querySelectorAll(`.hol-row[data-hol-date="${date}"]`);
+                    existingRows.forEach(r => r.remove());
+
                     const addedHolidays = data.holidays || [];
                     addedHolidays.forEach(hol => addHolidayToList(hol));
-                    const existingNames = HOLIDAY_MAP[data.date] || [];
-                    HOLIDAY_MAP[data.date] = Array.from(new Set([...(existingNames || []), ...(data.names || [])]));
-                    updateTotalCount(addedHolidays.length);
+                    
+                    updateTotalCount(addedHolidays.length - existingRows.length);
                 }
+                syncHolidayMap(date);
                 renderCalendar();
             } else {
                 if (data.errors?.names) {
@@ -349,6 +352,16 @@ function saveHoliday() {
             }
         })
         .catch(() => showToast('Failed to connect to the server.', 'error', 3000));
+}
+
+function syncHolidayMap(date) {
+    const rows = Array.from(document.querySelectorAll(`.hol-row[data-hol-date="${date}"]`));
+    const names = rows.flatMap(r => JSON.parse(r.dataset.holNames || '[]'));
+    if (names.length) {
+        HOLIDAY_MAP[date] = names;
+    } else {
+        delete HOLIDAY_MAP[date];
+    }
 }
 
 /* ──────────────────────────────────────────────────────
@@ -364,10 +377,11 @@ function addHolidayToList(hol) {
 
     const container = document.getElementById('holidayListContainer');
     const row = document.createElement('div');
-    row.className = 'hol-row';
+    row.className = 'hol-row cursor-pointer';
     row.id = `hol-row-${hol.id}`;
     row.dataset.holDate = hol.date;
     row.dataset.holNames = JSON.stringify(hol.names);
+    row.onclick = () => openEditHoliday(hol.id);
     row.innerHTML = buildRowInner(hol, day, mon);
 
     if (container) container.insertBefore(row, container.firstChild);
@@ -397,8 +411,8 @@ function buildRowInner(hol, day, mon) {
         </div>
         <div class="hol-info">${namesHtml}</div>
         <div class="hol-actions">
-            <button onclick="openEditHoliday(${hol.id})" class="btn-icon-edit" title="Edit">✏️</button>
-            <button onclick="deleteHoliday(${hol.id}, '${labelEsc.replace(/'/g, "\\'")}')" class="btn-icon-del" title="Delete">🗑</button>
+            <button onclick="event.stopPropagation(); openEditHoliday(${hol.id})" class="btn-icon-edit" title="Edit">✏️</button>
+            <button onclick="event.stopPropagation(); deleteHoliday(${hol.id}, '${labelEsc.replace(/'/g, "\\'")}')" class="btn-icon-del" title="Delete">🗑</button>
         </div>`;
 }
 

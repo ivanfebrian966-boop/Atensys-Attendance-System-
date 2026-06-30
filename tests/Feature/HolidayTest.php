@@ -64,7 +64,7 @@ class HolidayTest extends TestCase
 
         $response = $this->post(route('admin-hr.holidays.store'), [
             'date' => $date,
-            'name' => 'New Year'
+            'names' => ['New Year']
         ]);
 
         $response->assertJson(['success' => true]);
@@ -79,7 +79,7 @@ class HolidayTest extends TestCase
         // Verify that attendance is generated for the active employee since it's a weekday
         $this->assertDatabaseHas('attendances', [
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Holiday',
+            'attendance_status' => 'Present',
             'qr_code' => 'SYSTEM-HOLIDAY'
         ]);
     }
@@ -98,12 +98,12 @@ class HolidayTest extends TestCase
             'name' => 'Indonesian Independence Day'
         ]);
 
-        // Manually trigger generation or simulate
-        Attendance::create([
+        // Manually trigger generation or simulate without Eloquent overriding created_at
+        \DB::table('attendances')->insert([
             'nip' => $this->employee->nip,
             'check_in' => null,
             'check_out' => null,
-            'attendance_status' => 'Holiday',
+            'attendance_status' => 'Present',
             'qr_code' => 'SYSTEM-HOLIDAY',
             'created_at' => $date->copy()->setTime(7, 0, 0),
             'updated_at' => $date->copy()->setTime(7, 0, 0),
@@ -120,22 +120,36 @@ class HolidayTest extends TestCase
         // Verify that generated attendance is deleted
         $this->assertDatabaseMissing('attendances', [
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Holiday',
             'qr_code' => 'SYSTEM-HOLIDAY'
         ]);
     }
 
     public function test_qr_scanning_is_blocked_on_holiday()
     {
-        $date = Carbon::today()->toDateString();
-
-        HolidayDate::create([
-            'date' => $date,
-            'name' => 'National Holiday'
-        ]);
-
         $this->actingAs($this->admin);
 
+        $dateStr = Carbon::today()->toDateString();
+
+        // Create the holiday date directly via DB to prevent SQLite timezone shifting
+        \DB::table('holiday_dates')->insert([
+            'date' => $dateStr,
+            'name' => 'National Holiday',
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+
+        // Simulate a generated holiday attendance
+        \DB::table('attendances')->insert([
+            'nip' => $this->employee->nip,
+            'check_in' => null,
+            'check_out' => null,
+            'attendance_status' => 'Present',
+            'qr_code' => 'SYSTEM-HOLIDAY',
+            'created_at' => Carbon::now()->setTime(7, 0, 0),
+            'updated_at' => Carbon::now()->setTime(7, 0, 0),
+        ]);
+
+        // Try to check-in using QR on a holiday
         $response = $this->post(route('admin-hr.attendance.process-qr'), [
             'qr_data' => 'ATTENSYS:EMP:' . $this->employee->nip
         ]);
@@ -167,7 +181,7 @@ class HolidayTest extends TestCase
         // Add attendance record for Permission
         Attendance::create([
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Permission',
+            'attendance_status' => 'Leave',
             'qr_code' => 'SYSTEM',
             'created_at' => $date->copy()->setTime(7, 0, 0),
             'updated_at' => $date->copy()->setTime(7, 0, 0),
@@ -176,7 +190,7 @@ class HolidayTest extends TestCase
         // Save holiday
         $response = $this->post(route('admin-hr.holidays.store'), [
             'date' => $dateStr,
-            'name' => 'Christmas Day'
+            'names' => ['Christmas Day']
         ]);
 
         $response->assertJson(['success' => true]);
@@ -184,12 +198,12 @@ class HolidayTest extends TestCase
         // The employee should still have the Permission status, not Holiday
         $this->assertDatabaseHas('attendances', [
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Permission'
+            'attendance_status' => 'Leave'
         ]);
 
         $this->assertDatabaseMissing('attendances', [
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Holiday'
+            'qr_code' => 'SYSTEM-HOLIDAY'
         ]);
     }
 
@@ -202,7 +216,7 @@ class HolidayTest extends TestCase
 
         $response = $this->post(route('admin-hr.holidays.store'), [
             'date' => $date,
-            'name' => 'Sunday Holiday'
+            'names' => ['Sunday Holiday']
         ]);
 
         $response->assertJson(['success' => true]);
@@ -214,7 +228,6 @@ class HolidayTest extends TestCase
         // Verify that NO attendance is generated for the active employee because it's a weekend
         $this->assertDatabaseMissing('attendances', [
             'nip' => $this->employee->nip,
-            'attendance_status' => 'Holiday',
             'qr_code' => 'SYSTEM-HOLIDAY'
         ]);
     }

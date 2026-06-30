@@ -249,6 +249,11 @@
         <h3 class="text-lg font-bold text-slate-800 font-sora mb-1">Manage Leave Request</h3>
         <p class="text-sm text-slate-500 mb-4" id="manageEmployeeName">Employee Name</p>
 
+        <div id="manageLockedMessage" class="hidden bg-amber-50 text-amber-700 border border-amber-200 rounded-lg p-3 text-sm mb-4 flex items-start gap-2">
+            <span>🔒</span>
+            <span>This request is locked because it is older than 3 days.</span>
+        </div>
+
         <form id="manageForm" onsubmit="submitManageForm(event)" novalidate>
             <input type="hidden" id="manageId">
             

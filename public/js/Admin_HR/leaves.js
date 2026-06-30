@@ -267,6 +267,20 @@ function openManageModal(row) {
     document.getElementById('manageRejectError').classList.add('hidden');
     document.getElementById('manageApprovalError').classList.add('hidden');
     
+    const btn = document.getElementById('manageSubmitBtn');
+    const lockedMsg = document.getElementById('manageLockedMessage');
+    const statusSelect = document.getElementById('manageStatus');
+    
+    if (row.is_locked) {
+        if (btn) btn.disabled = true;
+        if (lockedMsg) lockedMsg.classList.remove('hidden');
+        statusSelect.disabled = true;
+    } else {
+        if (btn) btn.disabled = false;
+        if (lockedMsg) lockedMsg.classList.add('hidden');
+        statusSelect.disabled = false;
+    }
+    
     toggleManageRejectReason();
     document.getElementById('manageModal').style.display = 'flex';
 }

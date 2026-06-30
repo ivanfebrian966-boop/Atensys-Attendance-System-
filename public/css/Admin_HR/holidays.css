@@ -19,8 +19,14 @@
     text-transform: uppercase;
     letter-spacing: .06em;
 }
-.cal-day-label:first-child  { color: #ef4444; }
-.cal-day-label:last-child   { color: #3b82f6; }
+
+.cal-day-label:first-child {
+    color: #ef4444;
+}
+
+.cal-day-label:last-child {
+    color: #3b82f6;
+}
 
 /* Day Cells */
 .cal-day {
@@ -39,9 +45,11 @@
     gap: 1px;
     user-select: none;
 }
+
 .cal-day:not(.empty):hover {
     transform: scale(1.07);
 }
+
 .cal-day.empty {
     background: transparent;
     cursor: default;
@@ -61,7 +69,10 @@
     font-weight: 700;
     border: 1.5px solid #c7d2fe;
 }
-.cal-day.today .cal-num { font-size: 13px; }
+
+.cal-day.today .cal-num {
+    font-size: 13px;
+}
 
 /* Holiday */
 .cal-day.holiday {
@@ -70,6 +81,7 @@
     font-weight: 700;
     cursor: pointer;
 }
+
 .cal-day.holiday:hover {
     background: linear-gradient(135deg, #fecaca, #fca5a5);
 }
@@ -81,6 +93,7 @@
     align-items: center;
     justify-content: center;
 }
+
 .cal-dot {
     width: 4px;
     height: 4px;
@@ -90,11 +103,18 @@
 }
 
 /* Weekend colors */
-.cal-day.sunday:not(.holiday):not(.today)   { color: #ef4444; }
-.cal-day.saturday:not(.holiday):not(.today) { color: #3b82f6; }
+.cal-day.sunday:not(.holiday):not(.today) {
+    color: #ef4444;
+}
+
+.cal-day.saturday:not(.holiday):not(.today) {
+    color: #3b82f6;
+}
 
 /* Non-holiday hover */
-.cal-day:not(.empty):not(.holiday):not(.today):hover { background: #f1f5f9; }
+.cal-day:not(.empty):not(.holiday):not(.today):hover {
+    background: #f1f5f9;
+}
 
 /* ── Calendar Navigation ─────────────────────────────── */
 .cal-nav {
@@ -102,19 +122,28 @@
     align-items: center;
     gap: 8px;
 }
+
 .cal-nav button {
-    width: 32px; height: 32px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
     cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: #64748b;
     font-size: 16px;
     transition: all .15s;
     flex-shrink: 0;
 }
-.cal-nav button:hover { background: #eef2ff; color: #4f46e5; border-color: #c7d2fe; }
+
+.cal-nav button:hover {
+    background: #eef2ff;
+    color: #4f46e5;
+    border-color: #c7d2fe;
+}
 
 /* ── Calendar Legend ─────────────────────────────────── */
 .cal-legend {
@@ -124,6 +153,7 @@
     padding: 10px 16px 14px;
     flex-wrap: wrap;
 }
+
 .legend-item {
     display: flex;
     align-items: center;
@@ -132,16 +162,36 @@
     color: #64748b;
     font-weight: 500;
 }
+
 .legend-dot {
-    width: 12px; height: 12px;
+    width: 12px;
+    height: 12px;
     border-radius: 4px;
     flex-shrink: 0;
 }
-.today-dot   { background: #eef2ff; border: 1.5px solid #c7d2fe; }
-.holiday-dot { background: linear-gradient(135deg,#fee2e2,#fecaca); }
-.weekend-dot { border-radius: 50%; width: 10px; height: 10px; }
-.sun-dot     { background: #ef4444; }
-.sat-dot     { background: #3b82f6; }
+
+.today-dot {
+    background: #eef2ff;
+    border: 1.5px solid #c7d2fe;
+}
+
+.holiday-dot {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.weekend-dot {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+}
+
+.sun-dot {
+    background: #ef4444;
+}
+
+.sat-dot {
+    background: #3b82f6;
+}
 
 /* ── Holiday List Rows ───────────────────────────────── */
 .hol-row {
@@ -153,8 +203,14 @@
     transition: background .12s;
     border-radius: 8px;
 }
-.hol-row:last-child { border-bottom: none; }
-.hol-row:hover { background: #fafafa; }
+
+.hol-row:last-child {
+    border-bottom: none;
+}
+
+.hol-row:hover {
+    background: #fafafa;
+}
 
 .hol-date-badge {
     flex-shrink: 0;
@@ -168,10 +224,25 @@
     justify-content: center;
     color: #b91c1c;
 }
-.hol-date-badge .day-num  { font-size: 17px; font-weight: 800; line-height: 1; }
-.hol-date-badge .month-txt{ font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 
-.hol-info { flex: 1; min-width: 0; }
+.hol-date-badge .day-num {
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.hol-date-badge .month-txt {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.hol-info {
+    flex: 1;
+    min-width: 0;
+}
+
 .hol-name {
     font-size: 13px;
     font-weight: 600;
@@ -181,6 +252,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .hol-name-secondary {
     font-size: 11px;
     font-weight: 500;
@@ -198,19 +270,34 @@
 
 .btn-icon-edit,
 .btn-icon-del {
-    width: 30px; height: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     background: #f8fafc;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     font-size: 13px;
     transition: all .15s;
     padding: 0;
 }
-.btn-icon-edit:hover { background: #eef2ff; border-color: #c7d2fe; }
-.btn-icon-del        { border-color: #fecaca; background: #fff5f5; }
-.btn-icon-del:hover  { background: #fee2e2; border-color: #fca5a5; }
+
+.btn-icon-edit:hover {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.btn-icon-del {
+    border-color: #fecaca;
+    background: #fff5f5;
+}
+
+.btn-icon-del:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
 
 /* ── Modal Name Fields ───────────────────────────────── */
 .name-field-row {
@@ -219,15 +306,19 @@
     gap: 8px;
     margin-bottom: 8px;
 }
+
 .name-field-badge {
     flex-shrink: 0;
-    width: 22px; height: 22px;
+    width: 22px;
+    height: 22px;
     border-radius: 6px;
     background: #fee2e2;
     color: #b91c1c;
     font-size: 11px;
     font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-add-name {
@@ -241,20 +332,31 @@
     cursor: pointer;
     transition: all .15s;
 }
-.btn-add-name:hover { background: #e0e7ff; border-color: #a5b4fc; }
+
+.btn-add-name:hover {
+    background: #e0e7ff;
+    border-color: #a5b4fc;
+}
 
 .btn-remove-name {
     flex-shrink: 0;
-    width: 28px; height: 28px;
+    width: 28px;
+    height: 28px;
     border-radius: 7px;
     border: 1px solid #fecaca;
     background: #fff5f5;
     color: #ef4444;
     font-size: 11px;
     font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     transition: all .15s;
     padding: 0;
 }
-.btn-remove-name:hover { background: #fee2e2; border-color: #fca5a5; }
+
+.btn-remove-name:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+}

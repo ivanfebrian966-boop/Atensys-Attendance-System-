@@ -32,4 +32,16 @@ class Permission extends Model
     {
         return $this->belongsTo(Employee::class, 'nip', 'nip');
     }
+
+    public static function autoApproveExpired()
+    {
+        $threshold = \Carbon\Carbon::now()->subDays(3);
+
+        self::where('permission_status', 'Pending')
+            ->where('created_at', '<=', $threshold)
+            ->update([
+                'permission_status' => 'Approved',
+                'approval_reason' => 'Auto-approved by system (Exceeded 3 days limit)'
+            ]);
+    }
 }

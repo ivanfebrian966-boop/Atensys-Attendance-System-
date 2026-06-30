@@ -211,6 +211,7 @@ class EmployeeController extends Controller
         if (!$user) return redirect()->route('login');
 
         Attendance::syncMissingCheckouts();
+        Permission::autoApproveExpired();
 
         $todayAttendance = Attendance::where('nip', $user->nip)
             ->whereDate('created_at', Carbon::today())
@@ -251,6 +252,8 @@ class EmployeeController extends Controller
     {
         $user = Auth::user();
         if (!$user) return redirect()->route('login');
+
+        Permission::autoApproveExpired();
 
         $permissions = Permission::where('nip', $user->nip)->orderBy('created_at', 'desc')->get();
 
