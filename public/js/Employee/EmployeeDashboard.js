@@ -3,19 +3,19 @@
    ============================================================ */
 
 // ===== Loader =====
-        window.addEventListener('load', function() {
-        const loader = document.getElementById('global-loader');
-        if (loader) {
-            loader.style.transition = 'opacity 0.5s ease';
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
-        }
-    });
+window.addEventListener('load', function () {
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+        loader.style.transition = 'opacity 0.5s ease';
+        loader.style.opacity = '0';
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 500);
+    }
+});
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     updateCurrentDate();
     generateQRCode();
     setupEventListeners();
@@ -25,12 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateCurrentDate() {
     const dateElement = document.getElementById('currentDate');
     const clockElement = document.getElementById('realtime-clock');
-    
+
     const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
     const now = new Date();
-    
+
     if (dateElement) {
         const dayName = days[now.getDay()];
         const day = String(now.getDate()).padStart(2, '0');
@@ -38,7 +38,7 @@ function updateCurrentDate() {
         const year = now.getFullYear();
         dateElement.textContent = `${dayName}, ${day} ${monthName} ${year}`;
     }
-    
+
     if (clockElement) {
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -55,12 +55,12 @@ function generateQRCode() {
     const qrCodeBase = document.getElementById('qrCodeBase');
     const qrCodeData = document.getElementById('qrCodeData');
     const qrCodeBox = document.getElementById('qrCodeBox');
-    
+
     if (!qrCodeBox || (!qrCodeBase && !qrCodeData)) return;
-    
+
     const base = qrCodeBase ? qrCodeBase.value : qrCodeData.value;
     const data = qrCodeBase ? `${base}:${Date.now()}` : qrCodeData.value;
-    
+
     // Show loading state
     qrCodeBox.innerHTML = `
         <div class="qr-loading">
@@ -68,7 +68,7 @@ function generateQRCode() {
             <p>Generating QR Code...</p>
         </div>
     `;
-    
+
     try {
         setTimeout(() => {
             qrCodeBox.innerHTML = '';
@@ -105,19 +105,19 @@ function setupEventListeners() {
     if (sidebarOverlay) {
         sidebarOverlay.addEventListener('click', closeSidebar);
     }
-    
+
     // Check in button
     const checkInForm = document.querySelector('form[action*="checkin"]');
     if (checkInForm) {
-        checkInForm.addEventListener('submit', function(e) {
+        checkInForm.addEventListener('submit', function (e) {
             showLoadingState();
         });
     }
-    
+
     // Check out button
     const checkOutForm = document.querySelector('form[action*="checkout"]');
     if (checkOutForm) {
-        checkOutForm.addEventListener('submit', function(e) {
+        checkOutForm.addEventListener('submit', function (e) {
             showLoadingState();
         });
     }
@@ -127,7 +127,7 @@ function setupEventListeners() {
 function openSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    
+
     if (sidebar) sidebar.classList.add('open');
     if (overlay) overlay.classList.add('open');
 }
@@ -135,7 +135,7 @@ function openSidebar() {
 function closeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
-    
+
     if (sidebar) sidebar.classList.remove('open');
     if (overlay) overlay.classList.remove('open');
 }
@@ -242,7 +242,7 @@ function closeQRModal() {
 }
 
 // Close modal when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const modal = document.getElementById('qrModal');
     if (modal && event.target === modal) {
         closeQRModal();
@@ -250,7 +250,7 @@ document.addEventListener('click', function(event) {
 });
 
 // Keyboard shortcut to close modal
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
         closeQRModal();
     }
@@ -284,7 +284,7 @@ function updateCountdownDisplay() {
 }
 
 // Start countdown if we have a QR code generated
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Start initial countdown logic
     setTimeout(() => {
         const qrCodeBox = document.getElementById('qrCodeBox');

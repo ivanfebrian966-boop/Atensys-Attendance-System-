@@ -103,7 +103,7 @@
         </div>
         <div class="qr-section">
             <div class="qr-container">
-                <div class="qr-code-box" id="qrCodeBox">
+                <div class="qr-code-box" id="qrCodeBox" style="width:300px; height:300px;">
                     <div class="qr-loading">
                         <div class="qr-loading-spinner"></div>
                         <p>Generating QR Code...</p>
